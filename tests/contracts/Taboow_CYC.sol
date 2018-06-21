@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity 0.4.24;
 
 /*
     Copyright 2018, Vicent Nos
@@ -16,61 +16,119 @@ pragma solidity ^0.4.19;
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
- */
-
-
-library SafeMath {
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a == 0) {
-            return 0;
-        }
-        uint256 c = a * b;
-        assert(c / a == b);
-        return c;
-    }
-
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // assert(b > 0); // Solidity automatically throws when dividing by 0
-        uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-        return c;
-    }
-
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b <= a);
-        return a - b;
-    }
-
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        uint256 c = a + b;
-        assert(c >= a);
-        return c;
-    }
-}
+*/
 
 
-contract Ownable {
-    address public owner;
+ /**
+  * @title OpenZeppelin SafeMath
+  * @dev Math operations with safety checks that throw on error
+  */
+  library SafeMath {
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+   /**
+   * @dev Multiplies two numbers, throws on overflow.
+   */
+   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
+     // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+     // benefit is lost if 'b' is also tested.
+     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+     if (a == 0) {
+       return 0;
+     }
 
-    function Ownable() internal {
-                owner = msg.sender;
+     c = a * b;
+     assert(c / a == b);
+     return c;
+   }
 
-    }
+   /**
+   * @dev Integer division of two numbers, truncating the quotient.
+   */
+   function div(uint256 a, uint256 b) internal pure returns (uint256) {
+     // assert(b > 0); // Solidity automatically throws when dividing by 0
+     // uint256 c = a / b;
+     // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+     return a / b;
+   }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
+   /**
+   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
+   */
+   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+     assert(b <= a);
+     return a - b;
+   }
 
-    function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0));
-        OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-    }
-}
+   /**
+   * @dev Adds two numbers, throws on overflow.
+   */
+   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
+     c = a + b;
+     assert(c >= a);
+     return c;
+   }
+ }
+
+
+ /**
+  * @title OpenZeppelin Ownable
+  * @dev The Ownable contract has an owner address, and provides basic authorization control
+  * functions, this simplifies the implementation of "user permissions".
+  */
+ contract Ownable {
+   address public owner;
+
+   event OwnershipRenounced(address indexed previousOwner);
+   event OwnershipTransferred(
+     address indexed previousOwner,
+     address indexed newOwner
+   );
+
+   /**
+    * @dev The Ownable constructor sets the original `owner` of the contract to the sender
+    * account.
+    */
+   constructor() public {
+     owner = msg.sender;
+   }
+
+   /**
+    * @dev Throws if called by any account other than the owner.
+    */
+   modifier onlyOwner() {
+     require(msg.sender == owner);
+     _;
+   }
+
+   /**
+    * @dev Allows the current owner to relinquish control of the contract.
+    * @notice Renouncing to ownership will leave the contract without an owner.
+    * It will not be possible to call the functions with the `onlyOwner`
+    * modifier anymore.
+    */
+   function renounceOwnership() public onlyOwner {
+     emit OwnershipRenounced(owner);
+     owner = address(0);
+   }
+
+   /**
+    * @dev Allows the current owner to transfer control of the contract to a newOwner.
+    * @param _newOwner The address to transfer ownership to.
+    */
+   function transferOwnership(address _newOwner) public onlyOwner {
+     _transferOwnership(_newOwner);
+   }
+
+   /**
+    * @dev Transfers control of the contract to a newOwner.
+    * @param _newOwner The address to transfer ownership to.
+    */
+   function _transferOwnership(address _newOwner) internal {
+     require(_newOwner != address(0));
+     emit OwnershipTransferred(owner, _newOwner);
+     owner = _newOwner;
+   }
+ }
 
 
 //////////////////////////////////////////////////////////////
@@ -86,27 +144,15 @@ contract TaboowERC20 is Ownable {
 
     mapping (address => uint256) public balances;
 
-    mapping (address => uint256) public requestWithdraws;
-
     mapping (address => mapping (address => uint256)) internal allowed;
 
-    mapping (address => timeHold) holded;
-
-    struct timeHold{
-        uint256[] amount;
-        uint256[] time;
-        uint256 length;
-    }
-
-    /* Public variables for the ERC20 token */
+    /*  Public variables for the ERC20 token  */
     string public constant standard = "ERC20 Taboow CYC";
-    uint8 public constant decimals = 8; // hardcoded to be a constant
+    uint8 public constant decimals = 18; // hardcoded to be a constant
     uint256 public totalSupply;
     string public name;
     string public symbol;
-
-
-
+    
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
@@ -114,8 +160,6 @@ contract TaboowERC20 is Ownable {
     function balanceOf(address _owner) public view returns (uint256 balance) {
         return balances[_owner];
     }
-
-
 
     function transfer(address _to, uint256 _value) public returns (bool) {
 
@@ -128,7 +172,7 @@ contract TaboowERC20 is Ownable {
 
         balances[_to] = balances[_to].add(_value);
 
-        Transfer(msg.sender, _to, _value);
+        emit Transfer(msg.sender, _to, _value);
         return true;
     }
 
@@ -142,13 +186,13 @@ contract TaboowERC20 is Ownable {
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
 
-        Transfer(_from, _to, _value);
+        emit Transfer(_from, _to, _value);
         return true;
     }
 
     function approve(address _spender, uint256 _value) public returns (bool) {
         allowed[msg.sender][_spender] = _value;
-        Approval(msg.sender, _spender, _value);
+        emit Approval(msg.sender, _spender, _value);
         return true;
     }
 
@@ -158,7 +202,7 @@ contract TaboowERC20 is Ownable {
 
     function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
         allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
-        Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+        emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
         return true;
     }
 
@@ -169,7 +213,7 @@ contract TaboowERC20 is Ownable {
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
         }
-        Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+        emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
         return true;
     }
 
@@ -192,11 +236,7 @@ interface tokenRecipient {
 
 contract Taboow_CYC is TaboowERC20 {
 
-    // Contract variables and constants
-
-
-    uint256 public tokenPrice = 0;
-    // constant to simplify conversion of token amounts into integer form
+    //constant to simplify conversion of token amounts into integer form
     uint256 public tokenUnit = uint256(10)**decimals;
 
 
@@ -205,7 +245,7 @@ contract Taboow_CYC is TaboowERC20 {
 
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
-    function Taboow_CYC(
+    constructor(
             uint256 initialSupply,
             string contractName,
             string tokenSymbol,
