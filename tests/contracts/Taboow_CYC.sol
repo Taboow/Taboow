@@ -143,6 +143,7 @@ contract TaboowERC20 is Ownable {
 
 
     mapping (address => uint256) public balances;
+    mapping (address => bool) public frozenAccount;
 
     mapping (address => mapping (address => uint256)) internal allowed;
 
@@ -157,6 +158,8 @@ contract TaboowERC20 is Ownable {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
+    /* This generates a public event on the blockchain that will notify clients */
+    event FrozenFunds(address target, bool frozen);
 
     function balanceOf(address _owner) public view returns (uint256 balance) {
         return balances[_owner];
@@ -167,10 +170,17 @@ contract TaboowERC20 is Ownable {
 
     }
 
+    function freezeAccount(address target, bool freeze) onlyOwner public {
+        frozenAccount[target] = freeze;
+        emit FrozenFunds(target, freeze);
+    }
+
     function transfer(address _to, uint256 _value) public returns (bool) {
 
         require(_to != address(0));
         require(_value <= balances[msg.sender]);
+        require(!frozenAccount[msg.sender]);                     // Check if sender is frozen
+        require(!frozenAccount[_to]);                       // Check if recipient is frozen
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -191,6 +201,8 @@ contract TaboowERC20 is Ownable {
         require(_to != address(0));
         require(_value <= balances[_from]);
         require(_value <= allowed[_from][msg.sender]);
+        require(!frozenAccount[_from]);                     // Check if sender is frozen
+        require(!frozenAccount[_to]);                       // Check if recipient is frozen
 
         balances[_from] = balances[_from].sub(_value);
 
