@@ -271,11 +271,12 @@ contract Taboow_CYC is TaboowERC20 {
 
     //constant to simplify conversion of token amounts into integer form
     uint256 public tokenUnit = uint256(10)**decimals;
+    uint public totalCoins;
 
 
     //Declare logging events
     event LogDeposit(address sender, uint amount);
-
+    event LogCoinsMinted(address deliveredTo, uint amount);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     constructor(
@@ -299,5 +300,12 @@ contract Taboow_CYC is TaboowERC20 {
         if(!token.transfer(owner, _amount)) {
             revert();
         }
+    }
+
+    function mint(address owner, uint amount) public onlyOwner {
+      if (msg.sender != owner) return;
+      balances[owner] += amount;
+      totalCoins += amount;
+      emit LogCoinsMinted(owner, amount);
     }
 }
