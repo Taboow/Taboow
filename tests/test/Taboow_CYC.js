@@ -1,5 +1,6 @@
 var Taboow = artifacts.require("Taboow_CYC");
 var Taboow2 = artifacts.require("TaboowCYC2");
+var expectThrow = require('./helper.js');
 
 
 contract('Taboow Test CYC',  async (accounts) => {
@@ -291,53 +292,189 @@ contract('Taboow Test CYC',  async (accounts) => {
 
     it("should freezeAccount correctly", async () => {
 
-      // // Get initial balances of first and second account.
-      // let account_one = accounts[0];
-      // let account_two = accounts[1];
-      //
-      // let amount = 10000;
-      //
-      // let instance = await Taboow.deployed();
-      // let meta = instance;
-      //
-      // let transactionFeeBefore = await meta.transactionFee();
-      // transactionFeeBefore = transactionFeeBefore.toNumber();
-      //
-      // let balance = await meta.balanceOf.call(account_one);
-      // let account_one_starting_balance = balance.toNumber();
-      //
-      // balance = await meta.balanceOf.call(account_two);
-      // let account_two_starting_balance = balance.toNumber();
-      //
-      // await meta.setTransactionFee(100);
-      // await meta.transfer(account_two, amount);
-      //
-      // let expectedFee = (amount * 100)/1000;
-      //
-      // let transactionFeeAfter = await meta.transactionFee();
-      // transactionFeeAfter = transactionFeeAfter.toNumber();
-      //
-      // balance = await meta.balanceOf(account_one);
-      // let account_one_ending_balance = balance.toNumber();
-      //
-      // balance = await meta.balanceOf(account_two);
-      // let account_two_ending_balance = balance.toNumber();
-      //
-      // console.log("Account One Balances: " + account_one_starting_balance, account_one_ending_balance);
-      // console.log("Account Two Balances: " + account_two_starting_balance, account_two_ending_balance);
-      //
-      // console.log(transactionFeeBefore, transactionFeeAfter);
-      // console.log(expectedFee);
-      //
-      // assert.notEqual(account_one, account_two, "account_one have to be different than account_two");
-      // assert.notEqual(account_one_starting_balance, account_one_ending_balance, "account_one starting balance and ending balance don't have to be equal");
-      // assert.notEqual(account_two_starting_balance, account_two_ending_balance, "account_two starting balance and ending balance don't have to be equal");
-      // assert.notEqual(transactionFeeBefore, transactionFeeAfter, "transactionFee don't have to be equal after setTransactionFee function");
-      //
-      // assert.equal(account_one_ending_balance, account_one_starting_balance - (amount - expectedFee), "Amount wasn't correctly taken from the sender");
-      // assert.equal(account_one_starting_balance, account_one_ending_balance + (amount - expectedFee), "Amount wasn't correctly taken from the sender");
-      // assert.equal(account_two_ending_balance, account_two_starting_balance + (amount - expectedFee), "Amount wasn't correctly sent to the receiver");
-      // assert.equal(account_two_starting_balance, account_two_ending_balance - (amount - expectedFee), "Amount wasn't correctly sent to the receiver");
+      // Get initial balances of first and second account.
+      let account_one = accounts[0];
+      let account_two = accounts[1];
+
+      let amount = 10000;
+
+      let instance = await Taboow.deployed();
+      let meta = instance;
+
+      let balance = await meta.balanceOf.call(account_one);
+      let account_one_starting_balance = balance.toNumber();
+
+      balance = await meta.balanceOf.call(account_two);
+      let account_two_starting_balance = balance.toNumber();
+
+      let frozenBefore = await meta.frozenAccount(account_two);
+
+      await meta.freezeAccount(account_two, true);
+
+      let tx = meta.transfer(account_one, amount, {from:account_two});;
+      await expectThrow(tx);
+
+      balance = await meta.balanceOf(account_one);
+      let account_one_ending_balance = balance.toNumber();
+
+      balance = await meta.balanceOf(account_two);
+      let account_two_ending_balance = balance.toNumber();
+
+      let frozenAfter = await meta.frozenAccount(account_two);
+
+      console.log("Account One Balances: " + account_one_starting_balance, account_one_ending_balance);
+      console.log("Account Two Balances: " + account_two_starting_balance, account_two_ending_balance);
+
+      console.log(tx);
+
+      assert.notEqual(account_one, account_two, "account_one have to be different than account_two");
+      assert.notEqual(frozenBefore, frozenAfter, "frozenAccount value don't have to be equal after frozenAccount");
+
+      assert.equal(account_one_starting_balance, account_one_ending_balance, "Amount wasn't correctly taken from the sender");
+      assert.equal(account_two_starting_balance, account_two_ending_balance, "Amount wasn't correctly taken from the sender");
 
     });
+
+    it("should unfreezeAccount correctly", async () => {
+
+      // Get initial balances of first and second account.
+      let account_one = accounts[0];
+      let account_two = accounts[1];
+      let account_three = accounts[3];
+
+      let amount = 10000;
+
+      let instance = await Taboow.deployed();
+      let meta = instance;
+
+      let transactionFee = await meta.transactionFee();
+      transactionFee = transactionFee.toNumber();
+
+      let balance = await meta.balanceOf.call(account_one);
+      let account_one_starting_balance = balance.toNumber();
+
+      balance = await meta.balanceOf.call(account_two);
+      let account_two_starting_balance = balance.toNumber();
+
+      balance = await meta.balanceOf.call(account_three);
+      let account_three_starting_balance = balance.toNumber();
+
+      let frozenBefore = await meta.frozenAccount(account_two);
+
+      await meta.freezeAccount(account_two, false);
+      await meta.transfer(account_three, amount, {from: account_two});
+
+      let expectedFee = (amount * transactionFee)/1000;
+
+      balance = await meta.balanceOf(account_one);
+      let account_one_ending_balance = balance.toNumber();
+
+      balance = await meta.balanceOf(account_two);
+      let account_two_ending_balance = balance.toNumber();
+
+      balance = await meta.balanceOf(account_three);
+      let account_three_ending_balance = balance.toNumber();
+
+      let frozenAfter = await meta.frozenAccount(account_two);
+
+      console.log("Account One Balances: " + account_one_starting_balance, account_one_ending_balance);
+      console.log("Account Two Balances: " + account_two_starting_balance, account_two_ending_balance);
+      console.log("Account Three Balances: " + account_three_starting_balance, account_three_ending_balance);
+
+
+      console.log(expectedFee);
+
+      console.log(frozenBefore, frozenAfter);
+
+      assert.notEqual(account_one, account_two, "account_one have to be different than account_two");
+      assert.notEqual(account_one_starting_balance, account_one_ending_balance, "account_one starting balance and ending balance don't have to be equal");
+      assert.notEqual(account_two_starting_balance, account_two_ending_balance, "account_two starting balance and ending balance don't have to be equal");
+      assert.notEqual(account_three_starting_balance, account_three_ending_balance, "account_three starting balance and ending balance don't have to be equal");
+
+      assert.equal(transactionFee, 100, "transactionFee must be equal to 100");
+      assert.equal(account_one_ending_balance, account_one_starting_balance + expectedFee, "Fee wasn't correctly sent to the owner");
+      assert.equal(account_one_starting_balance, account_one_ending_balance - expectedFee, "Fee wasn't correctly sent to the owner");
+      assert.equal(account_two_ending_balance, account_two_starting_balance - amount, "Amount wasn't correctly sent to the receiver");
+      assert.equal(account_two_starting_balance, account_two_ending_balance + amount, "Amount wasn't correctly sent to the receiver");
+      assert.equal(account_three_ending_balance, amount - expectedFee, "Account three balance after transfer must be equal to amount - expectedFee");
+
+    });
+
+    it("should mint correctly", async () => {
+
+      // Get initial balances of first and second account.
+      let account_one = accounts[0];
+      let account_two = accounts[1];
+      let account_three = accounts[3];
+
+      let amount = 10000;
+
+      let instance = await Taboow.deployed();
+      let meta = instance;
+
+
+      let balance = await meta.balanceOf.call(account_one);
+      let account_one_starting_balance = balance.toNumber();
+
+
+      await meta.mint(account_one, amount);
+
+
+      balance = await meta.balanceOf(account_one);
+      let account_one_ending_balance = balance.toNumber();
+
+      console.log("Account One Balances: " + account_one_starting_balance, account_one_ending_balance);
+
+      assert.notEqual(account_one_starting_balance, account_one_ending_balance, "account_one starting balance and ending balance don't have to be equal");
+
+      assert.equal(account_one_ending_balance, account_one_starting_balance + amount, "Amount wasn't correctly sent to the owner");
+
+
+    });
+
+    it("should sweep correctly", async () => {
+
+      // Get initial balances of first and second account.
+      let account_one = accounts[0];
+      let account_two = accounts[1];
+      let account_three = accounts[4];
+
+      let amount = 10000;
+
+      let instance = await Taboow.deployed();
+      let meta = instance;
+
+      let instance_two = await Taboow2.deployed();
+      let meta2 = instance_two;
+
+      await meta2.transfer(meta.address, 1000000, {from:account_three});
+
+      let balanceBefore = await meta2.balanceOf(meta.address);
+      balanceBefore = balanceBefore.toNumber();
+
+      let ownerBalanceBefore = await meta2.balanceOf(account_one);
+      ownerBalanceBefore = ownerBalanceBefore.toNumber();
+
+      await meta.sweep(instance_two.address, amount);
+
+      let balanceAfter = await meta2.balanceOf(meta.address);
+      balanceAfter = balanceAfter.toNumber();
+      console.log(balanceBefore, balanceAfter);
+
+      let ownerBalanceAfter = await meta2.balanceOf(account_one);
+      ownerBalanceAfter = ownerBalanceAfter.toNumber();
+      console.log(ownerBalanceBefore, ownerBalanceAfter);
+
+      console.log(meta.address, meta2.address);
+
+      assert.notEqual(meta.address, meta2.address, "meta and meta2 addresses don't have to be equal");
+      assert.notEqual(balanceBefore, balanceAfter, "balanceBefore and balanceAfter from meta2 don't have to be equal");
+      assert.notEqual(ownerBalanceBefore, ownerBalanceAfter, "ownerBalance from meta2 don't have to be equal")
+
+      assert.equal(balanceAfter, balanceBefore - amount, "balanceAfter must be equal to balanceBefore - amount");
+      assert.equal(balanceBefore, balanceAfter + amount, "balanceBefore must be equal to balanceBefore + amount");
+      assert.equal(ownerBalanceAfter, amount, "ownerBalanceAfter must be equal to amount");
+
+    });
+
 });

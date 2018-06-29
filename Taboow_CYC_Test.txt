@@ -10,27 +10,63 @@ Total supply: 1000000000000
 Owner balance: 1000000000000
 Standard: ERC20 Taboow CYC
 Decimals: 18
-  [32m  ✓[0m[90m check constructor params[0m[31m (302ms)[0m
-Account Balances : 999999990000 10000
-  [32m  ✓[0m[90m should transfer coin correctly[0m[31m (190ms)[0m
+transactionFee: 0
+  [32m  ✓[0m[90m check constructor params[0m[31m (274ms)[0m
+Account One Balances: 1000000000000 999999991000
+Account Two Balances: 0 9000
+0 100
+1000
+  [32m  ✓[0m[90m should transfer coin correctly and send fee to owner[0m[31m (358ms)[0m
 Allowance Before: 0
 Allowance After: 10000
-  [32m  ✓[0m[90m should approve amount correctly[0m[31m (147ms)[0m
+  [32m  ✓[0m[90m should approve amount correctly[0m[31m (213ms)[0m
 Allowance before transfer: 10000
 Allowance after transfer: 0
-Sender Balance Start: 999999990000
-Receiver Balance Start: 10000
-Sender Balance End: 999999980000
-Receiver Balance End: 20000
-  [32m  ✓[0m[90m should transferFrom amount correctly[0m[31m (402ms)[0m
+Sender Balance Start: 999999991000
+Receiver Balance Start: 9000
+Sender Balance End: 999999982000
+Receiver Balance End: 18000
+transactionFee: 100
+  [32m  ✓[0m[90m should transferFrom amount correctly and send fee to the owner[0m[31m (427ms)[0m
 Balance before increaseApproval: 10000
 Balance after increaseApproval: 20000
-  [32m  ✓[0m[90m should increase appproval amount correctly[0m[31m (314ms)[0m
+  [32m  ✓[0m[90m should increase appproval amount correctly[0m[31m (235ms)[0m
 Balance before decreaseApproval: 20000
 Balance after decreaseApproval: 10000
-  [32m  ✓[0m[90m should decrease appproval amount correctly[0m[31m (605ms)[0m
+  [32m  ✓[0m[90m should decrease appproval amount correctly[0m[31m (310ms)[0m
 Balance allowed after approveAndCall: 20000
-  [32m  ✓[0m[90m should approve and communicate the approved correctly[0m[31m (168ms)[0m
+  [32m  ✓[0m[90m should approve and communicate the approved correctly[0m[31m (169ms)[0m
+Account One Balances: 999999982000 999999982000
+Account Two Balances: 18000 18000
+Promise {
+  <rejected> Error: VM Exception while processing transaction: revert
+    at Object.InvalidResponse (/usr/lib/node_modules/truffle/build/webpack:/~/web3/lib/web3/errors.js:38:1)
+    at /usr/lib/node_modules/truffle/build/webpack:/~/web3/lib/web3/requestmanager.js:86:1
+    at /usr/lib/node_modules/truffle/build/webpack:/~/truffle-provider/wrapper.js:134:1
+    at XMLHttpRequest.request.onreadystatechange (/usr/lib/node_modules/truffle/build/webpack:/~/web3/lib/web3/httpprovider.js:128:1)
+    at XMLHttpRequestEventTarget.dispatchEvent (/usr/lib/node_modules/truffle/build/webpack:/~/xhr2/lib/xhr2.js:64:1)
+    at XMLHttpRequest._setReadyState (/usr/lib/node_modules/truffle/build/webpack:/~/xhr2/lib/xhr2.js:354:1)
+    at XMLHttpRequest._onHttpResponseEnd (/usr/lib/node_modules/truffle/build/webpack:/~/xhr2/lib/xhr2.js:509:1)
+    at IncomingMessage.<anonymous> (/usr/lib/node_modules/truffle/build/webpack:/~/xhr2/lib/xhr2.js:469:1)
+    at emitNone (events.js:111:20)
+    at IncomingMessage.emit (events.js:208:7)
+    at endReadableNT (_stream_readable.js:1064:12)
+    at _combinedTickCallback (internal/process/next_tick.js:138:11)
+    at process._tickCallback (internal/process/next_tick.js:180:9) }
+  [32m  ✓[0m[90m should freezeAccount correctly[0m[31m (480ms)[0m
+Account One Balances: 999999982000 999999983000
+Account Two Balances: 18000 8000
+Account Three Balances: 0 9000
+1000
+true false
+  [32m  ✓[0m[90m should unfreezeAccount correctly[0m[31m (816ms)[0m
+Account One Balances: 999999983000 999999993000
+  [32m  ✓[0m[90m should mint correctly[0m[31m (174ms)[0m
+1000000 990000
+0 10000
+0xf12b5dd4ead5f743c6baa640b0216200e89b60da 0x345ca3e014aaf5dca488057592ee47305d9b3e10
+  [32m  ✓[0m[90m should sweep correctly[0m[31m (527ms)[0m
 
 
-[92m [0m[32m 7 passing[0m[90m (2s)[0m
+[92m [0m[32m 11 passing[0m[90m (4s)[0m
+
