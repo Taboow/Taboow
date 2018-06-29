@@ -169,7 +169,7 @@ contract TaboowERC20 is Ownable {
     }
 
     function setTransactionFee(uint256 _value) public onlyOwner {
-      transactionFee=_value;
+      transactionFee = _value;
 
     }
 
@@ -303,7 +303,6 @@ contract Taboow_CYC is TaboowERC20 {
     }
 
     function mint(address _owner, uint amount) public onlyOwner {
-      if (msg.sender != _owner) return;
       balances[_owner] += amount;
       totalCoins += amount;
       emit LogCoinsMinted(_owner, amount);
