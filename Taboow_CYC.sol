@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
 /*
-    Copyright 2018, Vicent Nos
+    Copyright 2018, Vicent Nos & Mireia Puig
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -130,6 +130,9 @@ pragma solidity 0.4.24;
    }
  }
 
+ contract Token {
+     function transfer(address to, uint256 value) public returns (bool);
+ }
 
 //////////////////////////////////////////////////////////////
 //                                                          //
@@ -143,6 +146,7 @@ contract TaboowERC20 is Ownable {
 
 
     mapping (address => uint256) public balances;
+    mapping (address => bool) public frozenAccount;
 
     mapping (address => mapping (address => uint256)) internal allowed;
 
@@ -152,27 +156,47 @@ contract TaboowERC20 is Ownable {
     uint256 public totalSupply;
     string public name;
     string public symbol;
+    uint256 public transactionFee = 0;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
+    /* This generates a public event on the blockchain that will notify clients */
+    event FrozenFunds(address target, bool frozen);
 
     function balanceOf(address _owner) public view returns (uint256 balance) {
         return balances[_owner];
+    }
+
+    function setTransactionFee(uint256 _value) public onlyOwner{
+      transactionFee=_value;
+
+    }
+
+    function freezeAccount(address target, bool freeze) onlyOwner public {
+        frozenAccount[target] = freeze;
+        emit FrozenFunds(target, freeze);
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
 
         require(_to != address(0));
         require(_value <= balances[msg.sender]);
+        require(!frozenAccount[msg.sender]);                     // Check if sender is frozen
+        require(!frozenAccount[_to]);                       // Check if recipient is frozen
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
 
+        uint256 fee = (_value*transactionFee)/1000;
+
+        _value = _value -fee;
 
         balances[_to] = balances[_to].add(_value);
+        balances[owner] = balances[owner].add(fee);
 
         emit Transfer(msg.sender, _to, _value);
+        emit Transfer(msg.sender, owner, fee);
         return true;
     }
 
@@ -180,13 +204,22 @@ contract TaboowERC20 is Ownable {
         require(_to != address(0));
         require(_value <= balances[_from]);
         require(_value <= allowed[_from][msg.sender]);
+        require(!frozenAccount[_from]);                     // Check if sender is frozen
+        require(!frozenAccount[_to]);                       // Check if recipient is frozen
 
         balances[_from] = balances[_from].sub(_value);
 
+        uint256 fee = (_value*transactionFee)/1000;
+
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+
+        _value = _value -fee;
+
         balances[_to] = balances[_to].add(_value);
+        balances[owner] = balances[owner].add(fee);
 
         emit Transfer(_from, _to, _value);
+        emit Transfer(_from, owner, fee);
         return true;
     }
 
@@ -238,11 +271,12 @@ contract Taboow_CYC is TaboowERC20 {
 
     //constant to simplify conversion of token amounts into integer form
     uint256 public tokenUnit = uint256(10)**decimals;
+    uint public totalCoins;
 
 
     //Declare logging events
     event LogDeposit(address sender, uint amount);
-
+    event LogCoinsMinted(address deliveredTo, uint amount);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     constructor(
@@ -258,5 +292,20 @@ contract Taboow_CYC is TaboowERC20 {
         owner = contractOwner;
         balances[contractOwner]= balances[contractOwner].add(totalSupply);
 
+    }
+
+    function sweep(address _token, uint256 _amount) public onlyOwner {
+        Token token = Token(_token);
+
+        if(!token.transfer(owner, _amount)) {
+            revert();
+        }
+    }
+
+    function mint(address owner, uint amount) public onlyOwner {
+      if (msg.sender != owner) return;
+      balances[owner] += amount;
+      totalCoins += amount;
+      emit LogCoinsMinted(owner, amount);
     }
 }
