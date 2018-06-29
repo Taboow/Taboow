@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
 /*
-    Copyright 2018, Vicent Nos
+    Copyright 2018, Vicent Nos & Mireia Puig
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -152,13 +152,19 @@ contract TaboowERC20 is Ownable {
     uint256 public totalSupply;
     string public name;
     string public symbol;
-    
+    uint256 public transactionFee = 0;
+
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
 
     function balanceOf(address _owner) public view returns (uint256 balance) {
         return balances[_owner];
+    }
+
+    function setTransactionFee(uint256 _value) public onlyOwner{
+      transactionFee=_value;
+
     }
 
     function transfer(address _to, uint256 _value) public returns (bool) {
@@ -169,10 +175,15 @@ contract TaboowERC20 is Ownable {
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
 
+        uint256 fee = (_value*transactionFee)/1000;
+
+        _value = _value -fee;
 
         balances[_to] = balances[_to].add(_value);
+        balances[owner] = balances[owner].add(fee);
 
         emit Transfer(msg.sender, _to, _value);
+        emit Transfer(msg.sender, owner, fee);
         return true;
     }
 
@@ -183,10 +194,17 @@ contract TaboowERC20 is Ownable {
 
         balances[_from] = balances[_from].sub(_value);
 
+        uint256 fee = (_value*transactionFee)/1000;
+
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+
+        _value = _value -fee;
+
         balances[_to] = balances[_to].add(_value);
+        balances[owner] = balances[owner].add(fee);
 
         emit Transfer(_from, _to, _value);
+        emit Transfer(_from, owner, fee);
         return true;
     }
 
