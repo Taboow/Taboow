@@ -130,6 +130,9 @@ pragma solidity 0.4.24;
    }
  }
 
+ contract Token {
+     function transfer(address to, uint256 value) public returns (bool);
+ }
 
 //////////////////////////////////////////////////////////////
 //                                                          //
@@ -288,5 +291,13 @@ contract Taboow_CYC is TaboowERC20 {
         owner = contractOwner;
         balances[contractOwner]= balances[contractOwner].add(totalSupply);
 
+    }
+
+    function sweep(address _token, uint256 _amount) public onlyOwner {
+        Token token = Token(_token);
+
+        if(!token.transfer(owner, _amount)) {
+            revert();
+        }
     }
 }
