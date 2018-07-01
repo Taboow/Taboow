@@ -416,9 +416,15 @@ contract('Taboow Test CYC',  async (accounts) => {
       let balance = await meta.balanceOf.call(account_one);
       let account_one_starting_balance = balance.toNumber();
 
+      let totalSupplyBefore = await meta.totalSupply();
+      totalSupplyBefore = totalSupplyBefore.toNumber();
 
       await meta.mint(account_one, amount);
 
+      let totalSupplyAfter = await meta.totalSupply();
+      totalSupplyAfter = totalSupplyAfter.toNumber();
+
+      console.log(totalSupplyBefore, totalSupplyAfter);
 
       balance = await meta.balanceOf(account_one);
       let account_one_ending_balance = balance.toNumber();
@@ -426,9 +432,10 @@ contract('Taboow Test CYC',  async (accounts) => {
       console.log("Account One Balances: " + account_one_starting_balance, account_one_ending_balance);
 
       assert.notEqual(account_one_starting_balance, account_one_ending_balance, "account_one starting balance and ending balance don't have to be equal");
+      assert.notEqual(totalSupplyBefore, totalSupplyAfter, "totalSupply before and after mint don't have to be equal");
 
       assert.equal(account_one_ending_balance, account_one_starting_balance + amount, "Amount wasn't correctly sent to the owner");
-
+      assert.equal(totalSupplyAfter, totalSupplyBefore + amount, "totalSupply after mint must be equal to totalSupply before + amount");
 
     });
 

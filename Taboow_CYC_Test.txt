@@ -11,15 +11,15 @@ Owner balance: 1000000000000
 Standard: ERC20 Taboow CYC
 Decimals: 18
 transactionFee: 0
-  [32m  ✓[0m[90m check constructor params[0m[31m (274ms)[0m
+  [32m  ✓[0m[90m check constructor params[0m[31m (175ms)[0m
 Account One Balances: 1000000000000 999999991000
 Account Two Balances: 0 9000
 0 100
 1000
-  [32m  ✓[0m[90m should transfer coin correctly and send fee to owner[0m[31m (358ms)[0m
+  [32m  ✓[0m[90m should transfer coin correctly and send fee to owner[0m[31m (255ms)[0m
 Allowance Before: 0
 Allowance After: 10000
-  [32m  ✓[0m[90m should approve amount correctly[0m[31m (213ms)[0m
+  [32m  ✓[0m[90m should approve amount correctly[0m[31m (77ms)[0m
 Allowance before transfer: 10000
 Allowance after transfer: 0
 Sender Balance Start: 999999991000
@@ -27,15 +27,15 @@ Receiver Balance Start: 9000
 Sender Balance End: 999999982000
 Receiver Balance End: 18000
 transactionFee: 100
-  [32m  ✓[0m[90m should transferFrom amount correctly and send fee to the owner[0m[31m (427ms)[0m
+  [32m  ✓[0m[90m should transferFrom amount correctly and send fee to the owner[0m[31m (329ms)[0m
 Balance before increaseApproval: 10000
 Balance after increaseApproval: 20000
-  [32m  ✓[0m[90m should increase appproval amount correctly[0m[31m (235ms)[0m
+  [32m  ✓[0m[90m should increase appproval amount correctly[0m[31m (106ms)[0m
 Balance before decreaseApproval: 20000
 Balance after decreaseApproval: 10000
-  [32m  ✓[0m[90m should decrease appproval amount correctly[0m[31m (310ms)[0m
+  [32m  ✓[0m[90m should decrease appproval amount correctly[0m[31m (295ms)[0m
 Balance allowed after approveAndCall: 20000
-  [32m  ✓[0m[90m should approve and communicate the approved correctly[0m[31m (169ms)[0m
+  [32m  ✓[0m[90m should approve and communicate the approved correctly[0m[31m (250ms)[0m
 Account One Balances: 999999982000 999999982000
 Account Two Balances: 18000 18000
 Promise {
@@ -53,20 +53,20 @@ Promise {
     at endReadableNT (_stream_readable.js:1064:12)
     at _combinedTickCallback (internal/process/next_tick.js:138:11)
     at process._tickCallback (internal/process/next_tick.js:180:9) }
-  [32m  ✓[0m[90m should freezeAccount correctly[0m[31m (480ms)[0m
+  [32m  ✓[0m[90m should freezeAccount correctly[0m[31m (301ms)[0m
 Account One Balances: 999999982000 999999983000
 Account Two Balances: 18000 8000
 Account Three Balances: 0 9000
 1000
 true false
-  [32m  ✓[0m[90m should unfreezeAccount correctly[0m[31m (816ms)[0m
+  [32m  ✓[0m[90m should unfreezeAccount correctly[0m[31m (378ms)[0m
+1000000000000 1000000010000
 Account One Balances: 999999983000 999999993000
-  [32m  ✓[0m[90m should mint correctly[0m[31m (174ms)[0m
+  [32m  ✓[0m[90m should mint correctly[0m[31m (130ms)[0m
 1000000 990000
 0 10000
-0xf12b5dd4ead5f743c6baa640b0216200e89b60da 0x345ca3e014aaf5dca488057592ee47305d9b3e10
-  [32m  ✓[0m[90m should sweep correctly[0m[31m (527ms)[0m
+0x4a5cd58b24e3bf04360b06bfeaf45a39aa8035b6 0x4eee4559bd589b1cdfc419f0eed2ff9cbd47f439
+  [32m  ✓[0m[90m should sweep correctly[0m[31m (449ms)[0m
 
 
-[92m [0m[32m 11 passing[0m[90m (4s)[0m
-
+[92m [0m[32m 11 passing[0m[90m (3s)[0m
