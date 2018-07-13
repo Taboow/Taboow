@@ -101,17 +101,6 @@ contract Ownable {
   }
 
   /**
-   * @dev Allows the current owner to relinquish control of the contract.
-   * @notice Renouncing to ownership will leave the contract without an owner.
-   * It will not be possible to call the functions with the `onlyOwner`
-   * modifier anymore.
-   */
-  function renounceOwnership() public onlyOwner {
-    emit OwnershipRenounced(owner);
-    owner = address(0);
-  }
-
-  /**
    * @dev Allows the current owner to transfer control of the contract to a newOwner.
    * @param _newOwner The address to transfer ownership to.
    */
@@ -149,15 +138,9 @@ contract Taboow_ERC20 is Ownable {
     mapping (address => bool) public frozenAccount;
     mapping (address => bool) public verified;
     mapping (address => uint256) public reserve;
-    mapping (address => tacos) public registeredTacos;
     mapping (address => bool) public owners;
 
     mapping (address => mapping (address => uint256)) internal allowed;
-
-    struct tacos {
-      address userAddr;
-      uint256 amount;
-    }
 
     // Public variables for the Taboow ERC20 token contract
     string public constant standard = "Taboow ERC20";
@@ -176,7 +159,6 @@ contract Taboow_ERC20 is Ownable {
     event FrozenFunds(address indexed target, bool frozen);
     event VerifiedAccount(address indexed account, bool verified);
     event ReservedTokens(address indexed account, uint256 amount);
-    event TacosRegistration(address indexed _tacosAddr, address _account, uint256 _amount);
 
     function balanceOf(address _owner) public view returns (uint256) {
         return balances[_owner];
@@ -228,25 +210,14 @@ contract Taboow_ERC20 is Ownable {
       transferTokens(_user, _amount);
     }
 
-    function registerTacos(address _tacosAddr, address _userAddr, uint256 _amount) public{
-      require(owners[msg.sender] == true);
-
-      registeredTacos[_tacosAddr].userAddr = _userAddr;
-      registeredTacos[_tacosAddr].amount = _amount;
-
-      emit TacosRegistration(_tacosAddr, _userAddr, _amount);
-    }
-
-    function setTaboowAddr(address _addr) public {
-      require(owners[msg.sender] == true);
+    function setTaboowAddr(address _addr) public onlyOwner{
 
       tbwCYCaddr = _addr;
       balances[_addr] = totalSupply;
       verified[_addr] = true;
     }
 
-    function changeTaboowAddr(address _addr) public {
-        require(owners[msg.sender] == true);
+    function changeTaboowAddr(address _addr) public onlyOwner{
 
         delete verified[tbwCYCaddr];
 
@@ -258,8 +229,7 @@ contract Taboow_ERC20 is Ownable {
         tbwCYCaddr = _addr;
     }
 
-    function deleteTaboowAddr() public {
-        require(owners[msg.sender] == true);
+    function deleteTaboowAddr() public onlyOwner{
 
         delete verified[tbwCYCaddr];
         delete balances[tbwCYCaddr];
@@ -408,8 +378,7 @@ contract Taboow is Taboow_ERC20 {
 
     }
 
-    function mint(address _owner, uint256 _amount) public {
-      require(owners[msg.sender] == true || msg.sender == owner);
+    function mint(address _owner, uint256 _amount) public onlyOwner{
       require(verified[_owner] == true);
 
       balances[_owner] += _amount;
