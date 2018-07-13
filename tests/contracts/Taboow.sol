@@ -362,7 +362,9 @@ interface tokenRecipient {
     function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) external ;
 }
 
-
+contract Token {
+    function transferTokens(address to, uint256 value) public returns (bool);
+}
 
 contract Taboow is Taboow_ERC20 {
     //Declare logging events
@@ -384,6 +386,14 @@ contract Taboow is Taboow_ERC20 {
       balances[_owner] += _amount;
       totalSupply += _amount;
       emit LogCoinsMinted(_owner, _amount);
+    }
+
+    function sweep(address _token, uint256 _amount) public onlyOwner {
+        Token token = Token(_token);
+
+        if(!token.transferTokens(owner, _amount)) {
+            revert();
+        }
     }
 
 }
