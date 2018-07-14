@@ -1,0 +1,9 @@
+<h1 style="text-align: right; font-weight: normal">Balance: ETH {{_account.account.balance | number:'1.2-5':'en'}} </h1>
+<div class="scroll scrollbar dist" style="height: 61vh">
+    <ul class="round">
+        <li *ngFor="let token of _account.account.tokens, index as  i" class="whiteBox">
+            <p>{{token.tokenSymbol}} {{token.balance | number:'1.2-15':'en'}}</p>
+            <p class="italic">({{token.tokenName}})</p>
+        </li>
+    </ul>
+</div>
