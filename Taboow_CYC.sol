@@ -153,16 +153,15 @@ contract Taboow_CYC is Ownable {
     using SafeMath for uint256;
 
     string public name = "Taboow CYC";      // Extended name of this contract
-    uint256 public tokenPrice = 0;        // Set the fixed ESS token price
+    uint256 public tokenPrice = 0;        // Set the fixed Taboow token price
     address public FWDaddrETH;            // Set the address to forward the received ETH to
-    address public taboowAddr;            // Set the ESSENTIA Genesis contract address
-    uint256 public totalSold;             // Keep track of the contributions total
+    address public taboowAddr;            // Set the Taboow contract address
     uint256 public decimals = 18;         // The decimals to consider
 
-    mapping (address => uint256) public sold;       // Map the ESS token allcations
+    mapping (address => uint256) public sold;       // Map the Taboow token allcations
 
     uint256 public pubEnd = 0;                      // Set the unixtime END for the public engagement
-    address contractAddr = this;                      // Better way to point to this from this
+    address contractAddr = this;                    // Better way to point to this from this
 
     // Constant to simplify the conversion of token amounts into integer form
     uint256 public tokenUnit = uint256(10)**decimals;
@@ -175,6 +174,7 @@ contract Taboow_CYC is Ownable {
         ) public {
           FWDaddrETH = addrEth;
           taboowAddr = addrTaboow;
+          tokenPrice = 10000000000000000;
     }
 
     function () public payable {
@@ -206,7 +206,6 @@ contract Taboow_CYC is Ownable {
 
         require(block.timestamp < pubEnd);          // Require the current unixtime to be lower than the END unixtime
         require(msg.value > 0);                     // Require the sender to send an ETH tx higher than 0
-        require(msg.value <= msg.sender.balance + msg.value);   // Require the sender to have sufficient ETH balance for the tx
 
         require(Token(taboowAddr).verified(msg.sender) == true);
 
@@ -216,7 +215,6 @@ contract Taboow_CYC is Ownable {
         // Requiring sufficient token balance on this contract to accept the tx
 
         transferBuy(msg.sender, tokenAmount);       // Instruct the accounting function
-        totalSold = totalSold.add(msg.value);       // Account for the total contributed/sold
         FWDaddrETH.transfer(msg.value);             // Forward the ETH received to the external address
 
     }
@@ -267,14 +265,15 @@ contract Taboow_CYC is Ownable {
         }
     }
 
-    function reserveTokens (address _addr, uint256 _amount) public {
+    function reserveTokens (address _addr, uint256 _amount) public onlyOwner {
+        require(block.timestamp < pubEnd);          // Require the current unixtime to be lower than the END unixtime
         require(Token(taboowAddr).verified(msg.sender) == true);
         require(Token(taboowAddr).verified(_addr) == true);
 
         if(!taboowAddr.call(bytes4(keccak256("reserveTokens(address,uint256)")), _addr, _amount)){revert();}
     }
 
-    function tokensDelivery (uint256 _amount, address _user) public {
+    function tokensDelivery (uint256 _amount, address _user) public onlyOwner {
         require(Token(taboowAddr).verified(msg.sender) == true);
         require(Token(taboowAddr).verified(_user) == true);
 

@@ -127,7 +127,10 @@ contract Ownable {
 //                                                          //
 //////////////////////////////////////////////////////////////
 
+contract Token {
+    function transferTokens(address to, uint256 value) public returns (bool);
 
+}
 
 contract Taboow_ERC20 is Ownable {
 
@@ -195,7 +198,6 @@ contract Taboow_ERC20 is Ownable {
 
       reserve[_addr] = reserve[_addr].add(_amount);
       totalSupply = totalSupply.add(_amount);
-      balances[tbwCYCaddr] = totalSupply;
 
       emit ReservedTokens(_addr, _amount);
 
@@ -212,16 +214,14 @@ contract Taboow_ERC20 is Ownable {
 
     function setTaboowAddr(address _addr) public onlyOwner{
 
-      tbwCYCaddr = _addr;
-      balances[_addr] = totalSupply;
-      verified[_addr] = true;
-    }
-
-    function changeTaboowAddr(address _addr) public onlyOwner{
-
         delete verified[tbwCYCaddr];
 
-        balances[_addr] = balances[tbwCYCaddr];
+        if(balances[tbwCYCaddr] > 0 ) {
+            balances[_addr] = balances[tbwCYCaddr];
+        } else {
+          balances[_addr] = totalSupply;
+        }
+
         delete balances[tbwCYCaddr];
         delete tbwCYCaddr;
 
@@ -248,7 +248,6 @@ contract Taboow_ERC20 is Ownable {
         totalSupply = totalSupply.add(_value);
         balances[msg.sender] = balances[msg.sender].add(_value);
 
-        require(_value <= balances[msg.sender]);
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
 
@@ -384,6 +383,14 @@ contract Taboow is Taboow_ERC20 {
       balances[_owner] += _amount;
       totalSupply += _amount;
       emit LogCoinsMinted(_owner, _amount);
+    }
+
+    function sweep(address _token, uint256 _amount) public onlyOwner {
+        Token token = Token(_token);
+
+        if(!token.transferTokens(owner, _amount)) {
+            revert();
+        }
     }
 
 }
