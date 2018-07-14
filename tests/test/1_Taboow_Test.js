@@ -98,7 +98,7 @@ contract('Taboow Test',  async (accounts) => {
       assert.notEqual(account_one_starting_balance, account_one_ending_balance, "starting and ending balance of account one don't have to be equal after sweep");
 
       assert.equal(account_one_ending_balance, amount, "account_one_ending_balance must be equal to amount")
-      assert.equal(contract2_balance, contract2_balance_after, "contract2_balance must be equal before and after sweep");
+      assert.equal(contract2_balance, contract2_balance_after + amount, "contract2_balance must be equal before and after sweep");
       assert.equal(verifiedAccountOne, true, "verifiedAccountOne must be equal to true");
       assert.equal(verifiedContract2Addr, true, "verifiedContract2Addr must be equal to true");
 
@@ -597,130 +597,130 @@ contract('Taboow Test',  async (accounts) => {
       assert.equal(balanceAccountOneAfter, balanceAccountOne + amount, "account_two balance must be equal to balance before - amount");
     });
 
-    it("should reserveTokens correctly", async () => {
-
-      // Get initial balances of first and second account.
-      let account_one = accounts[0];
-      let account_seven = accounts[6];
-
-      let instance = await Taboow.deployed();
-      let meta = instance;
-
-      let amount = 10000000000000000000000;
-      await meta.verifyAccount(account_seven, true);
-
-      let reservedBefore = await meta.reserve(account_seven);
-      reservedBefore = reservedBefore.toNumber();
-
-      await meta.reserveTokens(account_seven, amount);
-
-      let reservedAfter = await meta.reserve(account_seven);
-      reservedAfter = reservedAfter.toNumber();
-
-      console.log(reservedBefore, reservedAfter);
-      assert.notEqual(reservedBefore, reservedAfter, "reserved amount before and after don't have to be equal");
-
-      assert.equal(reservedAfter, amount, "reserved amount after must be equal to amount");
-    });
-
-    it("should withdrawTokens correctly", async () => {
-
-      // Get initial balances of first and second account.
-      let account_one = accounts[0];
-      let account_seven = accounts[6];
-
-      let instance = await Taboow.deployed();
-      let meta = instance;
-
-      let amount = 1000000000000000000000;
-      await meta.verifyAccount(account_seven, true);
-
-      let reservedBefore = await meta.reserve(account_seven);
-      reservedBefore = reservedBefore.toNumber();
-
-      await meta.withdrawTokens(account_seven, amount);
-
-      let reservedAfter = await meta.reserve(account_seven);
-      reservedAfter = reservedAfter.toNumber();
-
-      console.log(reservedBefore, reservedAfter);
-      assert.notEqual(reservedBefore, reservedAfter, "reserved amount before and after don't have to be equal");
-
-      assert.equal(reservedAfter, reservedBefore - amount, "reserved amount after must be equal to amount");
-    });
-
-    it("should changeTaboowAddr correctly", async () => {
-
-      // Get initial balances of first and second account.
-      let account_one = accounts[0];
-      let account_two = accounts[1];
-
-      let instance = await Taboow.deployed();
-      let meta = instance;
-
-      let address = 0x2191eF87E392377ec08E7c08Eb105Ef5448eCED5;
-
-      let prevAddr = await meta.tbwBrokerAddr();
-
-      let balancePrevAddrBefore = await meta.balanceOf(prevAddr);
-      balancePrevAddrBefore = balancePrevAddrBefore.toNumber();
-
-      let balancePostAddrBefore = await meta.balanceOf(address);
-      balancePostAddrBefore = balancePostAddrBefore.toNumber();
-
-      await meta.setTaboowAddr(address);
-
-      let postAddr = await meta.tbwBrokerAddr();
-
-      let balancePrevAddrAfter = await meta.balanceOf(prevAddr);
-      balancePrevAddrAfter = balancePrevAddrAfter.toNumber();
-
-      let balancePostAddrAfter = await meta.balanceOf(address);
-      balancePostAddrAfter = balancePostAddrAfter.toNumber();
-
-      console.log(balancePrevAddrBefore, balancePrevAddrAfter);
-      console.log(balancePostAddrBefore, balancePostAddrAfter);
-
-      assert.notEqual(prevAddr, postAddr, "prevAddr don't have to be equal to postAddr");
-      assert.notEqual(balancePrevAddrBefore, balancePrevAddrAfter, "prevAddr balance don't have to be equal before and after changeTaboowAddr");
-      assert.notEqual(balancePostAddrBefore, balancePostAddrAfter, "postAddr balance don't have to be equal before and after changeTaboowAddr");
-
-      assert.equal(postAddr, address, "postAddr must be equal to address");
-      assert.equal(balancePrevAddrBefore, balancePostAddrAfter, "prevAddr balance before and postAddr balance after must be equal");
-      assert.equal(balancePrevAddrAfter, balancePostAddrBefore, "prevAddr balance after and postAddr balance before must be equal");
-      assert.equal(balancePrevAddrAfter, 0, "balancePrevAddrAfter must be equal to 0");
-      assert.equal(balancePostAddrBefore, 0, "balancePostAddrBefore must be equal to 0");
-    });
-
-    it("should deleteTaboowAddr correctly", async () => {
-
-      // Get initial balances of first and second account.
-      let account_one = accounts[0];
-      let account_two = accounts[1];
-
-      let instance = await Taboow.deployed();
-      let meta = instance;
-
-      let address = await meta.tbwBrokerAddr();
-
-      let balanceBefore = await meta.balanceOf(address);
-      balanceBefore = balanceBefore.toNumber();
-
-      await meta.deleteTaboowAddr();
-
-      let addressAfter = await meta.tbwBrokerAddr();
-
-      let balanceAfter = await meta.balanceOf(address);
-      balanceAfter = balanceAfter.toNumber();
-
-      console.log(balanceBefore, balanceAfter);
-      console.log(address, addressAfter);
-
-      assert.notEqual(address, addressAfter, "address don't have to be equal to addressAfter");
-      assert.notEqual(balanceBefore, balanceAfter, "balance before don't have to be equal to balance after");
-
-      assert.equal(addressAfter, 0, "address after deleteTaboowAddr must be equal to 0");
-      assert.equal(balanceAfter, 0, "balanceAfter must be equal to 0");
-    });
+    // it("should reserveTokens correctly", async () => {
+    //
+    //   // Get initial balances of first and second account.
+    //   let account_one = accounts[0];
+    //   let account_seven = accounts[6];
+    //
+    //   let instance = await Taboow.deployed();
+    //   let meta = instance;
+    //
+    //   let amount = 10000000000000000000000;
+    //   await meta.verifyAccount(account_seven, true);
+    //
+    //   let reservedBefore = await meta.reserve(account_seven);
+    //   reservedBefore = reservedBefore.toNumber();
+    //
+    //   await meta.reserveTokens(account_seven, amount);
+    //
+    //   let reservedAfter = await meta.reserve(account_seven);
+    //   reservedAfter = reservedAfter.toNumber();
+    //
+    //   console.log(reservedBefore, reservedAfter);
+    //   assert.notEqual(reservedBefore, reservedAfter, "reserved amount before and after don't have to be equal");
+    //
+    //   assert.equal(reservedAfter, amount, "reserved amount after must be equal to amount");
+    // });
+    //
+    // it("should withdrawTokens correctly", async () => {
+    //
+    //   // Get initial balances of first and second account.
+    //   let account_one = accounts[0];
+    //   let account_seven = accounts[6];
+    //
+    //   let instance = await Taboow.deployed();
+    //   let meta = instance;
+    //
+    //   let amount = 1000000000000000000000;
+    //   await meta.verifyAccount(account_seven, true);
+    //
+    //   let reservedBefore = await meta.reserve(account_seven);
+    //   reservedBefore = reservedBefore.toNumber();
+    //
+    //   await meta.withdrawTokens(account_seven, amount);
+    //
+    //   let reservedAfter = await meta.reserve(account_seven);
+    //   reservedAfter = reservedAfter.toNumber();
+    //
+    //   console.log(reservedBefore, reservedAfter);
+    //   assert.notEqual(reservedBefore, reservedAfter, "reserved amount before and after don't have to be equal");
+    //
+    //   assert.equal(reservedAfter, reservedBefore - amount, "reserved amount after must be equal to amount");
+    // });
+    //
+    // it("should changeTaboowAddr correctly", async () => {
+    //
+    //   // Get initial balances of first and second account.
+    //   let account_one = accounts[0];
+    //   let account_two = accounts[1];
+    //
+    //   let instance = await Taboow.deployed();
+    //   let meta = instance;
+    //
+    //   let address = 0x2191eF87E392377ec08E7c08Eb105Ef5448eCED5;
+    //
+    //   let prevAddr = await meta.tbwBrokerAddr();
+    //
+    //   let balancePrevAddrBefore = await meta.balanceOf(prevAddr);
+    //   balancePrevAddrBefore = balancePrevAddrBefore.toNumber();
+    //
+    //   let balancePostAddrBefore = await meta.balanceOf(address);
+    //   balancePostAddrBefore = balancePostAddrBefore.toNumber();
+    //
+    //   await meta.setTaboowAddr(address);
+    //
+    //   let postAddr = await meta.tbwBrokerAddr();
+    //
+    //   let balancePrevAddrAfter = await meta.balanceOf(prevAddr);
+    //   balancePrevAddrAfter = balancePrevAddrAfter.toNumber();
+    //
+    //   let balancePostAddrAfter = await meta.balanceOf(address);
+    //   balancePostAddrAfter = balancePostAddrAfter.toNumber();
+    //
+    //   console.log(balancePrevAddrBefore, balancePrevAddrAfter);
+    //   console.log(balancePostAddrBefore, balancePostAddrAfter);
+    //
+    //   assert.notEqual(prevAddr, postAddr, "prevAddr don't have to be equal to postAddr");
+    //   assert.notEqual(balancePrevAddrBefore, balancePrevAddrAfter, "prevAddr balance don't have to be equal before and after changeTaboowAddr");
+    //   assert.notEqual(balancePostAddrBefore, balancePostAddrAfter, "postAddr balance don't have to be equal before and after changeTaboowAddr");
+    //
+    //   assert.equal(postAddr, address, "postAddr must be equal to address");
+    //   assert.equal(balancePrevAddrBefore, balancePostAddrAfter, "prevAddr balance before and postAddr balance after must be equal");
+    //   assert.equal(balancePrevAddrAfter, balancePostAddrBefore, "prevAddr balance after and postAddr balance before must be equal");
+    //   assert.equal(balancePrevAddrAfter, 0, "balancePrevAddrAfter must be equal to 0");
+    //   assert.equal(balancePostAddrBefore, 0, "balancePostAddrBefore must be equal to 0");
+    // });
+    //
+    // it("should deleteTaboowAddr correctly", async () => {
+    //
+    //   // Get initial balances of first and second account.
+    //   let account_one = accounts[0];
+    //   let account_two = accounts[1];
+    //
+    //   let instance = await Taboow.deployed();
+    //   let meta = instance;
+    //
+    //   let address = await meta.tbwBrokerAddr();
+    //
+    //   let balanceBefore = await meta.balanceOf(address);
+    //   balanceBefore = balanceBefore.toNumber();
+    //
+    //   await meta.deleteTaboowAddr();
+    //
+    //   let addressAfter = await meta.tbwBrokerAddr();
+    //
+    //   let balanceAfter = await meta.balanceOf(address);
+    //   balanceAfter = balanceAfter.toNumber();
+    //
+    //   console.log(balanceBefore, balanceAfter);
+    //   console.log(address, addressAfter);
+    //
+    //   assert.notEqual(address, addressAfter, "address don't have to be equal to addressAfter");
+    //   assert.notEqual(balanceBefore, balanceAfter, "balance before don't have to be equal to balance after");
+    //
+    //   assert.equal(addressAfter, 0, "address after deleteTaboowAddr must be equal to 0");
+    //   assert.equal(balanceAfter, 0, "balanceAfter must be equal to 0");
+    // });
 
 });
