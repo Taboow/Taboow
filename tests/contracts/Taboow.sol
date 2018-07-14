@@ -246,6 +246,7 @@ contract Taboow_ERC20 is Ownable {
         require(verified[_to]);
         require(msg.sender == tbwBrokerAddr || owners[msg.sender] == true);
 
+        balances[msg.sender] = balances[msg.sender].sub(_value);
 
         balances[_to] = balances[_to].add(_value);
 
