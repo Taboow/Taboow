@@ -193,8 +193,6 @@ contract Taboow_Broker is Ownable {
         // Calculate the amount of tokens per contribution
         uint256 tokenAmount = (msg.value * tokenUnit) / tokenPrice;
 
-        // Requiring sufficient token balance on this contract to accept the tx
-
         transferBuy(msg.sender, tokenAmount);       // Instruct the accounting function
         FWDaddrETH.transfer(msg.value);             // Forward the ETH received to the external address
 
