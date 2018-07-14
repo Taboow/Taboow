@@ -141,7 +141,7 @@ contract Taboow_Broker is Ownable {
 
     using SafeMath for uint256;
 
-    address public constant FWDaddrETH = 0x564B608D0A4FAf63DA77B62e7D770f45a2a21707;   // Set the address to forward the received ETH to
+    address public constant FWDaddrETH = 0x2932b7A2355D6fecc4b5c0B6BD44cC31df247a2e;   // Set the address to forward the received ETH to
     string public name = "Taboow Broker";      // Extended name of this contract
     uint256 public tokenPrice = 0;        // Set the fixed Taboow token price
     address public taboowAddr;            // Set the Taboow contract address

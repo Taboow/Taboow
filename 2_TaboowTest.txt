@@ -8,40 +8,40 @@ Contract name: Taboow Broker
 Decimals: 18
 tokenPrice: 10000000000000000
 pubEnd: 0
-  [32m  ✓[0m[90m check constructor and default params[0m[31m (173ms)[0m
-0x51fc52fd0b30fa0319d97893defe0201fed39c4c
+  [32m  ✓[0m[90m check constructor and default params[0m[31m (94ms)[0m
+0xace937991395b2051613368206066eb2e752a333
 true
 true
-  [32m  ✓[0m[90m should initialize functions and variables to start running[0m[31m (357ms)[0m
+  [32m  ✓[0m[90m should initialize functions and variables to start running[0m[31m (297ms)[0m
 1000000000000000000
 true
 soldBefore: 0
 soldAfter: 10000000000000000000
 10000000000000000000
-  [32m  ✓[0m[90m should buy amount correctly[0m[31m (364ms)[0m
+  [32m  ✓[0m[90m should buy amount correctly[0m[31m (261ms)[0m
 10000000000000000000
 11000000000000000000
 1000000000000000000
-  [32m  ✓[0m[90m should buy amount correctly from fallback function[0m[31m (174ms)[0m
+  [32m  ✓[0m[90m should buy amount correctly from fallback function[0m[31m (192ms)[0m
 account_one_reserved:  0
 account_one_reserved_after:  1000000000000000000
 balanceTaboowBefore:  0
 account_one_reserved_last:  0
 balanceTaboowAfter:  1000000000000000000
-  [32m  ✓[0m[90m should reserve and deliver tokens[0m[31m (826ms)[0m
+  [32m  ✓[0m[90m should reserve and deliver tokens[0m[31m (528ms)[0m
 balanceBefore: 1000000000000000000
 pubEnd: 0
 soldBefore: 11000000000000000000
 tokenPrice: 1000000000000000000
 balanceAfter: 12000000000000000000
 soldAfter: 0
-  [32m  ✓[0m[90m should withdrawPUB correctly[0m[31m (229ms)[0m
+  [32m  ✓[0m[90m should withdrawPUB correctly[0m[31m (228ms)[0m
 true
 true
-5.5e+24
-5.5e+24
+5.499988e+24
+4.499988e+24
 0 1e+24
-  [32m  ✓[0m[90m should sweep correctly to send tokens to owner account[0m[31m (568ms)[0m
+  [32m  ✓[0m[90m should sweep correctly to send tokens to owner account[0m[31m (318ms)[0m
 
 
-[92m [0m[32m 7 passing[0m[90m (3s)[0m
+[92m [0m[32m 7 passing[0m[90m (2s)[0m

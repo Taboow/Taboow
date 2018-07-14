@@ -3,10 +3,10 @@ Using network 'development'.
 
 [0m[0m
 [0m  Contract: Taboow Test[0m
-0x98d9f9e8debd4a632682ba207670d2a5acd3c489
+0xddf190259815afdf723748112e6a9532c1f06809
 true
 true
-  [32m  ✓[0m[90m should initialize functions and variables to start running[0m[31m (5280ms)[0m
+  [32m  ✓[0m[90m should initialize functions and variables to start running[0m[31m (397ms)[0m
 Taboow Broker address should be allowed to reserveTokens
 false
 true
@@ -28,8 +28,8 @@ Promise {
     at _combinedTickCallback (internal/process/next_tick.js:138:11)
     at process._tickCallback (internal/process/next_tick.js:180:9) }
 0
-  [32m  ✓[0m[90m checks that calls throws revert[0m[31m (3331ms)[0m
+  [32m  ✓[0m[90m checks that calls throws revert[0m[31m (296ms)[0m
 
 
-[92m [0m[32m 2 passing[0m[90m (9s)[0m
+[92m [0m[32m 2 passing[0m[90m (884ms)[0m
 

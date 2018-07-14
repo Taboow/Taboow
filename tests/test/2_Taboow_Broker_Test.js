@@ -141,8 +141,6 @@
 //
 //       let amount = 1000000000000000000;
 //
-//       await meta.setPubEnd(1628064138);
-//
 //       let owner = await meta.owner();
 //
 //       let soldBefore = await meta.sold(account_two);
@@ -311,7 +309,7 @@
 //          assert.notEqual(account_one_starting_balance, account_one_ending_balance, "starting and ending balance of account one don't have to be equal after sweep");
 //
 //          assert.equal(account_one_ending_balance, amount, "account_one_ending_balance must be equal to amount")
-//          assert.equal(contract2_balance, contract2_balance_after, "contract2_balance must be equal before and after sweep");
+//          assert.equal(contract2_balance, contract2_balance_after + amount, "contract2_balance must be equal before and after sweep");
 //          assert.equal(verifiedAccountOne, true, "verifiedAccountOne must be equal to true");
 //          assert.equal(verifiedContract2Addr, true, "verifiedContract2Addr must be equal to true");
 //
