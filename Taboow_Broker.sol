@@ -133,7 +133,7 @@ pragma solidity 0.4.24;
 
 //////////////////////////////////////////////////////////////
 //                                                          //
-//                    TaboowERC20 CYC                       //
+//                   TaboowERC20 Broker                     //
 //                   https://taboow.org                     //
 //                                                          //
 //////////////////////////////////////////////////////////////
@@ -144,15 +144,14 @@ contract Token {
     function verified(address _addr) public pure returns (bool _status);
     function reserveTokens (address _addr, uint256 _amount) public;
     function reserve(address _addr) public pure returns (uint256 _amount);
-    function tokensDelivery (uint256 _amount, address _user) public;
 
 }
 
-contract Taboow_CYC is Ownable {
+contract Taboow_Broker is Ownable {
 
     using SafeMath for uint256;
 
-    string public name = "Taboow CYC";      // Extended name of this contract
+    string public name = "Taboow Broker";      // Extended name of this contract
     uint256 public tokenPrice = 0;        // Set the fixed Taboow token price
     address public FWDaddrETH;            // Set the address to forward the received ETH to
     address public taboowAddr;            // Set the Taboow contract address
@@ -221,8 +220,8 @@ contract Taboow_CYC is Ownable {
 
     function withdrawPUB() public returns(bool) {
 
-        require(block.timestamp > pubEnd);          // Require the PE to be over - actual time higher than end unixtime
-        require(sold[msg.sender] > 0);              // Require the ESS token balance to be sent to be higher than 0
+        require(block.timestamp > pubEnd);          // Require the Taboow_Broker to be over - actual time higher than end unixtime
+        require(sold[msg.sender] > 0);              // Require the Taboow token balance to be sent to be higher than 0
 
         // Send ESS tokens to the contributors proportionally to their contribution/s
         if(!taboowAddr.call(bytes4(keccak256("transferTokens(address,uint256)")), msg.sender, sold[msg.sender])){revert();}
@@ -277,7 +276,7 @@ contract Taboow_CYC is Ownable {
         require(Token(taboowAddr).verified(msg.sender) == true);
         require(Token(taboowAddr).verified(_user) == true);
 
-        if(!taboowAddr.call(bytes4(keccak256("tokensDelivery(uint256,address)")), _amount, _user)){revert();}
+        if(!taboowAddr.call(bytes4(keccak256("transferTokens(address.uint256)")), _user, _amount)){revert();}
     }
 
 }

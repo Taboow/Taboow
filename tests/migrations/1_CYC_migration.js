@@ -1,5 +1,5 @@
 var Migrations = artifacts.require("Taboow");
-var Migrations1 = artifacts.require("Taboow_CYC");
+var Migrations1 = artifacts.require("Taboow_Broker");
 var Migrations2 = artifacts.require("TaboowCYC2");
 
 module.exports = function(deployer) {

@@ -151,7 +151,7 @@ contract Taboow_ERC20 is Ownable {
     string public name = "Taboow";
     string public symbol = "TBW";
     uint256 public totalSupply;
-    address public tbwCYCaddr;
+    address public tbwBrokerAddr;
 
     uint256 public transactionFee = 0;
 
@@ -203,53 +203,40 @@ contract Taboow_ERC20 is Ownable {
 
     }
 
-    function tokensDelivery (uint256 _amount, address _user) public {
-      require(owners[msg.sender] == true);
-      require(verified[_user]);
-      require(reserve[_user] <= _amount);
-
-      reserve[_user] = reserve[_user].sub(_amount);
-      transferTokens(_user, _amount);
-    }
-
     function setTaboowAddr(address _addr) public onlyOwner{
 
-        delete verified[tbwCYCaddr];
+        delete verified[tbwBrokerAddr];
 
-        if(balances[tbwCYCaddr] > 0 ) {
-            balances[_addr] = balances[tbwCYCaddr];
+        if(balances[tbwBrokerAddr] > 0 ) {
+            balances[_addr] = balances[tbwBrokerAddr];
         } else {
           balances[_addr] = totalSupply;
         }
 
-        delete balances[tbwCYCaddr];
-        delete tbwCYCaddr;
+        delete balances[tbwBrokerAddr];
+        delete tbwBrokerAddr;
 
         verified[_addr] = true;
-        tbwCYCaddr = _addr;
+        tbwBrokerAddr = _addr;
     }
 
     function deleteTaboowAddr() public onlyOwner{
 
-        delete verified[tbwCYCaddr];
-        delete balances[tbwCYCaddr];
-        delete tbwCYCaddr;
+        delete verified[tbwBrokerAddr];
+        delete balances[tbwBrokerAddr];
+        delete tbwBrokerAddr;
 
     }
 
     function transferTokens(address _to, uint256 _value) public returns(bool) {
         require(_to != address(0));
+        require(_value <= balances[msg.sender]);
         require(!frozenAccount[msg.sender]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         require(verified[msg.sender]);
         require(verified[_to]);
-        require(msg.sender == tbwCYCaddr || owners[msg.sender] == true);
+        require(msg.sender == tbwBrokerAddr || owners[msg.sender] == true);
 
-        totalSupply = totalSupply.add(_value);
-        balances[msg.sender] = balances[msg.sender].add(_value);
-
-        // SafeMath.sub will throw if there is not enough balance.
-        balances[msg.sender] = balances[msg.sender].sub(_value);
 
         balances[_to] = balances[_to].add(_value);
 
@@ -368,7 +355,6 @@ contract Taboow is Taboow_ERC20 {
     event LogDeposit(address sender, uint amount);
     event LogCoinsMinted(address deliveredTo, uint256 amount);
 
-    //initialSupply must be equal to 5500000000000000000000000 to get 5,500,000 of tokens
     constructor (
           uint256 initialSupply
         ) public {
@@ -378,7 +364,6 @@ contract Taboow is Taboow_ERC20 {
     }
 
     function mint(address _owner, uint256 _amount) public onlyOwner{
-      require(verified[_owner] == true);
 
       balances[_owner] += _amount;
       totalSupply += _amount;
