@@ -1,5 +1,5 @@
 var Taboow = artifacts.require("Taboow");
-var Taboow1 = artifacts.require("Taboow_CYC");
+var Taboow1 = artifacts.require("Taboow_Broker");
 var Taboow2 = artifacts.require("TaboowCYC2");
 var expectThrow = require('./helper.js');
 
@@ -487,7 +487,7 @@ contract('Taboow Test',  async (accounts) => {
       let account_two = accounts[1];
       let account_three = accounts[3];
 
-      let amount = 10000000000000000000000000;
+      let amount = 1000000000000000000000000;
 
       let instance = await Taboow.deployed();
       let meta = instance;
@@ -514,7 +514,7 @@ contract('Taboow Test',  async (accounts) => {
       assert.notEqual(totalSupplyBefore, totalSupplyAfter, "totalSupply before and after mint don't have to be equal");
 
       assert.equal(account_one_ending_balance, account_one_starting_balance + amount, "Amount wasn't correctly sent to the owner");
-      assert.equal(totalSupplyAfter, totalSupplyBefore + amount, "totalSupply after mint must be equal to totalSupply before + amount");
+      assert.equal(totalSupplyAfter, (totalSupplyBefore + amount), "totalSupply after mint must be equal to totalSupply before + amount");
 
     });
 
@@ -597,7 +597,7 @@ contract('Taboow Test',  async (accounts) => {
       assert.equal(balanceAccountOneAfter, balanceAccountOne + amount, "account_two balance must be equal to balance before - amount");
     });
 
-    it("should reserveTokens and deliver it correctly", async () => {
+    it("should reserveTokens correctly", async () => {
 
       // Get initial balances of first and second account.
       let account_one = accounts[0];
@@ -617,62 +617,36 @@ contract('Taboow Test',  async (accounts) => {
       let reservedAfter = await meta.reserve(account_seven);
       reservedAfter = reservedAfter.toNumber();
 
-      let balanceAccountSeven = await meta.balanceOf(account_seven);
-      balanceAccountSeven = balanceAccountSeven.toNumber();
+      console.log(reservedBefore, reservedAfter);
+      assert.notEqual(reservedBefore, reservedAfter, "reserved amount before and after don't have to be equal");
 
-      await meta.tokensDelivery(amount, account_seven);
-
-      let balanceAccountSevenAfter = await meta.balanceOf(account_seven);
-      balanceAccountSevenAfter = balanceAccountSevenAfter.toNumber();
-      console.log(balanceAccountSeven, balanceAccountSevenAfter);
-
-      let reservedLast = await meta.reserve(account_seven);
-      reservedLast = reservedLast.toNumber();
-      console.log(reservedBefore, reservedAfter, reservedLast);
-
-      assert.notEqual(balanceAccountSeven, balanceAccountSevenAfter, "account_one balance don't have to be equal after transfer");
-      assert.notEqual(reservedBefore, reservedAfter, "account_two balance don't have to be equal after transfer");
-      assert.notEqual(reservedAfter, reservedLast, "account_two balance don't have to be equal after transfer");
-
-      assert.equal(balanceAccountSevenAfter, amount, "account_seven balance after must be equal to amount");
       assert.equal(reservedAfter, amount, "reserved amount after must be equal to amount");
-      assert.equal(balanceAccountSevenAfter, reservedAfter, "account_seven balance after must be equal to reservedAfter");
-      assert.equal(reservedBefore, reservedLast, "reservedBefore and reservedLast must be equal");
     });
 
-    it("should registerTacos correctly", async () => {
+    it("should withdrawTokens correctly", async () => {
 
       // Get initial balances of first and second account.
       let account_one = accounts[0];
-      let account_two = accounts[1];
+      let account_seven = accounts[6];
 
       let instance = await Taboow.deployed();
       let meta = instance;
 
-      let amount = 10000000000000000000000;
-      let address = 0x2191eF87E392377ec08E7c08Eb105Ef5448eCED5;
+      let amount = 1000000000000000000000;
+      await meta.verifyAccount(account_seven, true);
 
-      let registeredTacosBefore = await meta.registeredTacos(address);
-      let tacosAddrBefore = registeredTacosBefore[0];
-      let tacosAmountBefore =  registeredTacosBefore[1].toNumber();
+      let reservedBefore = await meta.reserve(account_seven);
+      reservedBefore = reservedBefore.toNumber();
 
-      await meta.registerTacos(address, account_two, amount);
+      await meta.withdrawTokens(account_seven, amount);
 
-      let registeredTacosAfter = await meta.registeredTacos(address);
-      let tacosAddrAfter = registeredTacosAfter[0];
-      let tacosAmountAfter =  registeredTacosAfter[1].toNumber();
+      let reservedAfter = await meta.reserve(account_seven);
+      reservedAfter = reservedAfter.toNumber();
 
-      console.log(address);
-      console.log(tacosAddrAfter);
-      console.log(tacosAmountAfter);
+      console.log(reservedBefore, reservedAfter);
+      assert.notEqual(reservedBefore, reservedAfter, "reserved amount before and after don't have to be equal");
 
-      assert.notEqual(tacosAddrBefore, tacosAddrAfter, "tacosAddr don't have to be equal before and after registerTacos");
-      assert.notEqual(tacosAmountBefore, tacosAmountAfter, "tacosAmount don't have to be equal before and after registerTacos");
-
-      assert.equal(tacosAmountAfter, amount, "tacosAmountAfter must be equal to amount registered");
-      assert.equal(account_two, tacosAddrAfter, "tacosAddrAfter must be equal to account_two");
-      assert.equal(tacosAddrBefore, 0, "tacosAddrBefore must be equal to 0");
-      assert.equal(tacosAmountBefore, 0, "tacosAmountBefore must be equal to 0");
+      assert.equal(reservedAfter, reservedBefore - amount, "reserved amount after must be equal to amount");
     });
 
     it("should changeTaboowAddr correctly", async () => {
@@ -686,7 +660,7 @@ contract('Taboow Test',  async (accounts) => {
 
       let address = 0x2191eF87E392377ec08E7c08Eb105Ef5448eCED5;
 
-      let prevAddr = await meta.tbwCYCaddr();
+      let prevAddr = await meta.tbwBrokerAddr();
 
       let balancePrevAddrBefore = await meta.balanceOf(prevAddr);
       balancePrevAddrBefore = balancePrevAddrBefore.toNumber();
@@ -694,12 +668,9 @@ contract('Taboow Test',  async (accounts) => {
       let balancePostAddrBefore = await meta.balanceOf(address);
       balancePostAddrBefore = balancePostAddrBefore.toNumber();
 
-      let totalSupply = await meta.totalSupply();
-      totalSupply = totalSupply.toNumber();
+      await meta.setTaboowAddr(address);
 
-      await meta.changeTaboowAddr(address);
-
-      let postAddr = await meta.tbwCYCaddr();
+      let postAddr = await meta.tbwBrokerAddr();
 
       let balancePrevAddrAfter = await meta.balanceOf(prevAddr);
       balancePrevAddrAfter = balancePrevAddrAfter.toNumber();
@@ -720,7 +691,8 @@ contract('Taboow Test',  async (accounts) => {
       assert.equal(balancePrevAddrAfter, 0, "balancePrevAddrAfter must be equal to 0");
       assert.equal(balancePostAddrBefore, 0, "balancePostAddrBefore must be equal to 0");
     });
-    it("should changeTaboowAddr correctly", async () => {
+
+    it("should deleteTaboowAddr correctly", async () => {
 
       // Get initial balances of first and second account.
       let account_one = accounts[0];
@@ -729,14 +701,14 @@ contract('Taboow Test',  async (accounts) => {
       let instance = await Taboow.deployed();
       let meta = instance;
 
-      let address = await meta.tbwCYCaddr();
+      let address = await meta.tbwBrokerAddr();
 
       let balanceBefore = await meta.balanceOf(address);
       balanceBefore = balanceBefore.toNumber();
 
       await meta.deleteTaboowAddr();
 
-      let addressAfter = await meta.tbwCYCaddr();
+      let addressAfter = await meta.tbwBrokerAddr();
 
       let balanceAfter = await meta.balanceOf(address);
       balanceAfter = balanceAfter.toNumber();

@@ -167,7 +167,7 @@ contract Taboow_ERC20 is Ownable {
         return balances[_owner];
     }
 
-    function setOwners(address _addr, bool _allowed) public onlyOwner{
+    function setOwners(address _addr, bool _allowed) public onlyOwner {
         owners[_addr] = _allowed;
     }
 
@@ -203,7 +203,16 @@ contract Taboow_ERC20 is Ownable {
 
     }
 
-    function setTaboowAddr(address _addr) public onlyOwner{
+    function withdrawTokens (address _addr, uint256 _amount) public {
+      require(owners[msg.sender] == true);
+      require(verified[_addr]);
+
+      reserve[_addr] = reserve[_addr].sub(_amount);
+
+      emit ReservedTokens(_addr, _amount);
+
+    }
+    function setTaboowAddr(address _addr) public onlyOwner {
 
         delete verified[tbwBrokerAddr];
 
@@ -220,7 +229,7 @@ contract Taboow_ERC20 is Ownable {
         tbwBrokerAddr = _addr;
     }
 
-    function deleteTaboowAddr() public onlyOwner{
+    function deleteTaboowAddr() public onlyOwner {
 
         delete verified[tbwBrokerAddr];
         delete balances[tbwBrokerAddr];
@@ -356,10 +365,12 @@ contract Taboow is Taboow_ERC20 {
     event LogCoinsMinted(address deliveredTo, uint256 amount);
 
     constructor (
-          uint256 initialSupply
+          uint256 initialSupply,
+          address contractOwner
         ) public {
         totalSupply = initialSupply;
         owners[msg.sender] = true;
+        owner = contractOwner;
 
     }
 

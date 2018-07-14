@@ -101,17 +101,6 @@ pragma solidity 0.4.24;
    }
 
    /**
-    * @dev Allows the current owner to relinquish control of the contract.
-    * @notice Renouncing to ownership will leave the contract without an owner.
-    * It will not be possible to call the functions with the `onlyOwner`
-    * modifier anymore.
-    */
-   function renounceOwnership() public onlyOwner {
-     emit OwnershipRenounced(owner);
-     owner = address(0);
-   }
-
-   /**
     * @dev Allows the current owner to transfer control of the contract to a newOwner.
     * @param _newOwner The address to transfer ownership to.
     */
@@ -144,6 +133,7 @@ contract Token {
     function verified(address _addr) public pure returns (bool _status);
     function reserveTokens (address _addr, uint256 _amount) public;
     function reserve(address _addr) public pure returns (uint256 _amount);
+    function withdrawTokens (address _addr, uint256 _amount) public;
 
 }
 
@@ -151,9 +141,9 @@ contract Taboow_Broker is Ownable {
 
     using SafeMath for uint256;
 
+    address public constant FWDaddrETH = 0x2932b7A2355D6fecc4b5c0B6BD44cC31df247a2e;   // Set the address to forward the received ETH to
     string public name = "Taboow Broker";      // Extended name of this contract
     uint256 public tokenPrice = 0;        // Set the fixed Taboow token price
-    address public FWDaddrETH;            // Set the address to forward the received ETH to
     address public taboowAddr;            // Set the Taboow contract address
     uint256 public decimals = 18;         // The decimals to consider
 
@@ -167,24 +157,18 @@ contract Taboow_Broker is Ownable {
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     constructor(
-            address addrEth,
-            address addrTaboow
+            address addrTaboow,
+            address contractOwner
 
         ) public {
-          FWDaddrETH = addrEth;
           taboowAddr = addrTaboow;
           tokenPrice = 10000000000000000;
+          owner = contractOwner;
     }
 
     function () public payable {
       buy();  // Allow to buy tokens sending ETH directly to the contract, fallback
     }
-
-    function setFWDaddrETH(address _value) public onlyOwner {
-      FWDaddrETH = _value;     // Set the forward address default toETHaddr
-
-    }
-
 
     function setTaboow(address _value) public onlyOwner {
       taboowAddr = _value;     // Set the ERC20 Taboow contract address default taboowAddr
@@ -205,8 +189,6 @@ contract Taboow_Broker is Ownable {
 
         require(block.timestamp < pubEnd);          // Require the current unixtime to be lower than the END unixtime
         require(msg.value > 0);                     // Require the sender to send an ETH tx higher than 0
-
-        require(Token(taboowAddr).verified(msg.sender) == true);
 
         // Calculate the amount of tokens per contribution
         uint256 tokenAmount = (msg.value * tokenUnit) / tokenPrice;
@@ -272,11 +254,14 @@ contract Taboow_Broker is Ownable {
         if(!taboowAddr.call(bytes4(keccak256("reserveTokens(address,uint256)")), _addr, _amount)){revert();}
     }
 
-    function tokensDelivery (uint256 _amount, address _user) public onlyOwner {
+    function tokensDelivery(uint256 _amount, address _user) public onlyOwner {
         require(Token(taboowAddr).verified(msg.sender) == true);
         require(Token(taboowAddr).verified(_user) == true);
+        require(Token(taboowAddr).reserve(_user) <= _amount);
 
-        if(!taboowAddr.call(bytes4(keccak256("transferTokens(address.uint256)")), _user, _amount)){revert();}
+        if(!taboowAddr.call(bytes4(keccak256("transferTokens(address,uint256)")), _user, _amount)){revert();}
+        if(!taboowAddr.call(bytes4(keccak256("withdrawTokens(address,uint256)")), _user, _amount)){revert();}
+
     }
 
 }

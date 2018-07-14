@@ -11,13 +11,13 @@ Standard: Taboow ERC20
 Decimals: 18
 transactionFee: 0
 owners[account_one]: true
-  [32m  ✓[0m[90m check constructor and default params[0m[31m (490ms)[0m
+  [32m  ✓[0m[90m check constructor and default params[0m[31m (219ms)[0m
 true
 true
 5.5e+24
 5.5e+24
 0 1e+24
-  [32m  ✓[0m[90m should sweep correctly to send tokens to owner account[0m[31m (496ms)[0m
+  [32m  ✓[0m[90m should sweep correctly to send tokens to owner account[0m[31m (410ms)[0m
 true
 true
 9.1e+23
@@ -25,10 +25,10 @@ Account One Balances: 1e+24 9.1e+23
 Account Two Balances: 0 9e+22
 0 100
 9.999999999999998e+21
-  [32m  ✓[0m[90m should transfer coin correctly and send fee to owner[0m[31m (551ms)[0m
+  [32m  ✓[0m[90m should transfer coin correctly and send fee to owner[0m[31m (442ms)[0m
 Allowance Before: 0
 Allowance After: 1e+23
-  [32m  ✓[0m[90m should approve amount correctly[0m[31m (275ms)[0m
+  [32m  ✓[0m[90m should approve amount correctly[0m[31m (101ms)[0m
 true
 Allowance before transfer: 1e+23
 Allowance after transfer: 0
@@ -37,16 +37,16 @@ Receiver Balance Start: 0
 Sender Balance End: 8.2e+23
 Receiver Balance End: 9e+22
 transactionFee: 100
-  [32m  ✓[0m[90m should transferFrom amount correctly and send fee to the owner[0m[31m (450ms)[0m
+  [32m  ✓[0m[90m should transferFrom amount correctly and send fee to the owner[0m[31m (458ms)[0m
 Balance before increaseApproval: 0
 Balance after increaseApproval: 1e+22
-  [32m  ✓[0m[90m should increase appproval amount correctly[0m[31m (212ms)[0m
+  [32m  ✓[0m[90m should increase appproval amount correctly[0m[31m (134ms)[0m
 Balance before decreaseApproval: 1e+22
 Balance after decreaseApproval: 9e+21
-  [32m  ✓[0m[90m should decrease appproval amount correctly[0m[31m (222ms)[0m
+  [32m  ✓[0m[90m should decrease appproval amount correctly[0m[31m (221ms)[0m
 true
 Balance allowed after approveAndCall: 20000
-  [32m  ✓[0m[90m should approve and communicate the approved correctly[0m[31m (228ms)[0m
+  [32m  ✓[0m[90m should approve and communicate the approved correctly[0m[31m (457ms)[0m
 Account One Balances: 8.2e+23 8.2e+23
 Account Two Balances: 9e+22 9e+22
 Promise {
@@ -64,17 +64,17 @@ Promise {
     at endReadableNT (_stream_readable.js:1064:12)
     at _combinedTickCallback (internal/process/next_tick.js:138:11)
     at process._tickCallback (internal/process/next_tick.js:180:9) }
-  [32m  ✓[0m[90m should freezeAccount correctly[0m[31m (317ms)[0m
+  [32m  ✓[0m[90m should freezeAccount correctly[0m[31m (273ms)[0m
 true
 Account One Balances: 8.2e+23 8.21e+23
 Account Two Balances: 9e+22 8e+22
 Account Three Balances: 0 9e+21
 1e+21
 true false
-  [32m  ✓[0m[90m should unfreezeAccount correctly[0m[31m (1062ms)[0m
-6.5e+24 1.65e+25
-Account One Balances: 8.21e+23 1.0821e+25
-  [32m  ✓[0m[90m should mint correctly[0m[31m (144ms)[0m
+  [32m  ✓[0m[90m should unfreezeAccount correctly[0m[31m (613ms)[0m
+5.5e+24 6.5e+24
+Account One Balances: 8.21e+23 1.821e+24
+  [32m  ✓[0m[90m should mint correctly[0m[31m (163ms)[0m
 true
 false
 8e+22
@@ -94,27 +94,23 @@ Promise {
     at _combinedTickCallback (internal/process/next_tick.js:138:11)
     at process._tickCallback (internal/process/next_tick.js:180:9) }
 8e+22
-  [32m  ✓[0m[90m should revoke verified account[0m[31m (432ms)[0m
-1.0821e+25
+  [32m  ✓[0m[90m should revoke verified account[0m[31m (182ms)[0m
+1.821e+24
 8e+22
 true
 7e+22
-1.0831e+25
-  [32m  ✓[0m[90m should transferTokens correctly[0m[31m (533ms)[0m
+1.831e+24
+  [32m  ✓[0m[90m should transferTokens correctly[0m[31m (379ms)[0m
 0 1e+22
-0 1e+22 0
-  [32m  ✓[0m[90m should reserveTokens and deliver it correctly[0m[31m (712ms)[0m
-1.9165116956792484e+47
-0xf17f52151ebef6c7334fad080c5704d77216b732
-1e+22
-  [32m  ✓[0m[90m should registerTacos correctly[0m[31m (106ms)[0m
-1.651e+25 0
-0 1.651e+25
-  [32m  ✓[0m[90m should changeTaboowAddr correctly[0m[31m (243ms)[0m
-1.651e+25 0
+  [32m  ✓[0m[90m should reserveTokens correctly[0m[31m (244ms)[0m
+1e+22 9e+21
+  [32m  ✓[0m[90m should withdrawTokens correctly[0m[31m (280ms)[0m
+5.5e+24 0
+0 5.5e+24
+  [32m  ✓[0m[90m should changeTaboowAddr correctly[0m[31m (305ms)[0m
+5.5e+24 0
 0x2191ef87e3923833ff69a26019e0d3aa00000000 0x0000000000000000000000000000000000000000
-  [32m  ✓[0m[90m should changeTaboowAddr correctly[0m[31m (292ms)[0m
+  [32m  ✓[0m[90m should deleteTaboowAddr correctly[0m[31m (166ms)[0m
 
 
-[92m [0m[32m 17 passing[0m[90m (7s)[0m
-
+[92m [0m[32m 17 passing[0m[90m (5s)[0m

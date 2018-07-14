@@ -1,0 +1,35 @@
+Using network 'development'.
+
+
+[0m[0m
+[0m  Contract: Taboow Test[0m
+0x98d9f9e8debd4a632682ba207670d2a5acd3c489
+true
+true
+  [32m  ✓[0m[90m should initialize functions and variables to start running[0m[31m (5280ms)[0m
+Taboow Broker address should be allowed to reserveTokens
+false
+true
+true
+0
+Promise {
+  <rejected> Error: VM Exception while processing transaction: revert
+    at Object.InvalidResponse (/usr/lib/node_modules/truffle/build/webpack:/~/web3/lib/web3/errors.js:38:1)
+    at /usr/lib/node_modules/truffle/build/webpack:/~/web3/lib/web3/requestmanager.js:86:1
+    at /usr/lib/node_modules/truffle/build/webpack:/~/truffle-provider/wrapper.js:134:1
+    at XMLHttpRequest.request.onreadystatechange (/usr/lib/node_modules/truffle/build/webpack:/~/web3/lib/web3/httpprovider.js:128:1)
+    at XMLHttpRequestEventTarget.dispatchEvent (/usr/lib/node_modules/truffle/build/webpack:/~/xhr2/lib/xhr2.js:64:1)
+    at XMLHttpRequest._setReadyState (/usr/lib/node_modules/truffle/build/webpack:/~/xhr2/lib/xhr2.js:354:1)
+    at XMLHttpRequest._onHttpResponseEnd (/usr/lib/node_modules/truffle/build/webpack:/~/xhr2/lib/xhr2.js:509:1)
+    at IncomingMessage.<anonymous> (/usr/lib/node_modules/truffle/build/webpack:/~/xhr2/lib/xhr2.js:469:1)
+    at emitNone (events.js:111:20)
+    at IncomingMessage.emit (events.js:208:7)
+    at endReadableNT (_stream_readable.js:1064:12)
+    at _combinedTickCallback (internal/process/next_tick.js:138:11)
+    at process._tickCallback (internal/process/next_tick.js:180:9) }
+0
+  [32m  ✓[0m[90m checks that calls throws revert[0m[31m (3331ms)[0m
+
+
+[92m [0m[32m 2 passing[0m[90m (9s)[0m
+

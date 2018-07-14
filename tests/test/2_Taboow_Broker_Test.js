@@ -1,5 +1,5 @@
 var Taboow = artifacts.require("Taboow");
-var Taboow1 = artifacts.require("Taboow_CYC");
+var Taboow1 = artifacts.require("Taboow_Broker");
 var Taboow2 = artifacts.require("TaboowCYC2");
 var expectThrow = require('./helper.js');
 
@@ -18,8 +18,8 @@ contract('Taboow Test',  async (accounts) => {
       let taboowAddr = await meta.taboowAddr();
 
       //expected values
-      let expectedName = "Taboow CYC";
-      let expectedTokenPrice = 0;
+      let expectedName = "Taboow Broker";
+      let expectedTokenPrice = 10000000000000000;
       let expectedPubEnd = 0;
       let expectedDecimals = 18;
       let expectedOwner = 0x627306090abaB3A6e1400e9345bC60c78a8BEf57;
@@ -114,10 +114,6 @@ contract('Taboow Test',  async (accounts) => {
       soldBefore = soldBefore.toNumber();
       console.log("soldBefore: " + soldBefore);
 
-      let totalSoldBefore = await meta.totalSold();
-      totalSoldBefore = totalSoldBefore.toNumber();
-      console.log("totalSoldBefore: " + totalSoldBefore);
-
       await meta.buy({from: account_two, value:amount});
 
       let soldAfter = await meta.sold(account_two);
@@ -130,16 +126,10 @@ contract('Taboow Test',  async (accounts) => {
       let tokenAmount = (amount*tokenUnit)/1000000000000000000;
       console.log(tokenAmount);
 
-      let totalSoldAfter = await meta.totalSold();
-      totalSoldAfter = totalSoldAfter.toNumber();
-      console.log("totalSoldAfter: " + totalSoldAfter);
-
-      assert.notEqual(totalSoldBefore, totalSoldAfter, "totalSold value don't have to be equal before and after buy");
       assert.notEqual(soldBefore , soldAfter , "sold value don't have to be equal before and after buy");
 
       assert.equal(soldAfter, tokenAmount, "sold value after buy have to be equal to tokenAmount");
-      assert.equal(totalSoldAfter, totalSoldBefore + soldAfter, "totalSoldAfter must be equal to totalSoldBefore + soldAfter");
-      assert.equal(totalSoldAfter, soldAfter, "totalSoldAfter must be equal to soldAfter");
+
     });
 
     it("should buy amount correctly from fallback function", async () => {
@@ -159,16 +149,7 @@ contract('Taboow Test',  async (accounts) => {
       soldBefore = soldBefore.toNumber();
       console.log(soldBefore);
 
-      let totalSoldBefore = await meta.totalSold();
-      totalSoldBefore = totalSoldBefore.toNumber();
-      console.log("totalSoldBefore: " + totalSoldBefore);
-
-
       await meta.sendTransaction({from: accounts[2], value: 10**18});
-
-      let totalSoldAfter = await meta.totalSold();
-      totalSoldAfter = totalSoldAfter.toNumber();
-      console.log("totalSoldAfter: " + totalSoldAfter);
 
       let soldAfter = await meta.sold(account_two);
       soldAfter = soldAfter.toNumber();
@@ -180,13 +161,12 @@ contract('Taboow Test',  async (accounts) => {
       let tokenAmount = (amount*tokenUnit)/1000000000000000000;
       console.log(tokenAmount);
 
-      assert.notEqual(totalSoldBefore, totalSoldAfter, "totalSold value don't have to be equal before and after buy");
       assert.notEqual(soldBefore , soldAfter , "sold value don't have to be equal before and after buy");
 
-      assert.equal(totalSoldAfter, totalSoldBefore + tokenAmount, "totalSoldAfter must be equal to totalSoldBefore + soldAfter");
       assert.equal(soldAfter - soldBefore, tokenAmount, "sold value after buy have to be equal to tokenAmount");
 
     });
+
     it("should reserve and deliver tokens", async () => {
       let account_one = accounts[2];
 
@@ -197,33 +177,34 @@ contract('Taboow Test',  async (accounts) => {
       let meta_two = instance_two;
 
       await meta_two.setOwners(meta.address, true);
+      await meta_two.verifyAccount(meta.address, true);
       await meta_two.verifyAccount(account_one, true);
 
       let amount = 1000000000000000000;
 
       let account_one_reserved = await meta.isReserved(account_one);
       account_one_reserved = account_one_reserved.toNumber();
-      console.log(account_one_reserved);
+      console.log("account_one_reserved: ", account_one_reserved);
 
       await meta.reserveTokens(account_one, amount);
 
       let account_one_reserved_after = await meta.isReserved(account_one);
       account_one_reserved_after = account_one_reserved_after.toNumber();
-      console.log(account_one_reserved_after);
+      console.log("account_one_reserved_after: ", account_one_reserved_after);
 
       let balanceTaboowBefore = await meta_two.balanceOf(account_one);
       balanceTaboowBefore = balanceTaboowBefore.toNumber();
-      console.log(balanceTaboowBefore);
+      console.log("balanceTaboowBefore: ", balanceTaboowBefore);
 
       await meta.tokensDelivery(amount, account_one);
 
       let account_one_reserved_last = await meta.isReserved(account_one);
       account_one_reserved_last = account_one_reserved_last.toNumber();
-      console.log(account_one_reserved_last);
+      console.log("account_one_reserved_last: ", account_one_reserved_last);
 
       let balanceTaboowAfter = await meta_two.balanceOf(account_one);
       balanceTaboowAfter = balanceTaboowAfter.toNumber();
-      console.log(balanceTaboowAfter);
+      console.log("balanceTaboowAfter: ", balanceTaboowAfter);
 
       assert.notEqual(account_one_reserved, account_one_reserved_after, "reserved amount before and after reserve don't have to be equal");
       assert.notEqual(balanceTaboowBefore, balanceTaboowAfter, "account balance of Taboow Contract don't have to be equal before and after deliver tokens");
@@ -250,10 +231,6 @@ contract('Taboow Test',  async (accounts) => {
       balanceBefore = balanceBefore.toNumber();
       console.log("balanceBefore: " + balanceBefore);
 
-      let totalSupplyBefore = await meta_two.totalSupply();
-      totalSupplyBefore = totalSupplyBefore.toNumber();
-      console.log("totalSupplyBefore: " + totalSupplyBefore);
-
       await meta.setPubEnd(0);
 
       let pubEnd = await meta.pubEnd();
@@ -274,158 +251,71 @@ contract('Taboow Test',  async (accounts) => {
       balanceAfter = balanceAfter.toNumber();
       console.log("balanceAfter: " + balanceAfter);
 
-      let totalSupplyAfter = await meta_two.totalSupply();
-      totalSupplyAfter = totalSupplyAfter.toNumber();
-      console.log("totalSupplyAfter: " + totalSupplyAfter);
-
       let soldAfter = await meta.sold(account_one);
       soldAfter = soldAfter.toNumber();
       console.log("soldAfter: " + soldAfter);
 
       assert.notEqual(soldBefore , soldAfter , "sold value don't have to be equal before and after buy");
-      assert.notEqual(totalSupplyBefore, totalSupplyAfter, "contractBalance don't have to be equal before and after");
 
       assert.equal(soldBefore + balanceBefore, balanceAfter, "sold before withdraw and balance after withdraw have to be equal");
       assert.equal(soldAfter, 0, "sold value must be equal to 0 after withdrawPUB");
     });
 
+
     it("should sweep correctly to send tokens to owner account", async() => {
-      // Get initial balances of first and second account.
-      let account_one = accounts[0];
-      let account_two = accounts[1];
+         // Get initial balances of first and second account.
+         let account_one = accounts[0];
+         let account_two = accounts[1];
 
-      let amount = 1000000000000000000000000;
+         let amount = 1000000000000000000000000;
 
-      let instance = await Taboow.deployed();
-      let meta = instance;
+         let instance = await Taboow.deployed();
+         let meta = instance;
 
-      let instance2 = await Taboow1.deployed();
-      let meta2 = instance2;
+         let instance2 = await Taboow1.deployed();
+         let meta2 = instance2;
 
-      let contract2Addr = meta2.address;
+         let instance3 = await Taboow2.deployed();
+         let meta3 = instance3;
 
-      await meta.setTaboowAddr(contract2Addr);
+         let contract2Addr = meta.address;
 
-      await meta.verifyAccount(account_one, true);
+         await meta.setTaboowAddr(contract2Addr);
 
-      let verifiedAccountOne = await meta.verified(account_one);
-      console.log(verifiedAccountOne);
+         await meta.verifyAccount(account_one, true);
 
-      let verifiedContract2Addr = await meta.verified(contract2Addr);
-      console.log(verifiedContract2Addr);
+         let verifiedAccountOne = await meta.verified(account_one);
+         console.log(verifiedAccountOne);
 
-      let balance = await meta.balanceOf(account_one);
-      let account_one_starting_balance = balance.toNumber();
+         let verifiedContract2Addr = await meta.verified(contract2Addr);
+         console.log(verifiedContract2Addr);
 
-      balance = await meta.balanceOf(contract2Addr);
-      let contract2_balance = balance.toNumber();
-      console.log(contract2_balance);
+         let balance = await meta.balanceOf(account_one);
+         let account_one_starting_balance = balance.toNumber();
 
-      await meta2.sweep(meta.address, amount);
+         balance = await meta.balanceOf(contract2Addr);
+         let contract2_balance = balance.toNumber();
+         console.log(contract2_balance);
 
-      balance = await meta.balanceOf(account_one);
-      let account_one_ending_balance = balance.toNumber();
+         await meta.sweep(meta.address, amount);
 
-      balance = await meta.balanceOf(contract2Addr);
-      let contract2_balance_after = balance.toNumber();
-      console.log(contract2_balance_after);
+         balance = await meta.balanceOf(account_one);
+         let account_one_ending_balance = balance.toNumber();
 
-      console.log(account_one_starting_balance, account_one_ending_balance);
+         balance = await meta.balanceOf(contract2Addr);
+         let contract2_balance_after = balance.toNumber();
+         console.log(contract2_balance_after);
 
-      assert.notEqual(account_one_starting_balance, account_one_ending_balance, "starting and ending balance of account one don't have to be equal after sweep");
+         console.log(account_one_starting_balance, account_one_ending_balance);
 
-      assert.equal(account_one_ending_balance, amount, "account_one_ending_balance must be equal to amount")
-      assert.equal(contract2_balance, contract2_balance_after, "contract2_balance must be equal before and after sweep");
-      assert.equal(verifiedAccountOne, true, "verifiedAccountOne must be equal to true");
-      assert.equal(verifiedContract2Addr, true, "verifiedContract2Addr must be equal to true");
+         assert.notEqual(account_one_starting_balance, account_one_ending_balance, "starting and ending balance of account one don't have to be equal after sweep");
 
-    });
+         assert.equal(account_one_ending_balance, amount, "account_one_ending_balance must be equal to amount")
+         assert.equal(contract2_balance, contract2_balance_after, "contract2_balance must be equal before and after sweep");
+         assert.equal(verifiedAccountOne, true, "verifiedAccountOne must be equal to true");
+         assert.equal(verifiedContract2Addr, true, "verifiedContract2Addr must be equal to true");
 
-    it("should change addrFWD", async () => {
-        let account_one = accounts[0];
-        let account_two = accounts[1];
-
-        let instance = await Taboow1.deployed();
-        let meta = instance;
-
-        let expectedAddrBefore = 0x2932b7A2355D6fecc4b5c0B6BD44cC31df247a2e;
-        let addressBefore = await meta.FWDaddrETH();
-        console.log("addressBefore: " + addressBefore);
-
-        await meta.setFWDaddrETH(account_two);
-
-        let addressAfter = await meta.FWDaddrETH();
-        console.log("addressAfter: " + addressAfter);
-
-        assert.notEqual(addressBefore, addressAfter, "address before and after setaddrFWD don't have to be equal");
-
-        assert.equal(expectedAddrBefore, addressBefore, "address before setaddrFWD have to be equal to expectedAddrBefore");
-        assert.equal(account_two, addressAfter, "address after setaddrFWD have to be equal to account_two");
-
-      });
-
-    it("should buy amount correctly from fallback function with more than half ether balance", async () => {
-      let account_one = accounts[0];
-
-      let instance = await Taboow1.deployed();
-      let meta = instance;
-
-      let amount = 1000000000000000000;
-
-      await meta.setPubEnd(1628064138);
-
-      let owner = await meta.owner();
-
-      let soldBefore = await meta.sold(account_one);
-      soldBefore = soldBefore.toNumber();
-
-      let totalSoldBefore = await meta.totalSold();
-      totalSoldBefore = totalSoldBefore.toNumber();
-
-      let accountBalance = web3.eth.getBalance(web3.eth.coinbase);
-      accountBalance = accountBalance.toNumber();
-
-      txValue = 6721975000000000000;
-      accountBalance = accountBalance - txValue;
-
-      // Ganache accounts starts with 100 Ethers
-      let balanceInEth = web3.fromWei(web3.eth.getBalance(web3.eth.coinbase));
-      balanceInEth = balanceInEth.toNumber();
-
-      await meta.sendTransaction({from: accounts[0], value: accountBalance});
-
-      let totalSoldAfter = await meta.totalSold();
-      totalSoldAfter = totalSoldAfter.toNumber();
-
-      let soldAfter = await meta.sold(account_one);
-      soldAfter = soldAfter.toNumber();
-
-      let tokenUnit = await meta.tokenUnit();
-      tokenUnit = tokenUnit.toNumber();
-
-      let accountBalanceAfter = web3.eth.getBalance(web3.eth.coinbase);
-      accountBalanceAfter = accountBalanceAfter.toNumber();
-
-      let tokenAmount = (accountBalance*tokenUnit)/1000000000000000000;
-      console.log(tokenAmount);
-
-      let balanceInEthAfter = web3.fromWei(web3.eth.getBalance(web3.eth.coinbase));
-      balanceInEthAfter = balanceInEthAfter.toNumber();
-
-      console.log(totalSoldBefore, totalSoldAfter);
-      console.log(soldBefore, soldAfter);
-      console.log(accountBalance, accountBalanceAfter);
-      console.log(balanceInEth, balanceInEthAfter);
-
-      assert.notEqual(totalSoldBefore, totalSoldAfter, "totalSold value don't have to be equal before and after buy");
-      assert.notEqual(soldBefore , soldAfter , "sold value don't have to be equal before and after buy");
-      assert.notEqual(accountBalance, accountBalanceAfter, "account ether balance don't have to be equal before and after buy");
-      assert.notEqual(balanceInEth, balanceInEthAfter, "balance in ether don't have to be equal before and after buy");
-
-      assert.equal(totalSoldAfter, totalSoldBefore + tokenAmount, "totalSoldAfter must be equal to totalSoldBefore + soldAfter");
-      assert.equal(soldAfter, tokenAmount, "sold value after buy have to be equal to tokenAmount");
-
-    });
+       });
 
 
 });
