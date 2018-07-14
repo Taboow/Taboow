@@ -239,7 +239,7 @@ contract Taboow_Broker is Ownable {
     function sweep(address _token, uint256 _amount) public onlyOwner {
         Token token = Token(_token);
 
-        if(!token.transferTokens(owner, _amount)) {
+        if(!token.transfer(owner, _amount)) {
             revert();
         }
     }

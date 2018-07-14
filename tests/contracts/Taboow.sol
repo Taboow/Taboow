@@ -128,7 +128,7 @@ contract Ownable {
 //////////////////////////////////////////////////////////////
 
 contract Token {
-    function transferTokens(address to, uint256 value) public returns (bool);
+    function transfer(address to, uint256 value) public returns (bool);
 
 }
 
@@ -141,7 +141,7 @@ contract Taboow_ERC20 is Ownable {
     mapping (address => bool) public frozenAccount;
     mapping (address => bool) public verified;
     mapping (address => uint256) public reserve;
-    mapping (address => bool) public owners;
+    mapping (address => bool) public brokers;
 
     mapping (address => mapping (address => uint256)) internal allowed;
 
@@ -151,7 +151,6 @@ contract Taboow_ERC20 is Ownable {
     string public name = "Taboow";
     string public symbol = "TBW";
     uint256 public totalSupply;
-    address public tbwBrokerAddr;
 
     uint256 public transactionFee = 0;
 
@@ -167,33 +166,30 @@ contract Taboow_ERC20 is Ownable {
         return balances[_owner];
     }
 
-    function setOwners(address _addr, bool _allowed) public onlyOwner {
-        owners[_addr] = _allowed;
+    function setBrokers(address _addr, bool _allowed) public onlyOwner {
+        brokers[_addr] = _allowed;
     }
 
-    function setTransactionFee(uint256 _value) public {
-      require(owners[msg.sender] == true);
+    function setTransactionFee(uint256 _value) public onlyOwner{
 
       transactionFee = _value;
 
     }
 
-    function freezeAccount(address target, bool freeze) public {
-        require(owners[msg.sender] == true);
+    function freezeAccount(address target, bool freeze) public onlyOwner{
 
         frozenAccount[target] = freeze;
         emit FrozenFunds(target, freeze);
     }
 
-    function verifyAccount(address _addr, bool _verify) public {
-        require(owners[msg.sender] == true);
+    function verifyAccount(address _addr, bool _verify) public onlyOwner{
 
         verified[_addr] = _verify;
         emit VerifiedAccount(_addr, _verify);
     }
 
     function reserveTokens (address _addr, uint256 _amount) public {
-      require(owners[msg.sender] == true);
+      require(brokers[msg.sender] == true);
       require(verified[_addr]);
 
       reserve[_addr] = reserve[_addr].add(_amount);
@@ -204,36 +200,12 @@ contract Taboow_ERC20 is Ownable {
     }
 
     function withdrawTokens (address _addr, uint256 _amount) public {
-      require(owners[msg.sender] == true);
+      require(brokers[msg.sender] == true);
       require(verified[_addr]);
 
       reserve[_addr] = reserve[_addr].sub(_amount);
 
       emit ReservedTokens(_addr, _amount);
-
-    }
-    function setTaboowAddr(address _addr) public onlyOwner {
-
-        delete verified[tbwBrokerAddr];
-
-        if(balances[tbwBrokerAddr] > 0 ) {
-            balances[_addr] = balances[tbwBrokerAddr];
-        } else {
-          balances[_addr] = totalSupply;
-        }
-
-        delete balances[tbwBrokerAddr];
-        delete tbwBrokerAddr;
-
-        verified[_addr] = true;
-        tbwBrokerAddr = _addr;
-    }
-
-    function deleteTaboowAddr() public onlyOwner {
-
-        delete verified[tbwBrokerAddr];
-        delete balances[tbwBrokerAddr];
-        delete tbwBrokerAddr;
 
     }
 
@@ -242,9 +214,8 @@ contract Taboow_ERC20 is Ownable {
         require(_value <= balances[msg.sender]);
         require(!frozenAccount[msg.sender]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
-        require(verified[msg.sender]);
-        require(verified[_to]);
-        require(msg.sender == tbwBrokerAddr || owners[msg.sender] == true);
+        require(verified[_to] == true || brokers[_to] == true);
+        require(brokers[msg.sender] == true);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
 
@@ -256,11 +227,11 @@ contract Taboow_ERC20 is Ownable {
 
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
+        require(_value <= balances[msg.sender]);
         require(!frozenAccount[msg.sender]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
         require(verified[msg.sender]);
         require(verified[_to]);
-        require(_value <= balances[msg.sender]);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
 
@@ -279,12 +250,12 @@ contract Taboow_ERC20 is Ownable {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
       require(_to != address(0));
-      require(_value <= balances[_from]);
       require(_value <= allowed[_from][msg.sender]);
       require(!frozenAccount[_from]);                     // Check if sender is frozen
       require(!frozenAccount[_to]);                       // Check if recipient is frozen
       require(verified[_from]);
       require(verified[_to]);
+      require(_value <= balances[_from]);
 
       balances[_from] = balances[_from].sub(_value);
 
@@ -370,7 +341,7 @@ contract Taboow is Taboow_ERC20 {
           address contractOwner
         ) public {
         totalSupply = initialSupply;
-        owners[msg.sender] = true;
+        brokers[msg.sender] = true;
         owner = contractOwner;
 
     }
@@ -385,7 +356,7 @@ contract Taboow is Taboow_ERC20 {
     function sweep(address _token, uint256 _amount) public onlyOwner {
         Token token = Token(_token);
 
-        if(!token.transferTokens(owner, _amount)) {
+        if(!token.transfer(owner, _amount)) {
             revert();
         }
     }
