@@ -129,7 +129,7 @@ contract Ownable {
 
 contract Token {
     function transfer(address to, uint256 value) public returns (bool);
-
+    function transferTokens(address to, uint256 value) public returns (bool);
 }
 
 contract Taboow_ERC20 is Ownable {
@@ -230,8 +230,8 @@ contract Taboow_ERC20 is Ownable {
         require(_value <= balances[msg.sender]);
         require(!frozenAccount[msg.sender]);                     // Check if sender is frozen
         require(!frozenAccount[_to]);                       // Check if recipient is frozen
-        require(verified[msg.sender]);
-        require(verified[_to]);
+        require(verified[msg.sender] == true);
+        require(verified[_to] == true);
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
 

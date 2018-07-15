@@ -3,14 +3,14 @@ Using network 'development'.
 
 [0m[0m
 [0m  Contract: Taboow Test[0m
-0xddf190259815afdf723748112e6a9532c1f06809
+0x23e84570f7b28ad0d5e5545d398009194a8734f3
 true
 true
-  [32m  ✓[0m[90m should initialize functions and variables to start running[0m[31m (397ms)[0m
+  [32m  ✓[0m[90m should initialize functions and variables to start running[0m[31m (289ms)[0m
 Taboow Broker address should be allowed to reserveTokens
 false
 true
-true
+false
 0
 Promise {
   <rejected> Error: VM Exception while processing transaction: revert
@@ -28,8 +28,8 @@ Promise {
     at _combinedTickCallback (internal/process/next_tick.js:138:11)
     at process._tickCallback (internal/process/next_tick.js:180:9) }
 0
-  [32m  ✓[0m[90m checks that calls throws revert[0m[31m (296ms)[0m
+  [32m  ✓[0m[90m checks that calls throws revert[0m[31m (438ms)[0m
 
 
-[92m [0m[32m 2 passing[0m[90m (884ms)[0m
+[92m [0m[32m 2 passing[0m[90m (838ms)[0m
 
