@@ -32,6 +32,19 @@ export class TokenService{
             });
         });
     }
+    getDecimal() : Promise<number>{
+        let self=this
+        return new Promise (function (resolve, reject) {
+            self.token.decimals.call(function(err, res){  
+                if (err) {
+                    reject(err);
+                } else {
+                    console.log(res.toNumber());
+                    resolve(res.toNumber());
+                }
+            });
+        });
+    }
     getName() : Promise<string>{
         let self=this
         return new Promise (function (resolve, reject) {

@@ -1,5 +1,5 @@
-<p *ngIf="!areTokens" class="input"> You don't have tokens</p>
-<div *ngIf="areTokens">
+<p *ngIf="this._account.account.tokens?.length == 0" class="backWhite text-center"> You don't have tokens</p>
+<div *ngIf="this._account.account.tokens?.length > 0">
     <div >
         <label class="title" for="tokens">Tokens</label>
         <select id="tokens" class="block" [(ngModel)]="token" name="tokens">
@@ -18,6 +18,10 @@
     </div>
     <button type="button" class="btn-solid right" (click)="sendTokens()" > Send </button>
 </div>
+
+
+    
+
 
 
     

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, OnDestroy } from '@angular/core'
 
 /*Services*/
 import { AccountService } from '../../../account.service'
@@ -11,12 +11,15 @@ import { AccountService } from '../../../account.service'
 
 export class GeneralPage implements OnInit {
 
-
+  interval;
   constructor(protected _account: AccountService) {
     // console.log('SendPage')
   }
 
   ngOnInit() {
-    // console.log("Inited, ", devp2p)
+    this.interval=this._account.startIntervalTokens();
+  }
+  ngOnDestroy(){
+    clearInterval(this.interval)
   }
 }

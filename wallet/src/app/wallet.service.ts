@@ -41,22 +41,18 @@ export class WalletService {
     let error = false;
     let wallet;
     let self = this;
-    return new Promise((resolve, reject)=>{
-      try{
+    try{
         wallet = EthWallet.fromV3(json,pass);
-        console.log(wallet.getPrivateKeyString())
-      }catch(e){
+    }catch(e){
         error = true
         throw e;
-      }
+    }
       if(!error){
         acc.v3 = JSON.parse(json);
         acc.address = wallet.getAddressString();
         acc.name = name;
         self.addAccount(acc);
       }
-    })
-
   }
 
   importAccountPrivate(name, privateKey,  pass):void{
@@ -91,7 +87,7 @@ export class WalletService {
       acca.push(acc);
       localStorage.setItem('ethAcc',JSON.stringify(acca));
     }
-
+    
     this.getFinishW();//To refresh wallet
   }
 

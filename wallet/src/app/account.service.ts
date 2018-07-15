@@ -14,13 +14,12 @@ import * as EthWallet from 'ethereumjs-wallet'
 export class AccountService{
   account : any = {};
   pending: Array<any> = [];
-  events : any[];
+  events : Array<any> = [];
+  marginCalls : Array<any> = [];
   interval;
 
-  constructor(private http: Http, private _wallet : WalletService, private _token : TokenService, private _web3: Web3, private router: Router){
+  constructor(private http: Http, private _wallet : WalletService, private _token : TokenService,private _web3: Web3, private router: Router){
     //Hardcode
-    this.events=[{name:"event1",amount:"0.005",data:"23-03-2019"},{name:"event2",amount:"0.003",data:"23-03-2019"},{name:"event3",amount:"0.07",data:"23-03-2019"}]
-
     this.getAccountData();
     if('address' in this.account){
       this.startIntervalData();
@@ -36,6 +35,7 @@ export class AccountService{
       localStorage.setItem('acc',JSON.stringify(account.address));
       console.log(this.interval)
       this.startIntervalData();
+      this.setTokens();
     
     this.router.navigate(['/wallet/global']);
     
@@ -61,7 +61,6 @@ export class AccountService{
     }else{
       acc = {};
     }
-    console.log("this account", acc);
     return acc;
   }
 
@@ -100,15 +99,8 @@ export class AccountService{
     if(Object.keys(this.account).length != 0){
       this.getPendingTx();
       this.setData();
+      this.setTokens();
     }
-  }
-
-  getBalance(addr): Observable<any> {
-    //let url = 'https://api.etherscan.io/api?module=account&action=balance&address=' + addr + '&tag=latest&apikey=' + this._wallet.apikey;
-    let url = 'https://api-ropsten.etherscan.io/api?module=account&action=balance&address=' + addr + '&tag=latest&apikey=' + this._wallet.apikey;
-    let response = this.http.get(url).map(res => res.json());
-    return response;
-
   }
 
   getTx(addr): Observable<any> {
@@ -137,10 +129,8 @@ export class AccountService{
       let wallet = JSON.parse(localStorage.getItem('ethAcc'));
       let result = wallet.findIndex(x => x.address == this.account.address);
       if(wallet[result].hasOwnProperty('tokens')){
-        console.log("EpW",wallet[result].tokens)
         return wallet[result].tokens;
       }else{
-        console.log("Ep",[])
         return new Array();;
       }
     }
@@ -151,6 +141,7 @@ export class AccountService{
     this.account.tokens = [];
     if('address' in this.account){
       let tokens = this.getTokensLocale();
+      tokens = await this.updateTokens(tokens);
       this.getTokensTransfers(this.account.address).subscribe(async function(resp:any){
         let tkns : Array<any> = [];
         tkns = resp.result;
@@ -163,14 +154,14 @@ export class AccountService{
               tokenSymbol:  tkns[i].tokenSymbol,
               tokenDecimal: parseInt( tkns[i].tokenDecimal),
             }
-            token = await self.udpateTokenBalance(token)
+            token = await self.updateTokenBalance(token)
             tokens.push(token)
           }
         }
         self.account.tokens = tokens;
         let wallet = JSON.parse(localStorage.getItem('ethAcc'));
-        //let result = wallet.findIndex(x => x.address == this.account.address);
-        //wallet[result].tokens = self.account.tokens;
+        let result = wallet.findIndex(x => x.address == self.account.address);
+        wallet[result].tokens = self.account.tokens;
 
         localStorage.setItem('ethAcc',JSON.stringify(wallet));
       });
@@ -180,14 +171,12 @@ export class AccountService{
   addToken(token){
     if(localStorage.getItem('ethAcc')){
       let wallet = JSON.parse(localStorage.getItem('ethAcc'));
-      console.log(wallet)
-      let result = wallet.findIndex(x =>{
-        console.log(x)
-        return x.address == this.account.address
-      } );
+      let result = wallet.findIndex(x =>x.address == this.account.address);
       if('tokens' in wallet[result]){
-        wallet[result].tokens.push = token
+        this.account.tokens.push(token);
+        wallet[result].tokens.push(token);
       }else{
+        this.account.tokens = [token]
         wallet[result].tokens = [token]
       }
 
@@ -196,11 +185,12 @@ export class AccountService{
   }
   async updateTokens(tokens){
     for(let i = 0; i<tokens.length; i++){
-      tokens[i] = await this.udpateTokenBalance(tokens[i])
+      tokens[i] = await this.updateTokenBalance(tokens[i])
     }
-    this.account.tokens = tokens;
+    return tokens;
   }
-  async udpateTokenBalance(token){
+  
+  async updateTokenBalance(token){
     this._token.setToken(token.contractAddress);
     let exp = 10 ** token.tokenDecimal;
     let balance : any = await this._token.getBalanceOf(this.account.address);
@@ -224,11 +214,7 @@ export class AccountService{
     if(localStorage.getItem('ethAcc')){
       let wallet = JSON.parse(localStorage.getItem('ethAcc'));
       let result = wallet.findIndex(x => x.address == this.account.address);
-      console.log("wallet",wallet[result])
-      console.log("pending",this.pending)
       wallet[result].pending = this.pending;
-
-      console.log("wallet2",wallet[result])
       localStorage.setItem('ethAcc',JSON.stringify(wallet));
     }
     this.setData();
@@ -237,21 +223,16 @@ export class AccountService{
   removePendingTx(){
     let wallet = JSON.parse(localStorage.getItem('ethAcc'));
     let result = wallet.findIndex(x => x.address == this.account.address);
-    console.log("Remove wallet",wallet[result])
-      console.log("pending",this.pending)
-      wallet[result].pending = this.pending;
-
-      console.log("wallet2",wallet[result])
+    wallet[result].pending = this.pending;
     localStorage.setItem('ethAcc',JSON.stringify(wallet));
   }
- 
+
   getPrivateKey(pass){
     let wallet = EthWallet.fromV3(this.account.v3, pass);
     return wallet.getPrivateKey();
   }
   startIntervalData(){
     this.setData();
-    this.setTokens();
     this.interval = setInterval(()=>{
       this.setData();
     },3000); 
@@ -259,8 +240,8 @@ export class AccountService{
   }
   startIntervalTokens(){
     return setInterval(()=>{
-      this.updateTokens(this.account.balance)
-    });
+      this.updateTokens(this.account.tokens)
+    },3000);
   }
 
   tm(unix_tm) {

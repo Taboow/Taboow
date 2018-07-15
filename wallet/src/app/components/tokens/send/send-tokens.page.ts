@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, OnDestroy } from '@angular/core'
 
 import * as EthUtil from 'ethereumjs-util';
 import * as EthTx from 'ethereumjs-tx';
@@ -14,12 +14,12 @@ import { TokenService } from '../../../token.service'
   templateUrl: './send-tokens.html'
 })
 
-export class SendTokensPage implements OnInit {
+export class SendTokensPage implements OnInit, OnDestroy{
+  interval;
   addr: string = "";
   receiverAddr: string = "";
   amount: number = 0;
   token: any;
-  areTokens : boolean = false;
   errors:any = {
     receiver:"",
     amount:""
@@ -27,13 +27,15 @@ export class SendTokensPage implements OnInit {
 
   constructor(public _web3: Web3,protected _account: AccountService, private sendDialogService: SendDialogService, private _token : TokenService,) {
     if('tokens' in this._account.account && this._account.account.tokens.length > 0){
-      this.areTokens = true;
       this.token = this._account.account.tokens[0];
     }
   }
 
   ngOnInit() {
-    // console.log("Inited, ", devp2p)
+    this.interval=this._account.startIntervalTokens();
+  }
+  ngOnDestroy(){
+    clearInterval(this.interval)
   }
 
   checkAddress(receiverAddr): boolean {
