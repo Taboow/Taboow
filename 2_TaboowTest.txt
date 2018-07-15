@@ -8,40 +8,43 @@ Contract name: Taboow Broker
 Decimals: 18
 tokenPrice: 10000000000000000
 pubEnd: 0
-  [32m  ✓[0m[90m check constructor and default params[0m[31m (94ms)[0m
-0xace937991395b2051613368206066eb2e752a333
+  [32m  ✓[0m[90m check constructor and default params[0m[31m (163ms)[0m
+0xe2b6cf3863240892d59664d209a28289a73ef644
 true
 true
-  [32m  ✓[0m[90m should initialize functions and variables to start running[0m[31m (297ms)[0m
+  [32m  ✓[0m[90m should initialize functions and variables to start running[0m[31m (342ms)[0m
 1000000000000000000
 true
 soldBefore: 0
 soldAfter: 10000000000000000000
 10000000000000000000
-  [32m  ✓[0m[90m should buy amount correctly[0m[31m (261ms)[0m
+  [32m  ✓[0m[90m should buy amount correctly[0m[31m (560ms)[0m
 10000000000000000000
 11000000000000000000
 1000000000000000000
-  [32m  ✓[0m[90m should buy amount correctly from fallback function[0m[31m (192ms)[0m
+  [32m  ✓[0m[90m should buy amount correctly from fallback function[0m[31m (255ms)[0m
 account_one_reserved:  0
+account_one_reserved_after:  1000000000000000000
+  [32m  ✓[0m[90m should reserve and deliver tokens[0m[31m (680ms)[0m
 account_one_reserved_after:  1000000000000000000
 balanceTaboowBefore:  0
 account_one_reserved_last:  0
 balanceTaboowAfter:  1000000000000000000
-  [32m  ✓[0m[90m should reserve and deliver tokens[0m[31m (528ms)[0m
-balanceBefore: 1000000000000000000
+  [32m  ✓[0m[90m should deliver tokens[0m[31m (697ms)[0m
+balanceBefore: 0
 pubEnd: 0
-soldBefore: 11000000000000000000
+soldBefore: 1000000000000000000
 tokenPrice: 1000000000000000000
-balanceAfter: 12000000000000000000
+balanceAfter: 1000000000000000000
 soldAfter: 0
-  [32m  ✓[0m[90m should withdrawPUB correctly[0m[31m (228ms)[0m
+  [32m  ✓[0m[90m should withdrawPUB correctly[0m[31m (650ms)[0m
 true
 true
-5.499988e+24
-4.499988e+24
-0 1e+24
-  [32m  ✓[0m[90m should sweep correctly to send tokens to owner account[0m[31m (318ms)[0m
+1.0000002e+25
+2000000000000000000
+1.0000001e+25 2.0000001e+25
+  [32m  ✓[0m[90m should sweep correctly to send tokens to owner account[0m[31m (1100ms)[0m
 
 
-[92m [0m[32m 7 passing[0m[90m (2s)[0m
+[92m [0m[32m 8 passing[0m[90m (5s)[0m
+

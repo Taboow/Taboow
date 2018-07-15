@@ -19,7 +19,6 @@ contract('Taboow Test',  async (accounts) => {
 
        let tbwAddr1 = meta1.address;
 
-       await meta.setTaboowAddr(tbwAddr1);
        await meta1.setTaboow(tbwAddr);
 
        await meta.verifyAccount(account_one, true);
@@ -53,7 +52,7 @@ contract('Taboow Test',  async (accounts) => {
 
     console.log("Taboow Broker address should be allowed to reserveTokens");
 
-    let owned = await meta1.owners(meta.address) ;
+    let owned = await meta1.brokers(meta.address);
     console.log(owned);
 
     let isVerifiedOne = await meta.isVerified(account_one);

@@ -141,7 +141,7 @@ contract Taboow_Broker is Ownable {
 
     using SafeMath for uint256;
 
-    address public constant FWDaddrETH = 0x2c8d6468387bda630d045818fdb8639694f257c6;   // Set the address to forward the received ETH to
+    address public constant FWDaddrETH = 0x2c8D6468387bDa630d045818fdb8639694F257C6;   // Set the address to forward the received ETH to
     string public name = "Taboow Broker";      // Extended name of this contract
     uint256 public tokenPrice = 0;        // Set the fixed Taboow token price
     address public taboowAddr;            // Set the Taboow contract address
@@ -193,8 +193,6 @@ contract Taboow_Broker is Ownable {
         // Calculate the amount of tokens per contribution
         uint256 tokenAmount = (msg.value * tokenUnit) / tokenPrice;
 
-        // Requiring sufficient token balance on this contract to accept the tx
-
         transferBuy(msg.sender, tokenAmount);       // Instruct the accounting function
         FWDaddrETH.transfer(msg.value);             // Forward the ETH received to the external address
 
@@ -241,7 +239,7 @@ contract Taboow_Broker is Ownable {
     function sweep(address _token, uint256 _amount) public onlyOwner {
         Token token = Token(_token);
 
-        if(!token.transferTokens(owner, _amount)) {
+        if(!token.transfer(owner, _amount)) {
             revert();
         }
     }
