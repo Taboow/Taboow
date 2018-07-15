@@ -21,7 +21,12 @@ export class SendDialogComponent{
 
   async sendTx(pass){
     //check pass
-    console.log(pass)
+
+    let self = this;
+    let error = "";
+    let title = "";
+    let message = "";
+
     if (typeof(pass)=='undefined' || pass==""){
       console.log(pass)
       return false
@@ -30,13 +35,13 @@ export class SendDialogComponent{
     try{
       privateKey = this._account.getPrivateKey(pass)
     }catch(e){
-      return false;
+      title = "Unable to complete transaction";
+      message = "Something went wrong"
+      error = e.message;
+      self.dialogRef.close();
+      let dialogRef = self.dialogService.openErrorDialog(title,message,error);
     }
 
-    let self = this;
-    let error = "";
-    let title = "";
-    let message = "";
     
     this.data.tx.sign(privateKey);
     let serialized = "0x"+(this.data.tx.serialize()).toString('hex');
@@ -47,8 +52,8 @@ export class SendDialogComponent{
       title = "Unable to complete transaction";
       message = "Something went wrong"
       error = sendResult.message;
-      console.log(error)
       let dialogRef = self.dialogService.openErrorDialog(title,message,error);
+
 
     }else{
       let pending: any = await self._web3.getTx(sendResult);
