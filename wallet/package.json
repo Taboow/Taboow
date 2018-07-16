@@ -11,7 +11,8 @@
     "watch": "webpack --watch --progress --profile --colors --display-error-details --display-cached",
     "electron:w": "npm run watch && electron .",
     "electron": "npm run build && electron .",
-    "dist": "electron-builder"
+    "build2": "electron-packager . app --platform linux --arch x64 --icon=src/assets/images/xplodde.png --out dist/",
+    "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "@angular/animations": "~4.2.0",
@@ -29,8 +30,6 @@
     "bs58check": "^2.1.1",
     "chalk": "^2.3.0",
     "core-js": "^2.4.1",
-    "electron": "^1.8.4",
-    "electron-packager": "^12.1.0",
     "ethereumjs-abi": "^0.6.5",
     "ethereumjs-block": "^1.7.0",
     "ethereumjs-devp2p": "^2.2.0",
@@ -56,6 +55,10 @@
   "devDependencies": {
     "@types/jasmine": "2.5.36",
     "@types/node": "^6.0.45",
+    "@types/webpack-env": "^1.13.6",
+    "electron": "^1.8.4",
+    "electron-builder": "^20.19.2",
+    "electron-packager": "^12.1.0",
     "angular2-template-loader": "^0.6.0",
     "awesome-typescript-loader": "^3.0.4",
     "copy-webpack-plugin": "^4.3.1",
@@ -82,23 +85,14 @@
     "webpack-merge": "^3.0.0"
   },
   "build": {
-    "productName": "Node Performance Measure",
-    "appId": "EikosPartners.NodePerformanceMeasure",
-    "asar": false,
+    "appId": "Xplodde",
     "win": {
-      "icon": "taboow.icon",
-      "target": "nsis"
+      "icon": "./xplodde.ico"
     },
-    "nsis": {
-      "oneClick": false,
-      "allowElevation": false
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "taboow.png"
-    },
-    "mac": {
-      "target": "dmg"
-    }
+    "files": [
+      "build",
+      "main.js",
+      "config"
+    ]
   }
 }
