@@ -19,7 +19,9 @@
   color: #000;
   box-sizing:border-box;
 }
-
+.title-button-navbar {
+  margin-top: 10px;
+}
 h1{
   font-family:"Lato-Regular";
   font-size: 14pt;
@@ -135,6 +137,7 @@ nav{
 nav a {
   position: relative;
   flex-grow: 1;
+  flex-basis:0;
   height: 50px;
   text-align: center;
   margin: 0;
