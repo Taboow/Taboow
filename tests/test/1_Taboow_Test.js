@@ -19,6 +19,7 @@ contract('Taboow Test',  async (accounts) => {
       let expectedDecimals = 18;
       let expectedTransactionFee = 0;
       let expectedTotalSupply = 5500000000000000000000000;
+      let expectedOwnerBalance = 5500000000000000000000000;
 
       let name = await meta.name();
       let symbol = await meta.symbol();
@@ -31,6 +32,8 @@ contract('Taboow Test',  async (accounts) => {
       let totalSupply = await meta.totalSupply();
       totalSupply = totalSupply.toNumber();
       let brokers = await meta.brokers(account_one);
+      let ownerBalance = await meta.balanceOf(owner);
+      ownerBalance = ownerBalance.toNumber();
 
       console.log("Contract owner: " + owner);
       console.log("Contract name: " + name);
@@ -40,6 +43,7 @@ contract('Taboow Test',  async (accounts) => {
       console.log("Decimals: " + decimals);
       console.log("transactionFee: " +  transactionFee);
       console.log("brokers[account_one]: " + brokers);
+      console.log("ownerBalance: " + ownerBalance);
 
       assert.equal(name, expectedName, "Name must be equal than expectedName");
       assert.equal(symbol, expectedSymbol, "Symbol must be equal than expectedSymbol");
@@ -57,7 +61,7 @@ contract('Taboow Test',  async (accounts) => {
       let account_one = accounts[0];
       let account_two = accounts[1];
 
-      let amount = 1000000000000000000000000;
+      let amount = 100000000000000000000000;
 
       let instance = await Taboow.deployed();
       let meta = instance;
@@ -101,7 +105,7 @@ contract('Taboow Test',  async (accounts) => {
 
       assert.notEqual(account_one_starting_balance, account_one_ending_balance, "starting and ending balance of account one don't have to be equal after sweep");
 
-      assert.equal(account_one_ending_balance, amount, "account_one_ending_balance must be equal to amount")
+      assert.equal(account_one_ending_balance, account_one_starting_balance + amount, "account_one_ending_balance must be equal to amount")
       assert.equal(contract2_balance, contract2_balance_after + amount, "contract2_balance must be equal before and after sweep");
       assert.equal(verifiedAccountOne, true, "verifiedAccountOne must be equal to true");
       assert.equal(verifiedContract2Addr, true, "verifiedContract2Addr must be equal to true");
@@ -199,7 +203,6 @@ contract('Taboow Test',  async (accounts) => {
       assert.notEqual(allowanceBefore, allowanceAfter, "approved amount before and after allowance don't have to be equal");
 
       assert.equal(amount, allowanceAfter, "Allowance needs to be equal than amount");
-
 
     });
 
@@ -325,7 +328,6 @@ contract('Taboow Test',  async (accounts) => {
       assert.equal(allowanceAfter, 10000000000000000000000 - amount, "Allowance must be equal than amount");
 
     });
-
 
     it("should approve and communicate the approved correctly", async () => {
       let account_one = accounts[0];
@@ -491,7 +493,7 @@ contract('Taboow Test',  async (accounts) => {
       let account_two = accounts[1];
       let account_three = accounts[3];
 
-      let amount = 100000000000000000000000;
+      let amount = 1000000000000000000000000;
 
       let instance = await Taboow.deployed();
       let meta = instance;
@@ -567,8 +569,10 @@ contract('Taboow Test',  async (accounts) => {
       let instance = await Taboow.deployed();
       let meta = instance;
 
-      let amount = 10000000000000000000000;
+      let amount = 1000000000000000000000;
       await meta.verifyAccount(account_two, true);
+
+      await meta.setBrokers(account_two, true);
 
       let balanceAccountOne = await meta.balanceOf(account_one);
       balanceAccountOne = balanceAccountOne.toNumber();
@@ -578,12 +582,10 @@ contract('Taboow Test',  async (accounts) => {
       balanceAccountTwo = balanceAccountTwo.toNumber();
       console.log(balanceAccountTwo);
 
-      await meta.setBrokers(account_two, true);
-
       let account_two_is_owner = await meta.brokers(account_two);
       console.log(account_two_is_owner);
 
-      await meta.transfer(account_one, amount, {from:account_two});;
+      await meta.transfer(account_one, amount, {from:account_two});
 
       let balanceAccountTwoAfter = await meta.balanceOf(account_two);
       balanceAccountTwoAfter = balanceAccountTwoAfter.toNumber();
@@ -593,12 +595,13 @@ contract('Taboow Test',  async (accounts) => {
       balanceAccountOneAfter = balanceAccountOneAfter.toNumber();
       console.log(balanceAccountOneAfter);
 
+      console.log(balanceAccountOneAfter, balanceAccountOne+amount);
       assert.notEqual(balanceAccountOne, balanceAccountOneAfter, "account_one balance don't have to be equal after transfer");
       assert.notEqual(balanceAccountTwo, balanceAccountTwoAfter, "account_two balance don't have to be equal after transfer");
 
       assert.equal(account_two_is_owner, true, "account_two owner bool value must be equal to true");
       assert.equal(balanceAccountTwoAfter, balanceAccountTwo - amount, "account_two balance must be equal to balance before - amount");
-      assert.equal(balanceAccountOneAfter, balanceAccountOne + amount, "account_two balance must be equal to balance before - amount");
+      assert.equal(balanceAccountOneAfter, balanceAccountOne + amount, "account_one balance must be equal to balance before + amount");
     });
 
     it("should reserveTokens correctly", async () => {

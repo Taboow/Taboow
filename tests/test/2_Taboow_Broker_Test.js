@@ -165,7 +165,7 @@ contract('Taboow Test',  async (accounts) => {
 
     });
 
-    it("should reserve and deliver tokens", async () => {
+    it("should reserve tokens", async () => {
       let account_one = accounts[0];
 
       let instance = await Taboow1.deployed();
@@ -174,7 +174,7 @@ contract('Taboow Test',  async (accounts) => {
       let instance_two = await Taboow.deployed();
       let meta_two = instance_two;
 
-      let amount = 1000000000000000000;
+      let amount = 100000000000000000000;
 
       let contract2Addr = meta_two.address;
 
@@ -213,7 +213,7 @@ contract('Taboow Test',  async (accounts) => {
       let instance_two = await Taboow.deployed();
       let meta_two = instance_two;
 
-      let amount = 1000000000000000000;
+      let amount = 100000000000000000000;
 
       let contract2Addr = meta_two.address;
 
@@ -226,7 +226,7 @@ contract('Taboow Test',  async (accounts) => {
       account_one_reserved_after = account_one_reserved_after.toNumber();
       console.log("account_one_reserved_after: ", account_one_reserved_after);
 
-      let balanceTaboowBefore = await meta_two.balanceOf(account_one);
+      let balanceTaboowBefore = await meta_two.balanceOf(meta.address);
       balanceTaboowBefore = balanceTaboowBefore.toNumber();
       console.log("balanceTaboowBefore: ", balanceTaboowBefore);
 
@@ -236,17 +236,18 @@ contract('Taboow Test',  async (accounts) => {
       account_one_reserved_last = account_one_reserved_last.toNumber();
       console.log("account_one_reserved_last: ", account_one_reserved_last);
 
-      let balanceTaboowAfter = await meta_two.balanceOf(account_one);
+      let balanceTaboowAfter = await meta_two.balanceOf(meta.address);
       balanceTaboowAfter = balanceTaboowAfter.toNumber();
       console.log("balanceTaboowAfter: ", balanceTaboowAfter);
 
+      console.log(balanceTaboowBefore, balanceTaboowAfter);
       assert.notEqual(balanceTaboowBefore, balanceTaboowAfter, "account balance of Taboow Contract don't have to be equal before and after deliver tokens");
 
       assert.equal(account_one_reserved_after, amount, "amount reserved must be equal to amount given");
-      assert.equal(balanceTaboowAfter, amount, "account balance of Taboow Contract must be equal to amount given");
-      assert.equal(account_one_reserved_after, balanceTaboowAfter, "amount reserved must be equal to account balance");
+      assert.equal(balanceTaboowAfter, balanceTaboowBefore - amount, "account balance of Taboow Contract must be equal to amount given");
+      assert.equal(account_one_reserved_last, balanceTaboowAfter, "amount reserved must be equal to account balance");
       assert.equal(account_one_reserved_last, 0, "account_one_reserved_last must be equal to 0");
-      assert.equal(balanceTaboowBefore, 0, "balanceTaboowBefore must be equal to 0");
+      assert.equal(balanceTaboowBefore, 100000000000000000000, "balanceTaboowBefore must be equal to 0");
     });
 
     it("should withdrawPUB correctly", async () => {

@@ -341,8 +341,9 @@ contract Taboow is Taboow_ERC20 {
           address contractOwner
         ) public {
         totalSupply = initialSupply;
-        brokers[msg.sender] = true;
+        brokers[contractOwner] = true;
         owner = contractOwner;
+        balances[contractOwner] = initialSupply;
 
     }
 
