@@ -1,6 +1,6 @@
 /wallet/build
 /wallet/releases
-/wallet//node_modules
+/wallet/node_modules
 
 /wallet/package-lock.json
 /wallet/.vscode
