@@ -3,7 +3,7 @@
 </div>
 <div>
   <label class="title" for="nameAccount">Account name</label>
-  <input class="block" required id="nameAccount" type="text" value="" name="nameAccount" placeholder="enter wallet name" [(ngModel)]="nameAccount"/>
+  <input class="block" required id="nameAccount" type="text" value="" name="nameAccount" placeholder="enter account name" [(ngModel)]="nameAccount"/>
 </div>
 <div class="dist">
   <div class="half left">
@@ -18,5 +18,5 @@
 </div>
 <div class="clear buttons">
   <button class="btn-black half left" (click)="closeDialog()">Cancel</button>
-  <button class="btn-black half right" id="create" (click)="createAccount(nameAccount, pass, pass2)">Create wallet</button>
+  <button class="btn-black half right" id="create" (click)="createAccount(nameAccount, pass, pass2)">Create account</button>
 </div>
