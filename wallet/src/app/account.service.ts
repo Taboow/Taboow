@@ -56,6 +56,7 @@ export class AccountService{
     }
       this.account = account;
       localStorage.setItem('acc',JSON.stringify(account.address));
+      this.getPendingTx();
       this.startIntervalData();
       this.setTokens();
     
@@ -97,34 +98,36 @@ export class AccountService{
       let history = [];
       history =  resp.result;
       //history = history.reverse();
-      for(let i = 0; i<this.pending.length; i++){
-        let result = history.findIndex(x => (x.hash).toLowerCase() === this.pending[i].hash.toLowerCase());
-        if(result == -1){
-          history.unshift(this.pending[i]);
-        }else{
-          this.pending.splice(i,1)
-          this.removePendingTx();
-        }
-      }
 
-      for(let i =0; i<history.length; i++){
-        let date = this.tm(history[i].timeStamp);
-        history[i].date = date;
-      }
 
       this.getInternalTx(addr).subscribe((resp:any) =>{
         let intHistory = [];
         intHistory =  resp.result;
         for(let i =0; i<intHistory.length; i++){
-          let date = this.tm(intHistory[i].timeStamp);
-          intHistory[i].date = date;
           history.push(intHistory[i]);
         }
-       history.sort((a,b)=>{
+
+        history.sort((a,b)=>{
           return a.timeStamp - b.timeStamp
         });
-        this.account.history = history.reverse();
+        history = history.reverse();
+        for(let i = 0; i<this.pending.length; i++){
+          let result = history.findIndex(x => (x.hash).toLowerCase() == this.pending[i].hash.toLowerCase());
+          if(result == -1){
+            history.unshift(this.pending[i]);
+          }else{
+            this.pending.splice(i,1)
+            this.removePendingTx();
+          }
+          for(let i =0; i<history.length; i++){
+            let date = this.tm(history[i].timeStamp);
+            history[i].date = date;
+          }
+        }
+        this.account.history = history;
       })
+
+      
     }); 
   }
   
@@ -140,10 +143,8 @@ export class AccountService{
 
   getTx(addr): Observable<any> {
     
-    //Ojo ropsten
-    
-    //let url = 'http://api.etherscan.io/api?module=account&action=txlist&address=0x74FD51a98a4A1ECBeF8Cc43be801cce630E260Bd&startblock=0&endblock=99999999&sort=asc&apikey='+this._wallet.apikey;
-    let url = 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address='+addr+'&startblock=0&endblock=99999999&sort=asc&apikey='+this._wallet.apikey;
+    //Ropsten
+    let url = 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address='+addr+'&startblock=0&endblock=99999999&sort=asc&apikey='+this.apikey;
     // let url 'http://api.etherscan.io/api?module=account&action=txlist&address='+addr+'&startblock=0&endblock=99999999&sort=asc&apikey='+this._wallet.apikey;
 
     let response = this.http.get(url).map(res => res.json());
@@ -163,8 +164,7 @@ export class AccountService{
 
   getTokensTransfers(addr): Observable<any> {
     //Ropsten
-    //let url = 'http://api-ropsten.etherscan.io/api?module=account&action=tokentx&address=0x160A616506F77aaa7313b80DC5e4FDFC7a1A1827&startblock=0&endblock=999999999&sort=asc&apikey=YourApiKeyToken'
-    let url = 'http://api-ropsten.etherscan.io/api?module=account&action=tokentx&address='+addr+'&startblock=0&endblock=99999999&sort=asc&apikey='+this._wallet.apikey;
+    let url = 'http://api-ropsten.etherscan.io/api?module=account&action=tokentx&address='+addr+'&startblock=0&endblock=99999999&sort=asc&apikey='+this.apikey;
     // let url 'http://api.etherscan.io/api?module=account&action=txlist&address='+addr+'&startblock=0&endblock=99999999&sort=asc&apikey='+this._wallet.apikey;
 
     let response = this.http.get(url).map(res => res.json());
@@ -230,6 +230,7 @@ export class AccountService{
       localStorage.setItem('ethAcc',JSON.stringify(wallet));
     }
   }
+
   async updateTokens(tokens){
     for(let i = 0; i<tokens.length; i++){
       tokens[i] = await this.updateTokenBalance(tokens[i])
@@ -278,6 +279,7 @@ export class AccountService{
     let wallet = EthWallet.fromV3(this.account.v3, pass);
     return wallet.getPrivateKey();
   }
+
   startIntervalData(){
     this.setData();
     this.interval = setInterval(()=>{
@@ -285,6 +287,7 @@ export class AccountService{
     },3000); 
       
   }
+
   startIntervalTokens(){
     return setInterval(()=>{
       this.updateTokens(this.account.tokens)

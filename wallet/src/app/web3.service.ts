@@ -76,9 +76,7 @@ export class Web3 {
               clearInterval(interval)
               
               interval = setInterval(function(){
-                let timestamp =  self.web3.eth.getBlock(tx.blockNumber).timestamp;
                 let status = self.web3.eth.getTransactionReceipt(txhash).status;
-                console.log('echooo, ',tx.blockNumber, ": ", timestamp,"--", status)
                 if(status==1 || status==0){
                   clearInterval(interval)
                   resolve(parseInt(status)); 
@@ -89,10 +87,11 @@ export class Web3 {
           }, 2000)
         }
     });
-
-    
+      
     return await AsyncFunction;
   }
+
+
   async sendRawTx(txData:string){
 
     let self= this;
