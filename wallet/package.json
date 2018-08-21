@@ -90,9 +90,9 @@
     "webpack-merge": "^3.0.0"
   },
   "build": {
-    "appId": "Xplodde",
+    "appId": "Taboow",
     "win": {
-      "icon": "./xplodde.ico"
+      "icon": "./taboow.ico"
     },
     "files": [
       "build",
