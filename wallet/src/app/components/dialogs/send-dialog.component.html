@@ -12,7 +12,7 @@
             <p *ngIf="data.action != 'send'">{{data.token}} {{data.amount}}</p>
         </div>
         <div style="flex:1">
-            <p class="black">Fees</p>
+            <p class="black">Gas</p>
             <p>ETH {{(data.fees | converter:'fromWei':'ether') | number:'1.2-8':'en'}}</p>
         </div>
         <div style="flex:1"> 
@@ -25,7 +25,7 @@
 <div class="dist">
     <label class="title block">Password*</label>
     <input class="half" type="password" required id="pass" name="pass" [(ngModel)]="pass"/>
-    <p class="italic">Type your wallet password to continue.</p>
+    <p class="italic">Type your account password to continue.</p>
 </div>
 <div class="buttons">
     <button class="btn-black half left" (click)="closeDialog()">Cancel</button>

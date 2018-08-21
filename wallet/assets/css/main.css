@@ -85,7 +85,8 @@ header img{
 .sidenav{
   border-top: 7px solid #fff;
   display:inline-block;
-  width:250px;
+  min-width:250px;
+  max-width:250px;
   background-color: #fff;
   z-index: 1;
   box-shadow: 5px 5px 15px -5px rgba(0,0,0,0.2);
@@ -107,7 +108,9 @@ header img{
 .text-center{
   text-align:center;
 }
-
+.text-right{
+  text-align:right;
+}
 .inline{
   display: inline;
 }
@@ -159,9 +162,10 @@ nav a div{
   box-shadow: inset 0px 10px 10px -10px rgba(0,0,0,0.2);
   padding-top:15px;
   bottom:0;
-  width:100%;}
+  width:100%;
+}
+
 nav a span{
-  
   padding-bottom: 8px;
   height:15px;
   display: block;
@@ -248,12 +252,14 @@ div.input-container{
   padding: 12px;
   cursor: pointer;
 }
-input.error, input.error:focus, textarea.error, textarea.error:focus, div.error, div.error:focus{
+input.error, input.error:focus, textarea.error, textarea.error:focus, li.error, div.error, div.error:focus{
   border:1px solid #E66978;
   margin-bottom: 10px;
 }
+
 p.error{
   color: #E66978;
+  margin-top: 10px;
   margin-bottom: 10px;
   text-align: right;
   font-size: 9pt;
@@ -317,8 +323,19 @@ p.error{
   margin-right:5px;
   margin-top: 10px;
 }
+#terms{
+  position: fixed;
+  top: 395px;
+  bottom:35px;
+  margin-right:10px;
+}
 
-.extra{
+#terms p{
+  line-height: 1.5em;
+  padding: 10px 0;
+}
+
+#extra{
   margin-left: 20px;
 }
 .warning{
@@ -334,6 +351,7 @@ p.error{
   overflow-y: scroll;
   margin-right: -15px;
   padding-right: 10px;
+  flex-grow:1;
 }
 
 .scrollbar::-webkit-scrollbar {

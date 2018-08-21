@@ -13,6 +13,7 @@ import { TokensComponent } from './components/tokens/tokens.component'
 import { GeneralPage } from './components/tokens/general/general.page'
 import { SendTokensPage } from './components/tokens/send/send-tokens.page'
 import { AddTokenPage } from './components/tokens/add/add.page'
+import { SettingsComponent } from './components/settings/settings.component'
 
 const routes: Routes = [
   { path: 'wallet', component: WalletComponent,
@@ -32,6 +33,7 @@ const routes: Routes = [
       { path: 'add', component: AddTokenPage },
     ]
   },
+  { path: 'settings', component: SettingsComponent },
   { path: '', redirectTo: '/wallet/global', pathMatch: 'full' },
   { path: '**', redirectTo: '/wallet/global', pathMatch: 'full' },
 ];

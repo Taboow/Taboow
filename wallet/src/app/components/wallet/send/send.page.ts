@@ -23,7 +23,7 @@ export class SendPage implements OnInit {
     amount:""
   }
 
-  constructor(public _web3: Web3,private _account: AccountService, private sendDialogService: SendDialogService) {
+  constructor(public _web3: Web3, private _account: AccountService, private sendDialogService: SendDialogService) {
     // console.log('SendPage')
   }
 

@@ -17,13 +17,36 @@ export class AccountService{
   events : Array<any> = [];
   marginCalls : Array<any> = [];
   interval;
+  apikey: string = "";
+  //apikey: string = 'JDVE27WHYITCKM7Q2DMBC3N65VDIZ74HHJ';
 
   constructor(private http: Http, private _wallet : WalletService, private _token : TokenService,private _web3: Web3, private router: Router){
     //Hardcode
-    this.getAccountData();
-    if('address' in this.account){
-      this.startIntervalData();
+    this.getApiKey();
+    if(this.apikey != ""){
+      this.getAccountData();
+      if('address' in this.account){
+        this.startIntervalData();
+      }
+    }
+  }
 
+  setApiKey(apikey){
+    this.apikey = apikey;
+    let apikeys: any= {};
+    if(localStorage.getItem('apikeys')){
+      apikeys = JSON.parse(localStorage.getItem('apikeys'));
+    }
+      apikeys.eth = apikey;
+      localStorage.setItem('apikeys',JSON.stringify(apikeys));
+
+  }
+  getApiKey(){
+    if(localStorage.getItem('apikeys')){
+      let apikeys : any = JSON.parse(localStorage.getItem('apikeys'));
+      if('inf' in apikeys){
+        this.apikey  = apikeys.eth;
+      }
     }
   }
 
@@ -33,7 +56,6 @@ export class AccountService{
     }
       this.account = account;
       localStorage.setItem('acc',JSON.stringify(account.address));
-      console.log(this.interval)
       this.startIntervalData();
       this.setTokens();
     
@@ -74,7 +96,7 @@ export class AccountService{
     this.getTx(addr).subscribe((resp:any) =>{
       let history = [];
       history =  resp.result;
-      history = history.reverse();
+      //history = history.reverse();
       for(let i = 0; i<this.pending.length; i++){
         let result = history.findIndex(x => (x.hash).toLowerCase() === this.pending[i].hash.toLowerCase());
         if(result == -1){
@@ -89,7 +111,20 @@ export class AccountService{
         let date = this.tm(history[i].timeStamp);
         history[i].date = date;
       }
-      this.account.history = history;
+
+      this.getInternalTx(addr).subscribe((resp:any) =>{
+        let intHistory = [];
+        intHistory =  resp.result;
+        for(let i =0; i<intHistory.length; i++){
+          let date = this.tm(intHistory[i].timeStamp);
+          intHistory[i].date = date;
+          history.push(intHistory[i]);
+        }
+       history.sort((a,b)=>{
+          return a.timeStamp - b.timeStamp
+        });
+        this.account.history = history.reverse();
+      })
     }); 
   }
   
@@ -115,6 +150,17 @@ export class AccountService{
     return response;
   }
 
+  getInternalTx(addr): Observable<any> {
+    
+    //Ojo ropsten
+    
+    let url = 'http://api-ropsten.etherscan.io/api?module=account&action=txlistinternal&address='+addr+'&startblock=0&endblock=99999999&sort=asc&apikey='+this.apikey;
+    // let url 'http://api.etherscan.io/api?module=account&action=txlistinternal&address='+addr+'&startblock=0&endblock=99999999&sort=asc&apikey='+this._wallet.apikey;
+
+    let response = this.http.get(url).map(res => res.json());
+    return response;
+  }
+
   getTokensTransfers(addr): Observable<any> {
     //Ropsten
     //let url = 'http://api-ropsten.etherscan.io/api?module=account&action=tokentx&address=0x160A616506F77aaa7313b80DC5e4FDFC7a1A1827&startblock=0&endblock=999999999&sort=asc&apikey=YourApiKeyToken'
@@ -124,6 +170,7 @@ export class AccountService{
     let response = this.http.get(url).map(res => res.json());
     return response;
   }
+
   getTokensLocale(){
     if(localStorage.getItem('ethAcc')){
       let wallet = JSON.parse(localStorage.getItem('ethAcc'));

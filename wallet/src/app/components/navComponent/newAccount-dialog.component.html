@@ -7,13 +7,12 @@
 </div>
 <div class="dist">
   <div class="half left">
-    <label class="title" for="pass">Password</label>
+    <label class="title" for="pass">Set password</label>
     <input required id="pass" class="block" type="password" value="sss" name="pass" [(ngModel)]="pass"/>
   </div>
   <div class="half right">
     <label class="title" for="pass2">Repeat password</label>
-    <input required id="pass2" class="block" type="password" value="ssss" name="pass2" [(ngModel)]="pass2"
-      (keyup.enter)="checkPass(pass, pass2)" (blur)="checkPass(pass, pass2)"
+    <input required id="pass2" class="block" type="password" value="ssss" name="pass2" [(ngModel)]="pass2" (keyup.enter)="checkPass(pass, pass2)" (blur)="checkPass(pass, pass2)"
     />
   </div>
 </div>

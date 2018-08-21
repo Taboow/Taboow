@@ -1,18 +1,43 @@
 import { Injectable} from '@angular/core';
 
-var Web3L = require('web3');
+import * as Web3L from 'web3';
 
 @Injectable()
 export class Web3 {
-  web3;
+  web3: Web3L;
+  infuraKey = "";
   constructor(){
-    if (typeof this.web3 !== 'undefined') {
-      this.web3= new Web3L(this.web3.currentProvider);
-    } else {  
-      // set the provider you want from Web3.providers
-      this.web3 = new Web3L(new Web3L.providers.HttpProvider("https://ropsten.infura.io/zsCtddlly08DjGmyIBkH"));
+    this.getInfuraKey();
+    if(this.infuraKey!=""){
+      if (typeof this.web3 !== 'undefined') {
+        this.web3= new Web3L(this.web3.currentProvider);
+      } else {  
+        // set the provider you want from Web3.providers
+        this.web3 = new Web3L(new Web3L.providers.HttpProvider("https://ropsten.infura.io/"+this.infuraKey));
+      }
+    }else{
+      this.web3= new Web3L()
+    }   
+  }
+  setInfuraKey(apikey){
+    this.infuraKey = apikey;
+    let apikeys: any = {};
+    if(localStorage.getItem('apikeys')){
+      apikeys = JSON.parse(localStorage.getItem('apikeys'));
+    }
+      apikeys.inf = apikey;
+      localStorage.setItem('apikeys', JSON.stringify(apikeys));
+
+  }
+  getInfuraKey(){
+    if(localStorage.getItem('apikeys')){
+      let apikeys : any = JSON.parse(localStorage.getItem('apikeys'));
+      if('inf' in apikeys){
+        this.infuraKey = apikeys.inf;
+      }
     }
   }
+ 
   estimateGas(from, to, data, amount?):Promise<number>{
     let value = (typeof(amount)== 'undefined')? 0 : "0x"+amount.toString(16)
     //console.log("from:", from,", to:",to,", data:",data,", value:",amount)
@@ -31,7 +56,9 @@ export class Web3 {
   }
   setProvider(network:number){
     let net = (network==1)? 'mainnet' : 'ropsten'
-    this.web3.setProvider("https://"+net+".infura.io/zsCtddlly08DjGmyIBkH")
+    let url= "https://"+net+".infura.io/"+this.infuraKey;
+
+    this.web3.setProvider(new Web3L.providers.HttpProvider(url));
   }
 
   async getBlockTimestamp(txhash){
