@@ -25,9 +25,6 @@ export class AccountService{
     this.getApiKey();
     if(this.apikey != ""){
       this.getAccountData();
-      if('address' in this.account){
-        this.startIntervalData();
-      }
     }
   }
 
@@ -126,8 +123,6 @@ export class AccountService{
         }
         this.account.history = history;
       })
-
-      
     }); 
   }
   
@@ -136,7 +131,7 @@ export class AccountService{
     
     if(Object.keys(this.account).length != 0){
       this.getPendingTx();
-      this.setData();
+      this.startIntervalData();
       this.setTokens();
     }
   }

@@ -10,11 +10,9 @@ import { AccountService } from '../../../account.service'
 })
 export class GlobalPage implements OnInit {
   constructor(protected _account: AccountService) {
-    // console.log('SendPage')
   }
 
   ngOnInit() {
-    // console.log("Inited, ", devp2p)
   }
 
 

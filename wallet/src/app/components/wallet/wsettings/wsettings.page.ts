@@ -26,7 +26,6 @@ export class WsettingsPage implements OnInit {
   }
 
   ngOnInit() {
-    // console.log("Inited, ", devp2p)
   }
   exportPrivateKey(pass){
     this.submited = true;
@@ -63,7 +62,6 @@ export class WsettingsPage implements OnInit {
     if(pass==null || pass==""){
       return;
     }
-    console.log("json")
     let error:string = "";
 
     try{ 

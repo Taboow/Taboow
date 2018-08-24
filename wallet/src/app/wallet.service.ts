@@ -6,7 +6,6 @@ import * as EthUtil from 'ethereumjs-util';
 
 @Injectable()
 export class WalletService {
-  apikey: string = 'JDVE27WHYITCKM7Q2DMBC3N65VDIZ74HHJ';
   wallet: Array<any>;
 
   constructor() {
@@ -87,7 +86,7 @@ export class WalletService {
       acca.push(acc);
       localStorage.setItem('ethAcc',JSON.stringify(acca));
     }
-    
+
     this.getFinishW();//To refresh wallet
   }
 

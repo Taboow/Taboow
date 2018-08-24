@@ -24,11 +24,9 @@ export class SendPage implements OnInit {
   }
 
   constructor(public _web3: Web3, private _account: AccountService, private sendDialogService: SendDialogService) {
-    // console.log('SendPage')
   }
 
   ngOnInit() {
-    // console.log("Inited, ", devp2p)
   }
 
   checkAddress(receiverAddr): boolean {

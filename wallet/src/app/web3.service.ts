@@ -87,10 +87,8 @@ export class Web3 {
           }, 2000)
         }
     });
-      
     return await AsyncFunction;
   }
-
 
   async sendRawTx(txData:string){
 
