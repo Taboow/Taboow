@@ -87,6 +87,10 @@
   },
   "build": {
     "appId": "Taboow",
+    "mac":{
+      "target": "dmg",
+      "icon": "./taboow.png"
+    },
     "win": {
       "icon": "./taboow.ico"
     },
