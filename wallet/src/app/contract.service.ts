@@ -21,6 +21,7 @@ export class ContractService {
     
   }
   ngOnInit(){
+    
   }
 
   setContract(){

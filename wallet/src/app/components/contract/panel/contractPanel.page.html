@@ -1,3 +1,75 @@
-<div class="round white">
-    <p>{{message}}</p>
+<div *ngIf="frozenAccount == true else display">
+    <p>{{messageTaboow}}</p>
 </div>
+
+<ng-template #display>
+    <div *ngIf="(taboowOwnerAccount == true && TaboowBrokerOwner == true) else whoisOwner">
+
+        <div class="round backWhite border ">
+            <h1 class="title text-center">Taboow ERC20</h1>
+            <p>{{messageTaboow}}</p> owner
+        </div>
+
+        <div class="round backWhite border ">
+            <h1 class="title text-center ">Taboow Broker</h1>
+            <p>{{messageTaboowBroker}}</p> owner
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #whoisOwner>
+    <div *ngIf="taboowOwnerAccount==false else broker " class="round backWhite ">
+        <div *ngIf=" TaboowOwner == true else broker " class="round backWhite ">
+            <div class="round backWhite border ">
+                <h1 class="title text-center ">Taboow ERC20</h1>
+                <p>{{messageTaboow}}</p>whoisowner
+            </div>
+        </div>
+        <div *ngIf="TaboowBrokerOwner==true else broker " class="round backWhite ">
+            <div class="round backWhite border ">
+                <h1 class="title text-center ">Taboow Broker</h1>
+                <p>{{messageTaboowBroker}}</p>whoisowner
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #broker>
+    <div *ngIf="brokerAccount==true else verified " class="round backWhite ">
+        <div class="round backWhite border ">
+            <h1 class="title text-center ">Taboow ERC20</h1>
+            <p>{{messageTaboow}}</p>broker
+        </div>
+
+        <div class="round backWhite border ">
+            <h1 class="title text-center ">Taboow Broker</h1>
+            <p>{{messageTaboowBroker}}</p>broker
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #verified>
+    <div *ngIf="verifiedAccount==true else user " class="round backWhite ">
+        <div class="round backWhite border ">
+            <h1 class="title text-center ">Taboow ERC20</h1>
+            <p>{{messageTaboow}}</p>verified
+        </div>
+        <div class="round backWhite border ">
+            <h1 class="title text-center ">Taboow Broker</h1>
+            <p>{{messageTaboowBroker}}</p>verified
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #user>
+    <div *ngIf="user " class="round backWhite ">
+        <div class="round backWhite border ">
+            <h1 class="title text-center ">Taboow ERC20</h1>
+            <p>{{messageTaboow}}</p>defaultuser
+        </div>
+        <div class="round backWhite border ">
+            <h1 class="title text-center ">Taboow Broker</h1>
+            <p>{{messageTaboowBroker}}</p>defaultuser
+        </div>
+    </div>
+</ng-template>

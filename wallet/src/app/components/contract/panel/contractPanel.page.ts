@@ -10,57 +10,35 @@ import { Router } from '@angular/router';
 import { Web3 } from '../../../web3.service';
 import * as EthTx from 'ethereumjs-tx';
 import * as EthUtil from 'ethereumjs-util'
+import { ThrowStmt } from '../../../../../node_modules/@angular/compiler';
 
 @Component({
   selector: 'panel-page',
   templateUrl: './contractPanel.page.html'
 })
 export class ContractPanelPage implements OnInit {
-  //should think about administration panel (GET server role?) in a new tab
 
-  roles: string[] = ['OWNER','BROKER', 'USER'];
+  public messageTaboow;
+  public messageTaboowBroker;
 
-  //hereded From LCX
+  public TaboowOwner:boolean;
+  public TaboowBrokerOwner:boolean;
 
-  @Input() moreInfo;
-  @Input() functions;
+  public frozenAccount;
+  public verifiedAccount;
+  public brokerAccount;
+  public taboowOwnerAccount;
 
-  @Output() back = new EventEmitter<boolean>();
-
-  public submited: boolean = false;
-  public contractInfo: any;
-  public functionForm: FormGroup;
-  
-  public infoFunctions = [];
-  public transFunctions = [];
-  public funct: any;
-  public owner: string;
-
-  public message;
-
-  //Old structure
-  //abi : any = {};
-  //cAddress = "0x5ce5615485d4BE300C1e413a27B4fDdCaD7B2fa3";
-  //contract;
-
-  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //revisar function forms
   constructor(protected contract: ContractService, private sendDialogService : SendDialogService, protected _account: AccountService, private _dialog: DialogService, private router : Router, private _web3: Web3) {
-  
-    //this.contract.setContract();
+    //loading 
+    //loading close after this.userRole();
+
   }
 
   async ngOnInit(){
-    let x = await this.contract.getTaboowOwner();
-    console.log(x);
-
-    if(this._account.account.address == x){
-      this.message = "You're the owner";
-    }else{
-      this.message = "You're not the owner";
-    }
+    await this.userRole();
     
-
+    /*
     let fees = 0;
     let cost = 0;
     let y = await this.contract.setTransactionFee(20);
@@ -77,27 +55,73 @@ export class ContractPanelPage implements OnInit {
     let z = await this.contract.getTransactionFee();
     console.log("tx fee after",z);
     
-    
-  }
-  /*
-  setContractsInstances(){
-    this.getAbis();
-    if(this._web3.infuraKey != ''){
-      this.Taboow_Contract =this._web3.web3.eth.contract(this.Taboow_Abi).at(this.Taboow_Addr);
-      this.TaboowBroker_Contract =this._web3.web3.eth.contract(this.TaboowBroker_Abi).at(this.TaboowBroker_Addr);
-      console.log("taboowContract", this.Taboow_Contract);
-      console.log("taboowBrokerContract", this.TaboowBroker_Contract);
-    }
-  }
-  getAbis(){
-    this.Taboow_Abi = require('../../../../contracts/Taboow.json');
-    this.TaboowBroker_Abi = require('../../../../contracts/Taboow_Broker.json');
-    console.log("Taboow_Abi", this.Taboow_Abi);
-    console.log("TaboowBroker_Abi", this.TaboowBroker_Abi);
-    
-    
+    */
   }
 
+  async userRole(){
+    console.log("dentro de userRole?");
+    await this.isFrozenAccount();
+
+    await this.isTaboowOwner();
+    await this.isTaboowBrokerOwner();
+    if(this.TaboowBrokerOwner == true && this.TaboowOwner == true){
+      this.taboowOwnerAccount = true;
+    }else{
+      if(this.TaboowBrokerOwner == true || this.TaboowOwner == true){
+        this.taboowOwnerAccount = false;
+      }else{
+        this.taboowOwnerAccount = null;
+      }
+    }
+
+  }
+  async isTaboowOwner(){
+    let x = await this.contract.getTaboowOwner();
+    
+    if(this._account.account.address == x){
+      this.TaboowOwner = true;
+      this.messageTaboow = "You're the owner";
+    }else{
+      this.TaboowOwner = false;
+      this.messageTaboow = "You're not the owner";
+    }
+  }
+
+  async isTaboowBrokerOwner(){
+    let x = await this.contract.getTaboowBrokerOwner();
+    
+    if(this._account.account.address == x){
+      this.TaboowBrokerOwner = true;
+      this.messageTaboowBroker = "You're the owner";
+    }else{
+      this.TaboowBrokerOwner = false;
+      this.messageTaboowBroker = "You're not the owner";
+    }
+  }
+
+  async isFrozenAccount(){
+    this.frozenAccount  = await this.contract.getFrozenAccount(this._account.account.address);
+    
+    if(this.frozenAccount == true){
+      this.messageTaboow = "Your account has been frozen, please contact our support team.";
+    }    
+  }
+
+  async isBrokerAccount(){
+    this.brokerAccount  = await this.contract.getBrokers(this._account.account.address);
+    
+    if(this.brokerAccount == true){
+      this.messageTaboow = "Broker ROLE.";
+    }    
+  }
+  async isVerifiedAccount(){
+    this.verifiedAccount  = await this.contract.getVerified(this._account.account.address);
+    
+    if(this.verifiedAccount == true){
+      this.messageTaboow = "Verified ROLE.";
+    }    
+  }
+  /*
 
   //NEW CONTRACT MODE
   getControl(controlName: string): AbstractControl{

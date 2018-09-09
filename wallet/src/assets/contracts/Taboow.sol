@@ -170,8 +170,7 @@ contract Taboow_ERC20 is Ownable {
         brokers[_addr] = _allowed;
     }
 
-    function setTransactionFee(uint256 _value) public onlyOwner{
-
+    function setTransactionFee(uint256 _value) public onlyOwner
       transactionFee = _value;
 
     }
