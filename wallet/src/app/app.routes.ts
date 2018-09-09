@@ -12,6 +12,11 @@ import { WsettingsPage } from './components/wallet/wsettings/wsettings.page'
 import { TokensComponent } from './components/tokens/tokens.component'
 import { GeneralPage } from './components/tokens/general/general.page'
 import { SendTokensPage } from './components/tokens/send/send-tokens.page'
+
+import { ContractComponent } from './components/contract/contract.component';
+import { ContractPanelPage } from './components/contract/panel/contractPanel.page';
+
+
 import { AddTokenPage } from './components/tokens/add/add.page'
 import { SettingsComponent } from './components/settings/settings.component'
 
@@ -31,6 +36,12 @@ const routes: Routes = [
       { path: 'general', component: GeneralPage },
       { path: 'send-tokens', component: SendTokensPage },
       { path: 'add', component: AddTokenPage },
+    ]
+  },
+  { path: 'contract', component: ContractComponent,
+    children: [
+      { path: '', redirectTo: 'panel', pathMatch: 'full' },
+      { path: 'panel', component: ContractPanelPage }
     ]
   },
   { path: 'settings', component: SettingsComponent },

@@ -33,6 +33,10 @@ import { GeneralPage } from './components/tokens/general/general.page'
 import { SendTokensPage } from './components/tokens/send/send-tokens.page'
 import { AddTokenPage } from './components/tokens/add/add.page'
 
+
+import { ContractComponent } from './components/contract/contract.component';
+import { ContractPanelPage } from './components/contract/panel/contractPanel.page';
+
 import { SettingsComponent } from './components/settings/settings.component'
 
 /*Dialogs*/
@@ -53,6 +57,7 @@ import { PendingDialogComponent } from './components/dialogs/pending-dialog.comp
 /*Servicies*/
 import { WalletService } from './wallet.service';
 import { AccountService } from './account.service';
+import { ContractService } from './contract.service';
 import { Web3 } from './web3.service';
 import { DialogService } from './dialog.service';
 import { SendDialogService } from './send-dialog.service';
@@ -91,7 +96,9 @@ import { ConverterPipe } from './converter.pipe';
     TokensComponent,
     GeneralPage,
     SendTokensPage,
-    AddTokenPage
+    AddTokenPage,
+    ContractComponent,
+    ContractPanelPage
   ],
   imports: [
     BrowserModule,
@@ -129,6 +136,7 @@ import { ConverterPipe } from './converter.pipe';
   providers: [
     WalletService,
     AccountService,
+    ContractService,
     Web3,
     DialogService,
     SendDialogService,
