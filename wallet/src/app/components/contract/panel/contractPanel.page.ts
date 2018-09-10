@@ -31,7 +31,7 @@ export class ContractPanelPage implements OnInit {
 
   public inputValue1;
 
-  //Taboow.sol variables
+  //Taboow.sol call variables
   public TaboowName;
   public TaboowSymbol;
   public TaboowStandard;
@@ -53,7 +53,43 @@ export class ContractPanelPage implements OnInit {
   public reservedResponse;
   public verifiedAddr;
   public verifiedResponse
-  //TaboowBroker.sol variables
+
+  //Taboow.sol transaction variables
+  public setTransactionFeeValue;
+  public setBrokerAddr;
+  public setBrokerBool;
+  public verifyAccountAddr;
+  public verifyAccountBool;
+  public freezeAccountAddr;
+  public freezeAccountBool;
+  public mintAddr;
+  public mintValue;
+  public sweepAddrTaboow;
+  public sweepAmountTaboow;
+  public reserveTokensAddr;
+  public reserveTokensAmount;
+  public withdrawAddr;
+  public withdrawAmount;
+  public approveAddr;
+  public approveAmount;
+  public increaseAddr;
+  public increaseAmount;
+  public decreaseAddr;
+  public decreaseAmount;
+  public transferTokensAddr;
+  public transferTokensAmount;
+  public transferAddr;
+  public transferAmount;
+  public transferFromAddr1;
+  public transferFromAddr2;
+  public transferFromAmount;
+  public approveCallAddr;
+  public approveCallAmount;
+  public approveCallData;
+  public transferOwnership_TaboowAddr;
+  
+
+  //TaboowBroker.sol call variables
   public TaboowBrokerName;
   public TaboowBrokerDecimals;
   public FWDaddrEth;
@@ -69,6 +105,9 @@ export class ContractPanelPage implements OnInit {
   public isReservedResponse;
   public isVerifiedAddr;
   public isVerifiedResponse;
+
+  //TaboowBroker.sol transaction variables
+  
   
   constructor(protected contract: ContractService, private sendDialogService : SendDialogService, protected _account: AccountService, private _dialog: DialogService, private router : Router, private _web3: Web3) {
     //loading 
@@ -78,25 +117,6 @@ export class ContractPanelPage implements OnInit {
 
   async ngOnInit(){
     await this.userRole();
-    
-    /*
-    let fees = 0;
-    let cost = 0;
-    let y = await this.contract.setTransactionFee(20);
-    console.log(y);
-    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
-    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
-    fees += estimateGas;
-    cost += estimateGas;
-    let self= this;
-    let serialized = self.serializeTx(txInfo[0],'0000');
-    let sendResult = await self._web3.sendRawTx(serialized);
-    console.log("1",sendResult)
-
-    let z = await this.contract.getTransactionFee();
-    console.log("tx fee after",z);
-    
-    */
   }
 
   async userRole(){
@@ -174,8 +194,9 @@ export class ContractPanelPage implements OnInit {
     this.TaboowSymbol = await this.contract.getSymbol();
     this.TaboowDecimals = await this.contract.getDecimalsTaboow();
     this.TaboowTotalSupply = await this.contract.getTotalSupply();
-    this.TabooowTransactionFee = await this.contract.getTransactionFee();
     this.TaboowTotalSupply = this.TaboowTotalSupply / 1000000000000000000;
+    this.TabooowTransactionFee = await this.contract.getTransactionFee();
+    
   }
   async TaboowBrokerInfo(){
     this.TaboowBrokerName = await this.contract.getNameTaboowBroker();
@@ -230,11 +251,12 @@ export class ContractPanelPage implements OnInit {
   }
 
   //Taboow.sol transaction functions
-  async setBroker(addr, bool){
+
+  async setTransactionFee(value){
     let fees = 0;
     let cost = 0;
-    let y = await this.contract.setBrokers(addr, bool);
-    console.log(y);
+    let y = await this.contract.setTransactionFee(value);
+    //console.log(y);
     let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
     let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
     fees += estimateGas;
@@ -242,9 +264,229 @@ export class ContractPanelPage implements OnInit {
     let self= this;
     let serialized = self.serializeTx(txInfo[0],'0000');
     let sendResult = await self._web3.sendRawTx(serialized);
-    console.log("1",sendResult)
-    
+    //console.log("1",sendResult)
+
+    this.TabooowTransactionFee = value; //change to call
+    //await this.contract.getTransactionFee();
   }
+
+  async setBroker(addr, bool){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setBrokers(addr, bool);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+
+  async verifyAccount(addr, bool){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setVerifyAccount(addr, bool);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+
+  async freezeAccount(addr, bool){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setFreezeAccount(addr, bool);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async mint(addr, value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setMint(addr, value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async Taboow_Sweep(addr, value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setSweepTaboow(addr, value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async reserveTokens_Taboow(addr, value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setReserveTokens_Taboow(addr, value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async withdrawTokens(addr, value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setWithdrawTokens(addr, value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async approve(addr, value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setApprove(addr, value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async increaseApproval(addr, value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setIncreaseApproval(addr, value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async decreaseApproval(addr, value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setDecreaseApproval(addr, value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async transferTokens(addr, value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setTransferTokens(addr, value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async transfer(addr, value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setTransfer(addr, value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async transferFrom(addr1,addr2, value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setTransferFrom(addr1,addr2, value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async approveAndCall(addr,value, data){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setApproveAndCall(addr,value, data);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+  }
+  async TaboowTransferOwnership(addr){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.transferOwnership_Taboow(addr);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+    //await this.userRole();
+  }
+
+
+
+
 
   //TaboowBroker.sol Call Functions
   async isSold(addr){

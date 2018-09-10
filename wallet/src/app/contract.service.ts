@@ -225,13 +225,13 @@ export class ContractService {
         return txData
       }
       //freezeAccount() onlyowner
-      setFreezeAccount(value):string{
-        let txData = this.Taboow_Contract.freezeAccount.getData(value);
+      setFreezeAccount(addr ,value):string{
+        let txData = this.Taboow_Contract.freezeAccount.getData(addr ,value);
         return txData
       }
       //verifyAccount() onlyOwner
-      setVerifyAccount(value):string{
-        let txData = this.Taboow_Contract.verifyAccount.getData(value);
+      setVerifyAccount(addr ,value):string{
+        let txData = this.Taboow_Contract.verifyAccount.getData(addr ,value);
         return txData
       }
       //reserveTokens() public

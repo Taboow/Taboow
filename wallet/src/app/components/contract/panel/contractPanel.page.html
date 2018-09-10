@@ -20,19 +20,11 @@
                     <input type="text" name="ownerAllowance" id="ownerAllowance" placeholder="Owner" [(ngModel)]="ownerAllowance">
                     <input type="text" name="spenderAllowance" id="spenderAllowance" placeholder="Spender" [(ngModel)]="spenderAllowance">
                     <p class="inline">{{allowanceResponse}}</p>
-                    <!--
-                        <input class="displayInput expected" type="text" name="allowanceResponse" id="allowanceResponse" value="{{allowanceResponse}}" disabled>
-                    -->
-
                 </div>
                 <div>
                     <button type="button" name="button" class="btn-inverse" (click)="balances(balanceAddr)">Balance</button>
                     <input type="text" name="balanceAddr" id="balanceAddr" placeholder="Address" [(ngModel)]="balanceAddr">
                     <p class="inline">{{balanceResponse}}</p>
-                    <!--
-                        <input class="displayInput expected" type="text" name="balanceResponse" id="balanceResponse" value="{{balanceResponse}}" disabled>
-                    -->
-
                 </div>
                 <div>
                     <button type="button" name="button" class="btn-inverse" (click)="isBroker(brokerAddr)">Broker</button>
@@ -54,17 +46,91 @@
                     <input type="text" name="reservedAddr" id="reservedAddr" placeholder="Address" [(ngModel)]="reservedAddr">
                     <p class="inline">{{reservedResponse}}</p>
                 </div>
-
-
             </div>
             <div>
                 <h2 class="title">{{TaboowName}}: Transaction Functions</h2>
                 <div>
-                    <button type="button" name="button" class="btn-black" (click)="setBroker(soldAddr)">Set Broker</button>
-                    <input type="text" name="soldAddr" id="soldAddr" placeholder="Address" [(ngModel)]="soldAddr">
-                    <p class="inline">{{soldResponse}}</p>
+                    <button type="button" name="button" class="btn-black" (click)="setTransactionFee(setTransactionFeeValue)">Set Transaction Fee</button>
+                    <input type="text" name="setTransactionFeeValue" id="setTransactionFeeValue" placeholder="Value in wei" [(ngModel)]="setTransactionFeeValue">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="setBroker(setBrokerAddr, setBrokerBool)">Set Broker</button>
+                    <input type="text" name="setBrokerAddr" id="setBrokerAddr" placeholder="Address" [(ngModel)]="setBrokerAddr">
+                    <input type="text" name="setBrokerBool" id="setBrokerBool" placeholder="Boolean" [(ngModel)]="setBrokerBool">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="verifyAccount(verifyAccountAddr, verifyAccountBool)">Verify account</button>
+                    <input type="text" name="verifyAccountAddr" id="verifyAccountAddr" placeholder="Address" [(ngModel)]="verifyAccountAddr">
+                    <input type="text" name="verifyAccountBool" id="verifyAccountBool" placeholder="Boolean" [(ngModel)]="verifyAccountBool">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="freezeAccount(freezeAccountAddr, freezeAccountBool)">Freeze account</button>
+                    <input type="text" name="freezeAccountAddr" id="freezeAccountAddr" placeholder="Address" [(ngModel)]="freezeAccountAddr">
+                    <input type="text" name="freezeAccountBool" id="freezeAccountBool" placeholder="Boolean" [(ngModel)]="freezeAccountBool">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="mint(mintAddr, mintValue)">Mint</button>
+                    <input type="text" name="mintAddr" id="mintAddr" placeholder="Address" [(ngModel)]="mintAddr">
+                    <input type="text" name="mintValue" id="mintValue" placeholder="uint256" [(ngModel)]="mintValue">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="Taboow_Sweep(sweepAddrTaboow, sweepAmountTaboow)">Sweep</button>
+                    <input type="text" name="sweepAddrTaboow" id="sweepAddrTaboow" placeholder="Token Address" [(ngModel)]="sweepAddrTaboow">
+                    <input type="text" name="sweepAmountTaboow" id="sweepAmountTaboow" placeholder="uint256" [(ngModel)]="sweepAmountTaboow">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="reserveTokens_Taboow(reserveTokensAddr, reserveTokensAmount)">Reserve tokens</button>
+                    <input type="text" name="reserveTokensAddr" id="reserveTokensAddr" placeholder="Address" [(ngModel)]="reserveTokensAddr">
+                    <input type="text" name="reserveTokensAmount" id="reserveTokensAmount" placeholder="Amount" [(ngModel)]="reserveTokensAmount">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="withdrawTokens(withdrawAddr, withdrawAmount)">Withdraw tokens</button>
+                    <input type="text" name="withdrawAddr" id="withdrawAddr" placeholder="Address" [(ngModel)]="withdrawAddr">
+                    <input type="text" name="withdrawAmount" id="withdrawAmount" placeholder="Amount" [(ngModel)]="withdrawAmount">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="approve(approveAddr, approveAmount)">Approve</button>
+                    <input type="text" name="approveAddr" id="approveAddr" placeholder="Address" [(ngModel)]="approveAddr">
+                    <input type="text" name="approveAmount" id="approveAmount" placeholder="Amount" [(ngModel)]="approveAmount">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="increaseApproval(increaseAddr, increaseAmount)">Increase approval</button>
+                    <input type="text" name="increaseAddr" id="increaseAddr" placeholder="Address" [(ngModel)]="increaseAddr">
+                    <input type="text" name="increaseAmount" id="increaseAmount" placeholder="Amount" [(ngModel)]="increaseAmount">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="decreaseApproval(decreaseAddr, decreaseAmount)">Decrease approval</button>
+                    <input type="text" name="decreaseAddr" id="decreaseAddr" placeholder="Address" [(ngModel)]="decreaseAddr">
+                    <input type="text" name="decreaseAmount" id="decreaseAmount" placeholder="Amount" [(ngModel)]="decreaseAmount">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="transferTokens(transferTokensAddr, transferTokensAmount)">Transfer Tokens</button>
+                    <input type="text" name="transferTokensAddr" id="transferTokensAddr" placeholder="Address" [(ngModel)]="transferTokensAddr">
+                    <input type="text" name="transferTokensAmount" id="transferTokensAmount" placeholder="Amount" [(ngModel)]="transferTokensAmount">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="transfer(transferAddr, transferAmount)">Transfer</button>
+                    <input type="text" name="transferAddr" id="transferAddr" placeholder="Address" [(ngModel)]="transferAddr">
+                    <input type="text" name="transferAmount" id="transferAmount" placeholder="Amount" [(ngModel)]="transferAmount">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="transferFrom(transferFromAddr1, transferFromAddr2, transferFromAmount)">Transfer from</button>
+                    <input type="text" name="transferFromAddr1" id="transferFromAddr1" placeholder="From Address" [(ngModel)]="transferFromAddr1">
+                    <input type="text" name="transferFromAddr2" id="transferFromAddr2" placeholder="To Address" [(ngModel)]="transferFromAddr2">
+                    <input type="text" name="transferFromAmount" id="transferFromAmount" placeholder="Amount" [(ngModel)]="transferFromAmount">
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="approveAndCall(approveCallAddr, approveCallAmount, approveCallData)">Approve and call</button>
+                    <input type="text" name="approveCallAddr" id="approveCallAddr" placeholder="Address" [(ngModel)]="approveCallAddr">
+                    <input type="text" name="approveCallAmount" id="approveCallAmount" placeholder="Amount" [(ngModel)]="approveCallAmount">
+                    <input type="text" name="approveCallData" id="approveCallData" placeholder="Bytes" [(ngModel)]="approveCallData">
                 </div>
 
+
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="TaboowTransferOwnership(transferOwnership_TaboowAddr)">Transfer Ownership</button>
+                    <input type="text" name="transferOwnership_TaboowAddr" id="transferOwnership_TaboowAddr" placeholder="Address" [(ngModel)]="transferOwnership_TaboowAddr">
+                </div>
             </div>
         </div>
 
