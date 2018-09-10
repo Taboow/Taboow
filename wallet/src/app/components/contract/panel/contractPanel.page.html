@@ -3,30 +3,136 @@
 </div>
 
 <ng-template #display>
-    <div *ngIf="(taboowOwnerAccount == true && TaboowBrokerOwner == true) else whoisOwner">
+    <div *ngIf="taboowOwnerAccount == true else whoisOwner">
 
         <div class="round backWhite border ">
-            <h1 class="title text-center">Taboow ERC20</h1>
-            <p>{{messageTaboow}}</p> owner
+            <h1 class="title text-center">Contract: {{TaboowName}}</h1>
+            <p class="title red bold">{{messageTaboow}}</p>
+            <p class="title">Standard: <span>{{TaboowStandard}}</span></p>
+            <p class="title">Symbol: <span>{{TaboowSymbol}}</span></p>
+            <p class="title">Decimals: <span>{{TaboowDecimals}}</span></p>
+            <p class="title">Total supply: <span>{{TaboowTotalSupply}}</span></p>
+            <p class="title">Transaction fee: <span>{{TabooowTransactionFee}}</span></p>
+            <div>
+                <h2 class="title">{{TaboowName}}: Call Functions</h2>
+                <div>
+                    <button type="button" name="button" class="btn-inverse" (click)="isAllowed(ownerAllowance, spenderAllowance)">Allowance</button>
+                    <input type="text" name="ownerAllowance" id="ownerAllowance" placeholder="Owner" [(ngModel)]="ownerAllowance">
+                    <input type="text" name="spenderAllowance" id="spenderAllowance" placeholder="Spender" [(ngModel)]="spenderAllowance">
+                    <p class="inline">{{allowanceResponse}}</p>
+                    <!--
+                        <input class="displayInput expected" type="text" name="allowanceResponse" id="allowanceResponse" value="{{allowanceResponse}}" disabled>
+                    -->
+
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-inverse" (click)="balances(balanceAddr)">Balance</button>
+                    <input type="text" name="balanceAddr" id="balanceAddr" placeholder="Address" [(ngModel)]="balanceAddr">
+                    <p class="inline">{{balanceResponse}}</p>
+                    <!--
+                        <input class="displayInput expected" type="text" name="balanceResponse" id="balanceResponse" value="{{balanceResponse}}" disabled>
+                    -->
+
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-inverse" (click)="isBroker(brokerAddr)">Broker</button>
+                    <input type="text" name="brokerAddr" id="brokerAddr" placeholder="Address" [(ngModel)]="brokerAddr">
+                    <p class="inline">{{brokerResponse}}</p>
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-inverse" (click)="isFrozen(frozenAddr)">Frozen</button>
+                    <input type="text" name="frozenAddr" id="frozenAddr" placeholder="Address" [(ngModel)]="frozenAddr">
+                    <p class="inline">{{frozenResponse}}</p>
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-inverse" (click)="isVerified(verifiedAddr)">Verified</button>
+                    <input type="text" name="verifiedAddr" id="verifiedAddr" placeholder="Address" [(ngModel)]="verifiedAddr">
+                    <p class="inline">{{verifiedResponse}}</p>
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-inverse" (click)="isReserved(reservedAddr)">Reserved</button>
+                    <input type="text" name="reservedAddr" id="reservedAddr" placeholder="Address" [(ngModel)]="reservedAddr">
+                    <p class="inline">{{reservedResponse}}</p>
+                </div>
+
+
+            </div>
+            <div>
+                <h2 class="title">{{TaboowName}}: Transaction Functions</h2>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="setBroker(soldAddr)">Set Broker</button>
+                    <input type="text" name="soldAddr" id="soldAddr" placeholder="Address" [(ngModel)]="soldAddr">
+                    <p class="inline">{{soldResponse}}</p>
+                </div>
+
+            </div>
         </div>
 
         <div class="round backWhite border ">
-            <h1 class="title text-center ">Taboow Broker</h1>
-            <p>{{messageTaboowBroker}}</p> owner
+            <h1 class="title text-center">Contract: {{TaboowBrokerName}}</h1>
+            <p class="title red bold">{{messageTaboowBroker}}</p>
+            <p class="title">Decimals: <span>{{TaboowBrokerDecimals}}</span></p>
+            <p class="title">FWDaddrEth: <span>{{FWDaddrEth}}</span></p>
+            <p class="title">pubEnd: <span>{{pubEnd}}</span></p>
+            <p class="title">pubEnd date: <span>{{pubEndDate | date:'EEEE, d MMMM y, H:mm:ss'}}</span></p>
+            <p class="title">Taboow Addr: <span>{{taboowAddr}}</span></p>
+            <p class="title">Token Price: <span>{{tokenPrice | converter:'fromWei':'ether'}} ETH</span></p>
+            <p class="title">Token Unit: <span>{{tokenUnit}}</span></p>
+            <div>
+                <h2 class="title">{{TaboowBrokerName}}: Call Functions</h2>
+                <div>
+                    <button type="button" name="button" class="btn-inverse" (click)="isSold(soldAddr)">Sold</button>
+                    <input type="text" name="soldAddr" id="soldAddr" placeholder="Address" [(ngModel)]="soldAddr">
+                    <p class="inline">{{soldResponse}}</p>
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-inverse" (click)="isReserved_TaboowBroker(isReservedAddr)">Reserved</button>
+                    <input type="text" name="isReservedAddr" id="isReservedAddr" placeholder="Address" [(ngModel)]="isReservedAddr">
+                    <p class="inline">{{isReservedResponse}}</p>
+                </div>
+                <div>
+                    <button type="button" name="button" class="btn-inverse" (click)="isVerified_TaboowBroker(isVerifiedAddr)">Verified</button>
+                    <input type="text" name="isVerifiedAddr" id="isVerifiedAddr" placeholder="Address" [(ngModel)]="isVerifiedAddr">
+                    <p class="inline">{{isVerifiedResponse}}</p>
+                </div>
+
+            </div>
+            <div>
+                <h2 class="title">{{TaboowBrokerName}}: Transaction Functions</h2>
+                <div>
+                    <button type="button" name="button" class="btn-black" (click)="setBroker(soldAddr)">Sold</button>
+                    <input type="text" name="soldAddr" id="soldAddr" placeholder="Address" [(ngModel)]="soldAddr">
+                    <p class="inline">{{soldResponse}}</p>
+                </div>
+
+            </div>
         </div>
     </div>
 </ng-template>
 
 <ng-template #whoisOwner>
-    <div *ngIf="taboowOwnerAccount==false else broker " class="round backWhite ">
-        <div *ngIf=" TaboowOwner == true else broker " class="round backWhite ">
-            <div class="round backWhite border ">
+    <div *ngIf="taboowOwnerAccount == false else broker " class="round backWhite ">
+        <div *ngIf=" TaboowOwner == true" class="round backWhite ">
+            <div class="round backWhite border">
                 <h1 class="title text-center ">Taboow ERC20</h1>
                 <p>{{messageTaboow}}</p>whoisowner
             </div>
         </div>
-        <div *ngIf="TaboowBrokerOwner==true else broker " class="round backWhite ">
-            <div class="round backWhite border ">
+        <div *ngIf="TaboowBrokerOwner == true " class="round backWhite ">
+            <div class="round backWhite border">
+                <h1 class="title text-center ">Taboow Broker</h1>
+                <p>{{messageTaboowBroker}}</p>whoisowner
+            </div>
+        </div>
+
+        <div *ngIf=" TaboowOwner == false" class="round backWhite ">
+            <div class="round backWhite border">
+                <h1 class="title text-center ">Taboow ERC20</h1>
+                <p>{{messageTaboow}}</p>whoisowner
+            </div>
+        </div>
+        <div *ngIf="TaboowBrokerOwner == false " class="round backWhite ">
+            <div class="round backWhite border">
                 <h1 class="title text-center ">Taboow Broker</h1>
                 <p>{{messageTaboowBroker}}</p>whoisowner
             </div>
@@ -35,7 +141,7 @@
 </ng-template>
 
 <ng-template #broker>
-    <div *ngIf="brokerAccount==true else verified " class="round backWhite ">
+    <div *ngIf="brokerAccount == true else verified " class="round backWhite ">
         <div class="round backWhite border ">
             <h1 class="title text-center ">Taboow ERC20</h1>
             <p>{{messageTaboow}}</p>broker
@@ -49,7 +155,7 @@
 </ng-template>
 
 <ng-template #verified>
-    <div *ngIf="verifiedAccount==true else user " class="round backWhite ">
+    <div *ngIf="verifiedAccount == true else default " class="round backWhite ">
         <div class="round backWhite border ">
             <h1 class="title text-center ">Taboow ERC20</h1>
             <p>{{messageTaboow}}</p>verified
@@ -61,8 +167,8 @@
     </div>
 </ng-template>
 
-<ng-template #user>
-    <div *ngIf="user " class="round backWhite ">
+<ng-template #default>
+    <div class="round backWhite ">
         <div class="round backWhite border ">
             <h1 class="title text-center ">Taboow ERC20</h1>
             <p>{{messageTaboow}}</p>defaultuser

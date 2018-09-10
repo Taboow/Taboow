@@ -34,6 +34,15 @@ h1 {
     color: #000;
 }
 
+h2 {
+    font-family: "Lato-Regular";
+    font-size: 12pt;
+    font-weight: bold;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    color: #000;
+}
+
 .mat-dialog-container {
     position: relative;
     border-top: 10px solid #41e241;
@@ -472,4 +481,17 @@ input[type="radio"]:checked+label span {
 .border {
     border: 1px solid white;
     margin-bottom: 2rem;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.expected {
+    margin: 0;
+}
+
+.displayInput {
+    border: none;
+    width: 100%;
 }

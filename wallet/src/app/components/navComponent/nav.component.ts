@@ -21,7 +21,7 @@ export class NavComponent implements OnInit {
   route: string = "";
   loadingD;
   interval
-  constructor(location: Location, router: Router,public _account: AccountService,public dialog: MdDialog, private _web3: Web3) {
+  constructor(location: Location, router: Router,public _account: AccountService,public dialog: MdDialog, protected _web3: Web3) {
     router.events.subscribe((val) => {
       if(location.path() != ''){
         this.route = location.path();

@@ -29,6 +29,47 @@ export class ContractPanelPage implements OnInit {
   public brokerAccount;
   public taboowOwnerAccount;
 
+  public inputValue1;
+
+  //Taboow.sol variables
+  public TaboowName;
+  public TaboowSymbol;
+  public TaboowStandard;
+  
+  public TaboowDecimals;
+  public TaboowTotalSupply;
+  public TabooowTransactionFee;
+
+  public ownerAllowance;
+  public spenderAllowance;
+  public allowanceResponse;
+  public balanceAddr;
+  public balanceResponse;
+  public brokerAddr;
+  public brokerResponse;
+  public frozenAddr;
+  public frozenResponse;
+  public reservedAddr;
+  public reservedResponse;
+  public verifiedAddr;
+  public verifiedResponse
+  //TaboowBroker.sol variables
+  public TaboowBrokerName;
+  public TaboowBrokerDecimals;
+  public FWDaddrEth;
+  public pubEnd;
+  public pubEndDate:Date;
+  public taboowAddr;
+  public tokenPrice;
+  public tokenUnit;
+
+  public soldAddr;
+  public soldResponse;
+  public isReservedAddr;
+  public isReservedResponse;
+  public isVerifiedAddr;
+  public isVerifiedResponse;
+  
   constructor(protected contract: ContractService, private sendDialogService : SendDialogService, protected _account: AccountService, private _dialog: DialogService, private router : Router, private _web3: Web3) {
     //loading 
     //loading close after this.userRole();
@@ -67,13 +108,18 @@ export class ContractPanelPage implements OnInit {
     if(this.TaboowBrokerOwner == true && this.TaboowOwner == true){
       this.taboowOwnerAccount = true;
     }else{
+        await this.isBrokerAccount();
+        await this.isVerifiedAccount();
       if(this.TaboowBrokerOwner == true || this.TaboowOwner == true){
         this.taboowOwnerAccount = false;
       }else{
         this.taboowOwnerAccount = null;
       }
     }
+    
 
+    await this.TaboowInfo();
+    await this.TaboowBrokerInfo();
   }
   async isTaboowOwner(){
     let x = await this.contract.getTaboowOwner();
@@ -121,6 +167,104 @@ export class ContractPanelPage implements OnInit {
       this.messageTaboow = "Verified ROLE.";
     }    
   }
+
+  async TaboowInfo(){
+    this.TaboowName = await this.contract.getNameTaboow();
+    this.TaboowStandard = await this.contract.getStandard();
+    this.TaboowSymbol = await this.contract.getSymbol();
+    this.TaboowDecimals = await this.contract.getDecimalsTaboow();
+    this.TaboowTotalSupply = await this.contract.getTotalSupply();
+    this.TabooowTransactionFee = await this.contract.getTransactionFee();
+    this.TaboowTotalSupply = this.TaboowTotalSupply / 1000000000000000000;
+  }
+  async TaboowBrokerInfo(){
+    this.TaboowBrokerName = await this.contract.getNameTaboowBroker();
+    this.TaboowBrokerDecimals = await this.contract.getDecimalsTaboowBroker();
+    this.FWDaddrEth = await this.contract.getFWDaddrETH();
+    this.pubEnd = await this.contract.getPubEnd();
+    this.pubEndDate = new Date(this.pubEnd*1000);
+    
+    this.taboowAddr = await this.contract.getTaboowAddr();
+    this.tokenPrice = await this.contract.getTokenPrice();
+    this.tokenUnit = await this.contract.getTokenUnit();
+  }
+
+  //Taboow.sol call functions
+
+  async isAllowed(owner, spender){
+    this.allowanceResponse = await this.contract.getAllowance(owner, spender);
+    this.allowanceResponse = "Amount allowed to spend: " + this.allowanceResponse;
+  }
+  async balances(addr){
+    this.balanceResponse = await this.contract.getBalances(addr);
+    this.balanceResponse = this.balanceResponse / 1000000000000000000;
+    this.balanceResponse = "Balance: " + this.balanceResponse;
+  }
+  async isBroker(addr){
+    this.brokerResponse = await this.contract.getBrokers(addr);
+    if(this.brokerResponse == true){
+      this.brokerResponse = "Is broker";
+    }else{
+      this.brokerResponse = "Is not broker";
+    }
+  }
+  async isFrozen(addr){
+    this.frozenResponse = await this.contract.getFrozenAccount(addr);
+    if(this.frozenResponse == true){
+      this.frozenResponse = "Is frozen";
+    }else{
+      this.frozenResponse = "Is not frozen";
+    }
+  }
+  async isVerified(addr){
+    this.verifiedResponse = await this.contract.getVerified(addr);
+    if(this.verifiedResponse == true){
+      this.verifiedResponse = "Is verified";
+    }else{
+      this.verifiedResponse = "Is not verified";
+    }
+  }
+  async isReserved(addr){
+    this.reservedResponse = await this.contract.getReserve(addr);
+    this.reservedResponse = "Reserved amount: " + this.reservedResponse;
+  }
+
+  //Taboow.sol transaction functions
+  async setBroker(addr, bool){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setBrokers(addr, bool);
+    console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    console.log("1",sendResult)
+    
+  }
+
+  //TaboowBroker.sol Call Functions
+  async isSold(addr){
+    this.soldResponse = await this.contract.getSold(addr);
+    this.soldResponse = "Sold amount: " + this.soldResponse;
+  }
+ 
+  async isReserved_TaboowBroker(addr){
+      this.isReservedResponse = await this.contract.getIsReserved(addr);
+      this.isReservedResponse = "Reserved amount: " + this.isReservedResponse;
+  }
+  async isVerified_TaboowBroker(addr){
+      this.isVerifiedResponse = await this.contract.getIsVerified(addr);
+      if(this.isVerifiedResponse == true){
+        this.isVerifiedResponse = "Is verified";
+      }else{
+        this.isVerifiedResponse = "Is not verified";
+      }
+  }
+ 
   /*
 
   //NEW CONTRACT MODE

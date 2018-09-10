@@ -11,7 +11,7 @@ export class ContractService {
 	  public TaboowBroker_Abi;
   
 	  public Taboow_Addr = "0x8F361970fcA245710Ce91b993c24617671Aaefd0";
-	  public TaboowBroker_Addr = "0xA864A84a20c2306091ac5b444a0126D1C4a64bBD";
+	  public TaboowBroker_Addr = "0xA902494Cd646398DAe95Adc003a503Bf5979e17e";
   
 	  public Taboow_Contract;
     public TaboowBroker_Contract;
@@ -21,7 +21,7 @@ export class ContractService {
     
   }
   ngOnInit(){
-    
+
   }
 
   setContract(){
@@ -79,7 +79,7 @@ export class ContractService {
             if (err) {
               reject(err);
             } else {
-              resolve(res.toNumber());
+              resolve(res);
             }
           });
         });
@@ -92,7 +92,7 @@ export class ContractService {
             if (err) {
               reject(err);
             } else {
-              resolve(res.toNumber());
+              resolve(res);
             }
           });
         });
@@ -105,7 +105,7 @@ export class ContractService {
             if (err) {
               reject(err);
             } else {
-              resolve(res.toNumber());
+              resolve(res);
             }
           });
         });
@@ -338,6 +338,18 @@ export class ContractService {
           });
         });
       }
+      getTokenUnit(): Promise<number>{
+        let self=this
+        return new Promise (function (resolve, reject) {
+          self.TaboowBroker_Contract.tokenUnit.call(function(err, res){  
+            if (err) {
+              reject(err);
+            } else {
+              resolve(res.toNumber());
+            }
+          });
+        });
+      }
       //fwdAddr //mostrar solo al owner
       getFWDaddrETH(): Promise<string>{
         let self=this
@@ -368,7 +380,7 @@ export class ContractService {
       getDecimalsTaboowBroker(): Promise<number>{
         let self=this
         return new Promise (function (resolve, reject) {
-          self.TaboowBroker_Contract.tokenPrice.call(function(err, res){  
+          self.TaboowBroker_Contract.decimals.call(function(err, res){  
             if (err) {
               reject(err);
             } else {
