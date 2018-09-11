@@ -495,3 +495,7 @@ input[type="radio"]:checked+label span {
     border: none;
     width: 100%;
 }
+
+.marginTop {
+    margin-top: 40px;
+}
