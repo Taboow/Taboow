@@ -398,6 +398,8 @@ export class ContractService {
               reject(err);
             } else {
               resolve(res.toNumber());
+              console.log("res?",res);
+              
             }
           });
         });
@@ -468,8 +470,8 @@ export class ContractService {
         return txData
       }
       //EMGwithdraw onlyowner
-      EMGwithdraw():string{
-        let txData = this.TaboowBroker_Contract.EMGwithdraw.getData();
+      EMGwithdraw(value):string{
+        let txData = this.TaboowBroker_Contract.EMGwithdraw.getData(value);
         return txData
       }
 

@@ -2,6 +2,16 @@ import { Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
 
 import { ContractService  } from '../../../contract.service';
+import { Taboow } from './taboow.model';
+import { TaboowBroker } from './taboowBroker.model';
+import { UserInformation } from './userInformation.model';
+
+import { MdDialog } from '@angular/material';
+import { LoadingDialogComponent } from '../../dialogs/loading-dialog.component';
+import { BuyDialog } from './buy-dialog.component';
+import { ConfirmTxDialog } from './confirmTx.component';
+import { WithdrawDialog } from './withdraw-dialog.component';
+import { WithdrawTxDialog } from './withdrawTx.component';
 
 import { SendDialogService } from '../../../send-dialog.service';
 import { AccountService } from '../../../account.service';
@@ -12,17 +22,20 @@ import * as EthTx from 'ethereumjs-tx';
 import * as EthUtil from 'ethereumjs-util'
 import { ThrowStmt } from '../../../../../node_modules/@angular/compiler';
 
+
 @Component({
   selector: 'panel-page',
   templateUrl: './contractPanel.page.html'
 })
 export class ContractPanelPage implements OnInit {
-
+  
   public messageTaboow;
   public messageTaboowBroker;
 
   public TaboowOwner:boolean;
   public TaboowBrokerOwner:boolean;
+
+  public loadingD;
 
   public frozenAccount;
   public verifiedAccount;
@@ -31,96 +44,74 @@ export class ContractPanelPage implements OnInit {
 
   public inputValue1;
 
-  //Taboow.sol call variables
-  public TaboowName;
-  public TaboowSymbol;
-  public TaboowStandard;
+  public taboow = new Taboow;
+  public taboowBroker = new TaboowBroker;
+  public userInfo = new UserInformation;
+
+  public interval;
   
-  public TaboowDecimals;
-  public TaboowTotalSupply;
-  public TabooowTransactionFee;
-
-  public ownerAllowance;
-  public spenderAllowance;
-  public allowanceResponse;
-  public balanceAddr;
-  public balanceResponse;
-  public brokerAddr;
-  public brokerResponse;
-  public frozenAddr;
-  public frozenResponse;
-  public reservedAddr;
-  public reservedResponse;
-  public verifiedAddr;
-  public verifiedResponse
-
-  //Taboow.sol transaction variables
-  public setTransactionFeeValue;
-  public setBrokerAddr;
-  public setBrokerBool;
-  public verifyAccountAddr;
-  public verifyAccountBool;
-  public freezeAccountAddr;
-  public freezeAccountBool;
-  public mintAddr;
-  public mintValue;
-  public sweepAddrTaboow;
-  public sweepAmountTaboow;
-  public reserveTokensAddr;
-  public reserveTokensAmount;
-  public withdrawAddr;
-  public withdrawAmount;
-  public approveAddr;
-  public approveAmount;
-  public increaseAddr;
-  public increaseAmount;
-  public decreaseAddr;
-  public decreaseAmount;
-  public transferTokensAddr;
-  public transferTokensAmount;
-  public transferAddr;
-  public transferAmount;
-  public transferFromAddr1;
-  public transferFromAddr2;
-  public transferFromAmount;
-  public approveCallAddr;
-  public approveCallAmount;
-  public approveCallData;
-  public transferOwnership_TaboowAddr;
-  
-
-  //TaboowBroker.sol call variables
-  public TaboowBrokerName;
-  public TaboowBrokerDecimals;
-  public FWDaddrEth;
-  public pubEnd;
-  public pubEndDate:Date;
-  public taboowAddr;
-  public tokenPrice;
-  public tokenUnit;
-
-  public soldAddr;
-  public soldResponse;
-  public isReservedAddr;
-  public isReservedResponse;
-  public isVerifiedAddr;
-  public isVerifiedResponse;
-
-  //TaboowBroker.sol transaction variables
-  
-  
-  constructor(protected contract: ContractService, private sendDialogService : SendDialogService, protected _account: AccountService, private _dialog: DialogService, private router : Router, private _web3: Web3) {
-    //loading 
-    //loading close after this.userRole();
-
+ 
+  constructor(public dialogService: DialogService, protected contract: ContractService, protected sendDialogService : SendDialogService, protected _account: AccountService, public _dialog: DialogService, private router : Router, private _web3: Web3, public dialog: MdDialog) {
+    Promise.resolve().then(() => { 
+      this.loadingD = this.dialog.open(LoadingDialogComponent, {
+        width: '660px',
+        height: '150px',
+        disableClose: true,
+      });
+    });
   }
 
   async ngOnInit(){
-    await this.userRole();
+    console.log(this._account.account.balance);
+    
+
+    await this.load();
+    let pubEnd = await this.contract.getPubEnd();
+    let today = new Date;
+    let now = today.getTime()/1000;
+    console.log("now: ", now, "pubEnd: ",  pubEnd);
+    let count = 0;
+    if(pubEnd > now){
+      console.log("inside if");
+      
+      this.interval = setInterval(() =>{
+        console.log("insideInterval");
+        this.userInfo.pubEnd = this.contract.getPubEnd();
+        let todayd = new Date;
+        now = todayd.getTime()/1000;
+        this.userInfo.now = todayd.getTime()/1000;
+        count = count +1;     
+      }, 60000);
+    }
+    
   }
 
+  async load(){
+    
+    await this.isVerifiedAccount();
+    await this.loadUserInformation();
+    
+  }
+  async loadUserInformation(){
+    this.userInfo.account = this._account.account.address;
+    this.userInfo.tokenUnit = await this.contract.getTokenUnit();
+    this.userInfo.reservedAmount = await this.isReserved(this.userInfo.account);
+    this.userInfo.reservedAmount = this.userInfo.reservedAmount / this.userInfo.tokenUnit;
+    await this.isSold(this._account.account.address);
+    this.userInfo.soldAmount = this.taboowBroker.soldResponse;
+    this.userInfo.soldAmount = this.userInfo.soldAmount / this.userInfo.tokenUnit;
+    this.userInfo.pubEnd = await this.contract.getPubEnd();
+    this.userInfo.pubEndDate = new Date(this.userInfo.pubEnd*1000);
+    let today = new Date;
+    this.userInfo.now = today.getTime()/1000;
+    this.userInfo.balance = await this.contract.getBalances(this.userInfo.account);
+    if(this.userInfo.balance > 0){
+      this.userInfo.balance = this.userInfo.balance / this.userInfo.tokenUnit;
+    }
+    this.loadingD.close();
+    
+  }
   async userRole(){
-    console.log("dentro de userRole?");
     await this.isFrozenAccount();
 
     await this.isTaboowOwner();
@@ -136,11 +127,10 @@ export class ContractPanelPage implements OnInit {
         this.taboowOwnerAccount = null;
       }
     }
-    
-
     await this.TaboowInfo();
     await this.TaboowBrokerInfo();
   }
+
   async isTaboowOwner(){
     let x = await this.contract.getTaboowOwner();
     
@@ -184,70 +174,72 @@ export class ContractPanelPage implements OnInit {
     this.verifiedAccount  = await this.contract.getVerified(this._account.account.address);
     
     if(this.verifiedAccount == true){
-      this.messageTaboow = "Verified ROLE.";
-    }    
+      this.messageTaboow = "Your account is verified";
+    }else{
+      this.messageTaboow = "Your account is not verified";
+    }
   }
 
   async TaboowInfo(){
-    this.TaboowName = await this.contract.getNameTaboow();
-    this.TaboowStandard = await this.contract.getStandard();
-    this.TaboowSymbol = await this.contract.getSymbol();
-    this.TaboowDecimals = await this.contract.getDecimalsTaboow();
-    this.TaboowTotalSupply = await this.contract.getTotalSupply();
-    this.TaboowTotalSupply = this.TaboowTotalSupply / 1000000000000000000;
-    this.TabooowTransactionFee = await this.contract.getTransactionFee();
+    this.taboow.TaboowName = await this.contract.getNameTaboow();
+    this.taboow.TaboowStandard = await this.contract.getStandard();
+    this.taboow.TaboowSymbol = await this.contract.getSymbol();
+    this.taboow.TaboowDecimals = await this.contract.getDecimalsTaboow();
+    this.taboow.TaboowTotalSupply = await this.contract.getTotalSupply();
+    this.taboow.TaboowTotalSupply = this.taboow.TaboowTotalSupply / 1000000000000000000;
+    this.taboow.TabooowTransactionFee = await this.contract.getTransactionFee();
     
   }
   async TaboowBrokerInfo(){
-    this.TaboowBrokerName = await this.contract.getNameTaboowBroker();
-    this.TaboowBrokerDecimals = await this.contract.getDecimalsTaboowBroker();
-    this.FWDaddrEth = await this.contract.getFWDaddrETH();
-    this.pubEnd = await this.contract.getPubEnd();
-    this.pubEndDate = new Date(this.pubEnd*1000);
+    this.taboowBroker.TaboowBrokerName = await this.contract.getNameTaboowBroker();
+    this.taboowBroker.TaboowBrokerDecimals = await this.contract.getDecimalsTaboowBroker();
+    this.taboowBroker.FWDaddrEth = await this.contract.getFWDaddrETH();
+    this.taboowBroker.pubEnd = await this.contract.getPubEnd();
+    this.taboowBroker.pubEndDate = new Date(this.taboowBroker.pubEnd*1000);
     
-    this.taboowAddr = await this.contract.getTaboowAddr();
-    this.tokenPrice = await this.contract.getTokenPrice();
-    this.tokenUnit = await this.contract.getTokenUnit();
+    this.taboowBroker.taboowAddr = await this.contract.getTaboowAddr();
+    this.taboowBroker.tokenPrice = await this.contract.getTokenPrice();
+    this.taboowBroker.tokenUnit = await this.contract.getTokenUnit();
   }
 
   //Taboow.sol call functions
 
   async isAllowed(owner, spender){
-    this.allowanceResponse = await this.contract.getAllowance(owner, spender);
-    this.allowanceResponse = "Amount allowed to spend: " + this.allowanceResponse;
+    this.taboow.allowanceResponse = await this.contract.getAllowance(owner, spender);
+    this.taboow.allowanceResponse = "Amount allowed to spend: " + this.taboow.allowanceResponse;
   }
   async balances(addr){
-    this.balanceResponse = await this.contract.getBalances(addr);
-    this.balanceResponse = this.balanceResponse / 1000000000000000000;
-    this.balanceResponse = "Balance: " + this.balanceResponse;
+    this.taboow.balanceResponse = await this.contract.getBalances(addr);
+    this.taboow.balanceResponse = this.taboow.balanceResponse / 1000000000000000000;
+    this.taboow.balanceResponse = "Balance: " + this.taboow.balanceResponse;
   }
   async isBroker(addr){
-    this.brokerResponse = await this.contract.getBrokers(addr);
-    if(this.brokerResponse == true){
-      this.brokerResponse = "Is broker";
+    this.taboow.brokerResponse = await this.contract.getBrokers(addr);
+    if(this.taboow.brokerResponse == true){
+      this.taboow.brokerResponse = "Is broker";
     }else{
-      this.brokerResponse = "Is not broker";
+      this.taboow.brokerResponse = "Is not broker";
     }
   }
   async isFrozen(addr){
-    this.frozenResponse = await this.contract.getFrozenAccount(addr);
-    if(this.frozenResponse == true){
-      this.frozenResponse = "Is frozen";
+    this.taboow.frozenResponse = await this.contract.getFrozenAccount(addr);
+    if(this.taboow.frozenResponse == true){
+      this.taboow.frozenResponse = "Is frozen";
     }else{
-      this.frozenResponse = "Is not frozen";
+      this.taboow.frozenResponse = "Is not frozen";
     }
   }
   async isVerified(addr){
-    this.verifiedResponse = await this.contract.getVerified(addr);
-    if(this.verifiedResponse == true){
-      this.verifiedResponse = "Is verified";
+    this.taboow.verifiedResponse = await this.contract.getVerified(addr);
+    if(this.taboow.verifiedResponse == true){
+      this.taboow.verifiedResponse = "Is verified";
     }else{
-      this.verifiedResponse = "Is not verified";
+      this.taboow.verifiedResponse = "Is not verified";
     }
   }
   async isReserved(addr){
-    this.reservedResponse = await this.contract.getReserve(addr);
-    this.reservedResponse = "Reserved amount: " + this.reservedResponse;
+    this.taboow.reservedResponse = await this.contract.getReserve(addr);
+    this.taboow.reservedResponse = "Reserved amount: " + this.taboow.reservedResponse;
   }
 
   //Taboow.sol transaction functions
@@ -266,7 +258,7 @@ export class ContractPanelPage implements OnInit {
     let sendResult = await self._web3.sendRawTx(serialized);
     //console.log("1",sendResult)
 
-    this.TabooowTransactionFee = value; //change to call
+    this.taboow.TabooowTransactionFee = value; //change to call
     //await this.contract.getTransactionFee();
   }
 
@@ -485,106 +477,257 @@ export class ContractPanelPage implements OnInit {
   }
 
 
-
-
-
   //TaboowBroker.sol Call Functions
   async isSold(addr){
-    this.soldResponse = await this.contract.getSold(addr);
-    this.soldResponse = "Sold amount: " + this.soldResponse;
+    this.taboowBroker.soldResponse = await this.contract.getSold(addr);
+    //this.taboowBroker.soldResponse = "Sold amount: " + this.taboowBroker.soldResponse;
   }
  
   async isReserved_TaboowBroker(addr){
-      this.isReservedResponse = await this.contract.getIsReserved(addr);
-      this.isReservedResponse = "Reserved amount: " + this.isReservedResponse;
+      this.taboowBroker.isReservedResponse = await this.contract.getIsReserved(addr);
+      this.taboowBroker.isReservedResponse = "Reserved amount: " + this.taboowBroker.isReservedResponse;
   }
   async isVerified_TaboowBroker(addr){
-      this.isVerifiedResponse = await this.contract.getIsVerified(addr);
-      if(this.isVerifiedResponse == true){
-        this.isVerifiedResponse = "Is verified";
+      this.taboowBroker.isVerifiedResponse = await this.contract.getIsVerified(addr);
+      if(this.taboowBroker.isVerifiedResponse == true){
+        this.taboowBroker.isVerifiedResponse = "Is verified";
       }else{
-        this.isVerifiedResponse = "Is not verified";
+        this.taboowBroker.isVerifiedResponse = "Is not verified";
       }
+  }
+  //to Implement
+  async TaboowBrokerTransferOwnership(addr){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.transferOwnership_TaboowBroker(addr);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+    //await this.userRole();
+  }
+  async setTaboowAddress(addr){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setTaboowAddr(addr);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+    //await this.userRole();
+  }
+  async setBrokerPrice(value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setPrice(value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+    //await this.userRole();
+  }
+  async setBrokerPubEnd(value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setPubEnd(value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+    //await this.userRole();
+  }
+  async buyTaboow(){
+    let estimateGas = 1000000000;
+    let gasLimit = 1000000;
+    let amount = this._web3.web3.toWei(this.taboowBroker.buyValue);
+    let dialogRef = this.dialog.open( ConfirmTxDialog, {
+      width: '660px',
+      height: '450px',
+      data : {
+        contract: this.userInfo,
+        amount: amount,
+        fees: estimateGas,
+        cost: gasLimit
+      }
+    }); 
+    let self = this;
+    dialogRef.afterClosed().subscribe(async function(pass){
+      let title = "Unable to buy tokens";
+      let message = "Something went wrong"
+      let error ="";
+      let dialogRef;
+      if(typeof(pass)== 'undefined' || pass==""){
+        return false;
+      }else{
+        dialogRef = self.dialog.open( BuyDialog,
+          {
+            width: '660px',
+            height: '150px',
+            disableClose: true,
+          }
+        )
+          let tx2Data = await self.contract.buy();
+          let txInfo2 = await self.unsignedTx(self.contract.TaboowBroker_Addr ,tx2Data,1000000, amount);
+          
+          let serialized2 = self.serializeTx(txInfo2[0],pass);
+          let sendResult2 = await self._web3.sendRawTx(serialized2);
+          if(sendResult2 instanceof Error){
+            let error = sendResult2.message;
+            dialogRef.close();
+            dialogRef = self.dialogService.openErrorDialog(title,message,error);
+          }else{
+            
+            let pending: any = await self._web3.getTx(sendResult2);
+            pending.timeStamp = Date.now()/1000;
+            self._account.addPendingTx(pending);
+            title = "Transaction has been sended";
+            message = "You can see the transaction in the history tab"
+            dialogRef.close();
+            dialogRef = self.dialogService.openErrorDialog(title,message,error, 'redirect');
+            dialogRef.afterClosed().subscribe(result=>{
+                self.router.navigate(['/wallet/history']);
+          })
+          }
+        }
+    });
+   
+  }
+  async withdrawPUB(){
+    let estimateGas = 10000000000;
+    let gasPrice = 10000000000;
+    //let amount = this._web3.web3.toWei(this.taboowBroker.buyValue);
+    let dialogRef = this.dialog.open( WithdrawTxDialog, {
+      width: '660px',
+      height: '450px',
+      data : {
+        contract: this.userInfo,
+        fees: estimateGas,
+        cost: 1000000
+      }
+    }); 
+    let self = this;
+    dialogRef.afterClosed().subscribe(async function(pass){
+      let title = "Unable to withdraw tokens";
+      let message = "Something went wrong"
+      let error ="";
+      let dialogRef;
+      if(typeof(pass)== 'undefined' || pass==""){
+        return false;
+      }else{
+        dialogRef = self.dialog.open( WithdrawDialog,
+          {
+            width: '660px',
+            height: '150px',
+            disableClose: true,
+          }
+        )
+          let tx2Data = await self.contract.withdrawPUB();
+          let txInfo2 = await self.unsignedTx(self.contract.TaboowBroker_Addr ,tx2Data,1000000);
+          
+          let serialized2 = self.serializeTx(txInfo2[0],pass);
+          let sendResult2 = await self._web3.sendRawTx(serialized2);
+          if(sendResult2 instanceof Error){
+            let error = sendResult2.message;
+            dialogRef.close();
+            dialogRef = self.dialogService.openErrorDialog(title,message,error);
+          }else{
+            
+            let pending: any = await self._web3.getTx(sendResult2);
+            pending.timeStamp = Date.now()/1000;
+            self._account.addPendingTx(pending);
+            title = "Transaction has been sended";
+            message = "You can see the transaction in the history tab"
+            dialogRef.close();
+            dialogRef = self.dialogService.openErrorDialog(title,message,error, 'redirect');
+            dialogRef.afterClosed().subscribe(result=>{
+                self.router.navigate(['/wallet/history']);
+          })
+          }
+        }
+    });
+
+  }
+  async EMGwithdraw(value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.EMGwithdraw(value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+    //await this.userRole();
+  }
+  async sweepTaboowBroker(addr, value){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setSweepTaboowBroker(addr, value);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+    //await this.userRole();
+  }
+  async tokensDelivery(value, addr){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setTokensDelivery(value, addr);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+    //await this.userRole();
+  }
+  async reserveTokens_TaboowBroker(value, addr){
+    let fees = 0;
+    let cost = 0;
+    let y = await this.contract.setReserveTokens_TaboowBroker(value, addr);
+    //console.log(y);
+    let estimateGas = await this._web3.estimateGas(this._account.account.address, this.contract.Taboow_Addr, y)
+    let txInfo = await this.unsignedTx(this.contract.Taboow_Addr, y, estimateGas);
+    fees += estimateGas;
+    cost += estimateGas;
+    let self= this;
+    let serialized = self.serializeTx(txInfo[0],'0000');
+    let sendResult = await self._web3.sendRawTx(serialized);
+    //console.log("1",sendResult)
+    //await this.userRole();
   }
  
-  /*
-
-  //NEW CONTRACT MODE
-  getControl(controlName: string): AbstractControl{
-    return this.functionForm.get(controlName);
-  }
-
-  showFunction(){
-    let funct = this.getControl('functionCtrl').value
-    //console.log("funct",funct.inputs)
-    if(funct != this.funct){
-      this.submited = false;
-      //Remove prev controls
-      if(this.funct != null){
-        console.log("dentro remove");
-        this.functionForm = this._forms.removeControls(this.funct.inputs, this.functionForm);
-        if(this.funct.payable){
-          this.functionForm.removeControl('ethAmount');
-        }
-      }
-      
-      this.funct = funct;
-      this.functionForm = this._forms.addControls(funct.inputs, this.functionForm);
-      if(this.funct.payable){
-        this.functionForm.addControl('ethAmount', new FormControl(0, [Validators.required, Validators.min(0)]));
-      }
-      let element = document.getElementById('contract');
-    }
-  }
-
-  async onSubmit(){
-    this.submited = true;
-    if(this.functionForm.invalid){
-      return false
-    }
-    //let params = this._forms.getValues(this.funct.inputs, this.functionForm, this.contractInfo.type);
-    if(this.funct.constant){  
-      let response = await this._TaboowContract.callFunction(this._TaboowContract.contract, this.funct.name, params);
-      console.log("response", response)
-      if(this.funct.decimals == 'decimals'){
-        let number = parseInt(response.toString()) /Math.pow(10,this.contractInfo.decimals);
-				let zero = '0'
-				response = number.toLocaleString('en') + "."+zero.repeat(this.contractInfo.decimals)
-      }else if(this.funct.decimals == "eth"){
-        let number = this._web3.web3.fromWei(parseInt(response.toString()),'ether')
-				response = number.toLocaleString('en')
-      }
-
-      this._dialog.openMessageDialog(this.funct.name, response)
-    }else{
-      let dialogRef = this._dialog.openLoadingDialog();
-      let data = await this._TaboowContract.getFunctionData(this.funct.name, params)
-      let amount = 0;
-      if(this.funct.payable){
-        amount =  parseFloat(this.getControl('ethAmount').value)
-      }
-
-      //ERROR in [at-loader] ./src/app/components/contract/panel/contractPanel.page.ts:121:80
-      //TS2345: Argument of type '{ data: any; }' is not assignable to parameter of type 'string'.
-      
-      //let tx =  await this._rawtx.createRaw(this.contractInfo.address, amount, {data:data})
-      let tx =  await this._rawtx.createRaw(this.contractInfo.address, amount)
-      console.log(tx)
-      dialogRef.close();
-      //tx, to, amount, fees, total, action, token?
-      this.sendDialogService.openConfirmSend(tx[0], this.contractInfo.address, tx[2],tx[1]-tx[2], tx[1], "send")
-  }
-}
-
-  decimalsOutput(value){
-    let result = value/Math.pow(10,this.contractInfo.decimals)
-    return result
-  }
-
-  goBack(){
-    this.back.emit(true);
-  }
-*/
   async unsignedTx(contractAddr,txData, gas, amount?){
     let gasLimit = gas;
     

@@ -20,7 +20,7 @@ export class AccountService{
   apikey: string = "";
   //apikey: string = 'JDVE27WHYITCKM7Q2DMBC3N65VDIZ74HHJ';
 
-  constructor(private http: Http, private _wallet : WalletService, private _token : TokenService,private _web3: Web3, private router: Router){
+  constructor(private http: Http, private _wallet : WalletService, private _token : TokenService,protected _web3: Web3, private router: Router){
     //Hardcode
     this.getApiKey();
     if(this.apikey != ""){

@@ -52,6 +52,10 @@ import { ErrorDialogComponent } from './components/dialogs/error-dialog.componen
 import { LoadingDialogComponent } from './components/dialogs/loading-dialog.component';
 import { WaitingDialogComponent } from './components/dialogs/waiting-dialog.component';
 import { PendingDialogComponent } from './components/dialogs/pending-dialog.component';
+import { ConfirmTxDialog } from './components/contract/panel/confirmTx.component';
+import { BuyDialog } from './components/contract/panel/buy-dialog.component';
+import { WithdrawTxDialog } from './components/contract/panel/withdrawTx.component';
+import { WithdrawDialog } from './components/contract/panel/withdraw-dialog.component';
 
 
 /*Servicies*/
@@ -91,6 +95,10 @@ import { ConverterPipe } from './converter.pipe';
     PendingDialogComponent,
     JSONDialogComponent,
     PrivateKeyDialogComponent,
+    ConfirmTxDialog,
+    BuyDialog,
+    WithdrawTxDialog,
+    WithdrawDialog,
     ListComponent,
     PaginatorComponent,
     TokensComponent,
@@ -132,6 +140,10 @@ import { ConverterPipe } from './converter.pipe';
     PendingDialogComponent,
     JSONDialogComponent,
     PrivateKeyDialogComponent,
+    ConfirmTxDialog,
+    BuyDialog,
+    WithdrawTxDialog,
+    WithdrawDialog
   ],
   providers: [
     WalletService,
