@@ -1,18 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="26px" height="26px" viewBox="0 0 26 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
-    <title>Page 1 Copy 2</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="xplodde-symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.5" stroke-linecap="round" stroke-linejoin="round">
-        <g id="menu-contract-b-nolink" transform="translate(-32.000000, -187.000000)" stroke="#FFFFFF">
-            <g id="Page-1-Copy-2" transform="translate(32.000000, 187.000000)">
-                <path d="M10.434,16.434 C10.434,16.434 10.434,18.434 13.244,18.434 C16.764,18.434 16.764,13.646 13.244,12.934 C9.724,12.222 9.724,7.434 13.244,7.434 C15.434,7.434 15.434,9.434 15.434,9.434" id="Stroke-1"></path>
-                <path d="M13.434,5.434 L13.434,7.434" id="Stroke-3"></path>
-                <path d="M13.434,18.434 L13.434,20.434" id="Stroke-5"></path>
-                <path d="M12.934,2.827 C18.516,2.827 23.041,7.352 23.041,12.934 C23.041,18.516 18.516,23.041 12.934,23.041 C7.352,23.041 2.827,18.516 2.827,12.934 C2.827,7.352 7.352,2.827 12.934,2.827 Z" id="Stroke-7"></path>
-                <path d="M12.934,0.5 C19.801,0.5 25.368,6.067 25.368,12.934 C25.368,19.801 19.801,25.368 12.934,25.368 C6.067,25.368 0.5,19.801 0.5,12.934 C0.5,6.067 6.067,0.5 12.934,0.5 Z" id="Stroke-9"></path>
-            </g>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 26 26" style="enable-background:new 0 0 26 26;" xml:space="preserve">
+<style type="text/css">
+	.st0{opacity:0.5;}
+	.st1{fill:none;stroke:#FFFFFF;stroke-linecap:round;stroke-linejoin:round;}
+	.st2{fill:none;stroke:#FFFFFF;stroke-linecap:square;stroke-linejoin:round;stroke-dasharray:2,5;}
+	.st3{opacity:0.5;fill:#FFFFFF;enable-background:new    ;}
+</style>
+<title>Page 1 Copy 2</title>
+<desc>Created with Sketch.</desc>
+<g>
+	<g id="xplodde-symbols_4_" class="st0">
+		<g id="off-token---general-copy_3_" transform="translate(-179.000000, -28.000000)">
+			<g id="Page-1_3_" transform="translate(179.000000, 28.000000)">
+				<path id="Stroke-7_4_" class="st1" d="M25.2,13c0,6.7-5.5,12.2-12.2,12.2S0.8,19.8,0.8,13S6.3,0.8,13,0.8S25.2,6.3,25.2,13z"/>
+			</g>
+		</g>
+	</g>
+	<g id="xplodde-symbols_3_" class="st0">
+		<g id="off-token---general-copy_2_" transform="translate(-179.000000, -28.000000)">
+			<g id="Page-1_2_" transform="translate(179.000000, 28.000000)">
+				<path id="Stroke-7_3_" class="st2" d="M23.1,12.8c0,5.6-4.5,10.1-10.1,10.1S2.9,18.4,2.9,12.8S7.4,2.7,13,2.7
+					S23.1,7.2,23.1,12.8z"/>
+			</g>
+		</g>
+	</g>
+	<path class="st3" d="M13.1,5.3l-4.6,8.2l4.6,6.8l4.5-6.8L13.1,5.3z M16.2,13.1L13,14.4l-3.1-1.2l3.2-5.6L16.2,13.1z M13.1,18.3
+		l-2.6-3.8l2.6,1l2.6-1L13.1,18.3z"/>
+</g>
 </svg>

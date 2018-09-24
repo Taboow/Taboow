@@ -5,8 +5,8 @@ import {MdDialog} from '@angular/material';
 import {MdDialogRef} from '@angular/material';
 
 /*Services*/
-import { AccountService } from '../../account.service'
-import { WalletService } from '../../wallet.service'
+import { AccountService } from '../../services/account.service'
+import { WalletService } from '../../services/wallet.service'
 
 
 @Component({
@@ -18,7 +18,7 @@ export class SelectAccountDialogComponent implements OnInit{
 
   selectedAcc;
 
-  constructor(public dialog: MdDialog, public dialogRef: MdDialogRef<SelectAccountDialogComponent>, public _account: AccountService, private _wallet: WalletService) {
+  constructor(public dialog: MdDialog, public dialogRef: MdDialogRef<SelectAccountDialogComponent>, public _account: AccountService, protected _wallet: WalletService) {
 
   }
   ngOnInit(){
@@ -43,3 +43,5 @@ export class SelectAccountDialogComponent implements OnInit{
   }
 
 }
+
+ 

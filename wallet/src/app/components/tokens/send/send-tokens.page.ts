@@ -1,34 +1,33 @@
-import { Component, OnInit, OnDestroy} from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core'
 
 import * as EthUtil from 'ethereumjs-util';
 import * as EthTx from 'ethereumjs-tx';
 
 /*Services*/
-import { AccountService } from '../../../account.service'
-import { Web3 } from '../../../web3.service'
-import { SendDialogService } from '../../../send-dialog.service'
-import { TokenService } from '../../../token.service'
+import { AccountService } from '../../../services/account.service'
+import { SendDialogService } from '../../../services/send-dialog.service'
+import { TokenService } from '../../../services/token.service'
+import { RawTxService } from '../../../services/rawtx.sesrvice';
 
 @Component({
   selector: 'send-tokens-page',
   templateUrl: './send-tokens.html'
 })
 
-export class SendTokensPage implements OnInit, OnDestroy {
+export class SendTokensPage implements OnInit, OnDestroy{
   interval;
   addr: string = "";
   receiverAddr: string = "";
   amount: number = 0;
   token: any;
-  areTokens : boolean = false;
   errors:any = {
     receiver:"",
     amount:""
   }
+  submited = false;
 
-  constructor(public _web3: Web3,protected _account: AccountService, private sendDialogService: SendDialogService, private _token : TokenService,) {
+  constructor(public _rawtx: RawTxService,protected _account: AccountService, private sendDialogService: SendDialogService, private _token : TokenService,) {
     if('tokens' in this._account.account && this._account.account.tokens.length > 0){
-      this.areTokens = true;
       this.token = this._account.account.tokens[0];
     }
   }
@@ -36,68 +35,24 @@ export class SendTokensPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.interval = this._account.startIntervalTokens();
   }
+
   ngOnDestroy(){
     clearInterval(this.interval);
   }
 
-  checkAddress(receiverAddr): boolean {
-    if(!EthUtil.isValidAddress(receiverAddr)){
-      this.errors.receiver = "invalid receiver address";
-      return false
-    }else{
-      this.errors.receiver =  ""
-      return true
-    }
-
-  }
-  checkAmount(amount):boolean{
-    if(amount<0){
-      this.errors.amount = "Can not send negative amounts of ETH";
-      return false;
-    }else{
-      this.errors.amount ="";
-      return true;
-    }
-  }
-
-  async sendTokens() {
-    if(this.checkAmount(this.amount) == false || this.checkAddress(this.receiverAddr) == false){
+  async sendTokens(form) {
+    this.submited = true;
+    console.log(form)
+    if(form.invalid){
       return false;
     }
+    this._token.setToken(form.controls.token.value.contractAddress);
 
-    let amount = this.amount * (10 ** this.token.tokenDecimal);
-    let txData = await this._token.getDataTransfer(this.receiverAddr, amount)
-    let gasLimit = await this._web3.estimateGas(this._account.account.address,this.token.contractAddress,txData);
-
-    let acc = this._account.account;
-    
-    let gasPrice  = this._web3.web3.toHex(this._web3.web3.toWei('1','gwei'));
-    let nonce = await this._web3.getNonce(acc.address)
-    
-    let txParams = {
-      nonce: this._web3.web3.toHex(nonce),
-      gasPrice: gasPrice,
-      gasLimit: this._web3.web3.toHex(gasLimit),
-      to: this.token.contractAddress,
-      data: txData,
-      chainId:'0x3'
-    }
-    //console.log(txParams)
-    let fees = gasLimit*gasPrice;
-    let tx = new EthTx(txParams);
-    
-    let cost = fees
-    let balance =  this._web3.web3.toWei(this._account.account.balance,'ether');
-
-    //console.log("value ",amount," cost:",cost,"---",balance);
-    if(cost> balance){ 
-      this.errors.amount = 'Insufficient funds';
-      return false;
-    }else{
-      this.errors.amount ="";
-    }
-
-    this.sendDialogService.openConfirmSend(tx, this.receiverAddr, this.amount, fees, cost , 'transfer',this.token.tokenSymbol)
+    let amount = parseFloat(form.controls.amount.value) * Math.pow(10,parseInt(form.controls.token.value.tokenDecimal));
+    console.log(amount);
+    let txData = await this._token.getDataTransfer(form.controls.receiverAddr.value, Math.floor(amount))
+    let tx =  await this._rawtx.createRaw(form.controls.token.value.contractAddress, 0, {data:txData})
+    this.sendDialogService.openConfirmSend(tx[0], form.controls.receiverAddr.value, this.amount, tx[1], tx[1] , 'transfer',form.controls.token.value.tokenSymbol)
   }
 
 }

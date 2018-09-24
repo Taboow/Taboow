@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core'
 declare var require: any;
 import * as QRcode from 'qrcode';
 
-import { AccountService } from '../../../account.service'
+import { AccountService } from '../../../services/account.service';
 
 
 
@@ -18,6 +18,7 @@ export class ReceivePage implements OnInit {
   }
 
   ngOnInit() {
+    // console.log("Inited, ", devp2p)
     QRcode.toCanvas(this._account.account.address , { errorCorrectionLevel: 'H' }, function (err, canvas) {
       let canvasCont = document.getElementById('canvas')
       canvasCont.appendChild(canvas)

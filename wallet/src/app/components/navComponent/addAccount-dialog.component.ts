@@ -1,7 +1,5 @@
 import { Component, OnInit, Inject  } from '@angular/core'
 
-import {MdButtonModule} from '@angular/material';
-
 import {MdDialog} from '@angular/material';
 import {MdDialogRef} from '@angular/material';
 import {NewAccountDialogComponent} from './newAccount-dialog.component';
@@ -30,7 +28,7 @@ export class AddAccountDialogComponent implements OnInit {
     this.dialogRef.close();
     let dialogRef = this.dialog.open(dialog, {
       width: '660px',
-      height: (type=='import')?'555px':'350px',
+      height: (type=='import')?'600px':'350px',
     });
 
   }

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core'
-import { AccountService } from '../../account.service';
-import { Web3 } from '../../web3.service';
+import { Web3 } from '../../services/web3.service';
+import { EtherscanService } from '../../services/etherscan.service';
+import { AccountService } from '../../services/account.service';
 
+const shell = require('electron').shell;
 
 @Component({
   selector: 'app-settings',
@@ -12,29 +14,35 @@ export class SettingsComponent implements OnInit {
   lang = 'en';
   infuraApiKey : string;
   etherscanApiKey: string;
-  constructor(private _account: AccountService, private _web3 : Web3) {
+  constructor(private _scan: EtherscanService, private _web3 : Web3, private _account: AccountService) {
     this.infuraApiKey= _web3.infuraKey;
-    this.etherscanApiKey = _account.apikey;
+    this.etherscanApiKey = _scan.apikey;
   }
 
   ngOnInit() {}
 
-  setInfuraKey(){
-    this._web3.setInfuraKey(this.infuraApiKey);
-    this._web3.setProvider(3);
-  }
-  setEtherscanKey(){
-    this._account.setApiKey(this.etherscanApiKey)
-  }
-  openUrl(website){
-    const shell = require('electron').shell;
-    let url;
-    if(website=='infura'){
-      url='https://infura.io/register';
-    }else{
-      url='https://ropsten.etherscan.io/apis'
+  setInfuraKey(text?){
+    if(typeof(text)!= 'undefined'){
+      this.infuraApiKey = text;
     }
-        shell.openExternal(url);
+    this._web3.setInfuraKey(this.infuraApiKey);
+    this._web3.setNetwork(this._web3.network);
+    if(this._scan.apikey != "" && this._web3.infuraKey != ""){
+      this._account.getAccountData();
+      if('address' in this._account.account){
+        this._account.startIntervalData();
+      }
+    }
   }
+  setEtherscanKey(text?){
+    if(typeof(text)!= 'undefined'){
+      this.etherscanApiKey = text;
+    }
+    this._scan.setApiKey(this.etherscanApiKey)
+  }
+  openUrl(url){
+    shell.openExternal(url);
+  }
+
 
 }

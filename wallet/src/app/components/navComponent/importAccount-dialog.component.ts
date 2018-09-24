@@ -1,15 +1,13 @@
 import { Component } from '@angular/core'
 
 /*Services*/
-import { WalletService } from '../../wallet.service'
-import { AccountService } from '../../account.service'
-import { DialogService } from '../../dialog.service'
+import { WalletService } from '../../services/wallet.service'
+import { AccountService } from '../../services/account.service'
+import { DialogService } from '../../services/dialog.service'
 
 /*Dialog*/
 import { MdDialog } from '@angular/material';
 import { MdDialogRef } from '@angular/material';
-import { LoadingDialogComponent } from '../dialogs/loading-dialog.component';
-
 
 const EthUtils = require('ethereumjs-util')
 
@@ -21,6 +19,15 @@ export class ImportAccountDialogComponent{
   nameAccount:string;
   importType= "keystore";
   submited : boolean = false;
+
+  passErr;
+  pass2Err;
+  checkPassErr;
+
+
+  protected input;
+  protected password;
+  protected password2;
 
   constructor(public dialogRef: MdDialogRef<ImportAccountDialogComponent>, private _wallet: WalletService,
                private _account: AccountService, public dialog: MdDialog, private dialogService: DialogService) {
@@ -43,7 +50,28 @@ export class ImportAccountDialogComponent{
     let importType = this.importType
     
     if(this.checkPass(pass, pass2) == false || this.checkInput(input) == false){
+      if(this.checkPass(pass, pass2) == false){
+        this.checkPassErr = true;
+      }else{
+        this.checkPassErr = null;
+      }
+   
       return false
+    }
+
+    if(pass==null || pass2 == null){
+      if(pass == null){
+        this.passErr = true;
+      }else{
+        this.passErr = null;
+      }
+      if(pass2 == null){
+        this.pass2Err = true;
+      }else{
+        this.pass2Err = null;
+      }
+  
+      return false;
     }
     if(this.importType=="keystore"){
       try{
@@ -73,7 +101,7 @@ export class ImportAccountDialogComponent{
       return false
     }
 
-    console.log(importType)
+    //console.log(importType)
     try{
       if(importType=="keystore"){
         wallet.importAccountJSON(name, input, pass);
@@ -83,7 +111,7 @@ export class ImportAccountDialogComponent{
       if(!localStorage.getItem('acc')){
         account.getAccountData();
       } 
-      console.log("finish");
+      //console.log("finish");
     }catch(e){
       error=(e.name=="SyntaxError")? "Json interface has wrong format": e.message;
     }

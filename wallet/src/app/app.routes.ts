@@ -12,13 +12,16 @@ import { WsettingsPage } from './components/wallet/wsettings/wsettings.page'
 import { TokensComponent } from './components/tokens/tokens.component'
 import { GeneralPage } from './components/tokens/general/general.page'
 import { SendTokensPage } from './components/tokens/send/send-tokens.page'
+import { AddTokenPage } from './components/tokens/add/add.page'
 
 import { ContractComponent } from './components/contract/contract.component';
 import { ContractPanelPage } from './components/contract/panel/contractPanel.page';
 
+import { KYCComponent } from './components/kyc/kyc.component';
+import { KYCPage } from './components/kyc/kycPanel/kyc.page';
 
-import { AddTokenPage } from './components/tokens/add/add.page'
 import { SettingsComponent } from './components/settings/settings.component'
+
 
 const routes: Routes = [
   { path: 'wallet', component: WalletComponent,
@@ -44,7 +47,14 @@ const routes: Routes = [
       { path: 'panel', component: ContractPanelPage }
     ]
   },
-  { path: 'settings', component: SettingsComponent },
+  { path: 'kyc', component: KYCComponent,
+    children: [
+      { path: '', redirectTo: 'kycPage', pathMatch: 'full' },
+      { path: 'kycPage', component: KYCPage },
+    
+    ]
+  },
+  { path: 'general-settings', component: SettingsComponent },
   { path: '', redirectTo: '/wallet/global', pathMatch: 'full' },
   { path: '**', redirectTo: '/wallet/global', pathMatch: 'full' },
 ];

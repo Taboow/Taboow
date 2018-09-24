@@ -1,5 +1,5 @@
 import { Component, OnInit, OnChanges, Input } from '@angular/core';
-import { AccountService } from '../../../account.service';
+import { Web3 } from '../../../services/web3.service';
 
 @Component({
   selector: 'app-list',
@@ -16,23 +16,26 @@ export class ListComponent implements OnInit, OnChanges {
 
     items: any[];
 
-    constructor(protected _account: AccountService) {
+    constructor(private _web3: Web3) {
     }
 
     ngOnInit(): void {
         this.totalPages = Math.ceil(this.history.length/this.limit);
         this.getItmes();
-        console.log(this.items.length)
+        //console.log(this.items.length)
     }
+    
     ngOnChanges(): void {
         this.totalPages = Math.ceil(this.history.length/this.limit);
         if(this.page==1){
             this.getItmes();
         }
+  
     }
     openExternal(txHash){
         const shell = require('electron').shell;
-        shell.openExternal('https://ropsten.etherscan.io/tx/'+txHash);
+        let net = (this._web3.network==1) ? "":"ropsten.";
+        shell.openExternal('https://'+net+'etherscan.io/tx/'+txHash);
     }
 
     getItmes(): void {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 /*Service*/
-import { AccountService } from '../../../account.service';
+import { AccountService } from '../../../services/account.service';
 
 /*Dialog*/
 import { MdDialog } from '@angular/material';
@@ -11,7 +11,7 @@ import { PrivateKeyDialogComponent } from './privatekey-dialog.component';
 import { ErrorDialogComponent } from '../../dialogs/error-dialog.component';
 
 import * as EthWallet from 'ethereumjs-wallet'
-import { DialogService } from '../../../dialog.service';
+import { DialogService } from '../../../services/dialog.service';
 
 @Component({
   selector: 'wsettings-page',
@@ -26,6 +26,7 @@ export class WsettingsPage implements OnInit {
   }
 
   ngOnInit() {
+    // console.log("Inited, ", devp2p)
   }
   exportPrivateKey(pass){
     this.submited = true;
@@ -62,6 +63,7 @@ export class WsettingsPage implements OnInit {
     if(pass==null || pass==""){
       return;
     }
+    //console.log("json")
     let error:string = "";
 
     try{ 

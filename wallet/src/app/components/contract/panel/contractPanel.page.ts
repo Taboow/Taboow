@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
 
-import { ContractService  } from '../../../contract.service';
+import { ContractService  } from '../../../services/contract.service';
 import { Taboow } from './taboow.model';
 import { TaboowBroker } from './taboowBroker.model';
 import { UserInformation } from './userInformation.model';
@@ -13,11 +13,11 @@ import { ConfirmTxDialog } from './confirmTx.component';
 import { WithdrawDialog } from './withdraw-dialog.component';
 import { WithdrawTxDialog } from './withdrawTx.component';
 
-import { SendDialogService } from '../../../send-dialog.service';
-import { AccountService } from '../../../account.service';
-import { DialogService } from '../../../dialog.service';
+import { SendDialogService } from '../../../services/send-dialog.service';
+import { AccountService } from '../../../services/account.service';
+import { DialogService } from '../../../services/dialog.service';
 import { Router } from '@angular/router';
-import { Web3 } from '../../../web3.service';
+import { Web3 } from '../../../services/web3.service';
 import * as EthTx from 'ethereumjs-tx';
 import * as EthUtil from 'ethereumjs-util'
 import { ThrowStmt } from '../../../../../node_modules/@angular/compiler';
@@ -52,18 +52,16 @@ export class ContractPanelPage implements OnInit {
   
  
   constructor(public dialogService: DialogService, protected contract: ContractService, protected sendDialogService : SendDialogService, protected _account: AccountService, public _dialog: DialogService, private router : Router, private _web3: Web3, public dialog: MdDialog) {
-    Promise.resolve().then(() => { 
+   /* Promise.resolve().then(() => { 
       this.loadingD = this.dialog.open(LoadingDialogComponent, {
         width: '660px',
         height: '150px',
         disableClose: true,
       });
-    });
+    });*/
   }
 
   async ngOnInit(){
-    console.log(this._account.account.balance);
-    
 
     await this.load();
     let pubEnd = await this.contract.getPubEnd();
@@ -88,29 +86,11 @@ export class ContractPanelPage implements OnInit {
 
   async load(){
     
-    await this.isVerifiedAccount();
-    await this.loadUserInformation();
-    
+    await this.contract.isVerifiedAccount();
+    await this.contract.loadUserInformation();
+    //this.loadingD.close();
   }
-  async loadUserInformation(){
-    this.userInfo.account = this._account.account.address;
-    this.userInfo.tokenUnit = await this.contract.getTokenUnit();
-    this.userInfo.reservedAmount = await this.isReserved(this.userInfo.account);
-    this.userInfo.reservedAmount = this.userInfo.reservedAmount / this.userInfo.tokenUnit;
-    await this.isSold(this._account.account.address);
-    this.userInfo.soldAmount = this.taboowBroker.soldResponse;
-    this.userInfo.soldAmount = this.userInfo.soldAmount / this.userInfo.tokenUnit;
-    this.userInfo.pubEnd = await this.contract.getPubEnd();
-    this.userInfo.pubEndDate = new Date(this.userInfo.pubEnd*1000);
-    let today = new Date;
-    this.userInfo.now = today.getTime()/1000;
-    this.userInfo.balance = await this.contract.getBalances(this.userInfo.account);
-    if(this.userInfo.balance > 0){
-      this.userInfo.balance = this.userInfo.balance / this.userInfo.tokenUnit;
-    }
-    this.loadingD.close();
-    
-  }
+
   async userRole(){
     await this.isFrozenAccount();
 
@@ -120,7 +100,7 @@ export class ContractPanelPage implements OnInit {
       this.taboowOwnerAccount = true;
     }else{
         await this.isBrokerAccount();
-        await this.isVerifiedAccount();
+        await this.contract.isVerifiedAccount();
       if(this.TaboowBrokerOwner == true || this.TaboowOwner == true){
         this.taboowOwnerAccount = false;
       }else{
@@ -170,15 +150,7 @@ export class ContractPanelPage implements OnInit {
       this.messageTaboow = "Broker ROLE.";
     }    
   }
-  async isVerifiedAccount(){
-    this.verifiedAccount  = await this.contract.getVerified(this._account.account.address);
-    
-    if(this.verifiedAccount == true){
-      this.messageTaboow = "Your account is verified";
-    }else{
-      this.messageTaboow = "Your account is not verified";
-    }
-  }
+
 
   async TaboowInfo(){
     this.taboow.TaboowName = await this.contract.getNameTaboow();
@@ -556,7 +528,12 @@ export class ContractPanelPage implements OnInit {
     //console.log("1",sendResult)
     //await this.userRole();
   }
+
+  
   async buyTaboow(){
+    console.log("this.taboowBroker.buyValue", this.taboowBroker.buyValue);
+    console.log("contract", this.userInfo);
+    
     let estimateGas = 1000000000;
     let gasLimit = 1000000;
     let amount = this._web3.web3.toWei(this.taboowBroker.buyValue);
@@ -732,11 +709,23 @@ export class ContractPanelPage implements OnInit {
     let gasLimit = gas;
     
     //console.log(amount,"---", gasLimit*2)
-    let chainId = 3;
+    let chainId;
+    if(this._web3.network == 1){
+      chainId = "0x1";
+    }
+    if(this._web3.network == 3){
+      chainId = "0x3";
+    }
+    
     let acc = this._account.account;
+    console.log("account unsignedTxs", acc);
+    
     let amountW = (typeof(amount) == "undefined")? 0 : amount;
     let gasPrice  = this._web3.web3.toWei('10','gwei');
     let nonce = await this._web3.getNonce(acc.address)
+    console.log("nonce de este account", nonce);
+    console.log("contractAddr", contractAddr);
+    
 
     let txParams = {
       nonce: nonce,
@@ -745,7 +734,7 @@ export class ContractPanelPage implements OnInit {
       to: contractAddr,
       value: this._web3.web3.toHex(amountW),
       data: txData,
-      chainId:'0x3'
+      chainId: chainId
     }
   
     let tx= new EthTx(txParams);

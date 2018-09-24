@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core'
 
-import * as EthUtil from 'ethereumjs-util';
-import * as EthTx from 'ethereumjs-tx';
-
 /*Services*/
-import { AccountService } from '../../../account.service'
-import { Web3 } from '../../../web3.service'
-import { SendDialogService } from '../../../send-dialog.service'
+import { AccountService } from '../../../services/account.service';
+import { Web3 } from '../../../services/web3.service';
+import { SendDialogService } from '../../../services/send-dialog.service';
+import { RawTxService } from '../../../services/rawtx.sesrvice';
+import { DialogService } from '../../../services/dialog.service';
 
 @Component({
   selector: 'send-page',
@@ -22,72 +21,47 @@ export class SendPage implements OnInit {
     receiver:"",
     amount:""
   }
+  submited = false;
 
-  constructor(public _web3: Web3, private _account: AccountService, private sendDialogService: SendDialogService) {
+  constructor(public _web3: Web3,private _account: AccountService, private _dialog: DialogService, private sendDialogService: SendDialogService,  private _rawtx: RawTxService) {
   }
 
   ngOnInit() {
   }
 
-  checkAddress(receiverAddr): boolean {
-    if(!EthUtil.isValidAddress(receiverAddr)){
-      this.errors.receiver = "invalid receiver address";
-      return false
-    }else{
-      this.errors.receiver =  ""
-      return true
-    }
-
-  }
-  checkAmount(amount):boolean{
-    if(amount<0){
-      this.errors.amount = "Can not send negative amounts of ETH";
-      return false;
-    }else{
-      this.errors.amount ="";
-      return true;
-    }
-  }
-
-  async sendEth(receiverAddr: string, amount: number, trans_data? : string) {
-    if(this.checkAmount(amount) == false || this.checkAddress(receiverAddr) == false){
+  async sendEth(form) {
+    this.submited = true;
+    console.log(form.controls)
+    if(form.invalid){
       return false;
     }
-
-    let chainId = 3;
-    let acc = this._account.account;
-    let amountW = this._web3.web3.toWei(amount,'ether');
-    let gasPrice  = this._web3.web3.toHex(this._web3.web3.toWei('1','gwei'));
-    let nonce = await this._web3.getNonce(acc.address)
-    
-    let txParams = {
-      nonce: nonce,
-      gasPrice: gasPrice,
-      gasLimit: this._web3.web3.toHex(21000),
-      to: receiverAddr,
-      value: this._web3.web3.toHex(amountW),
-      data:this._web3.web3.toHex(trans_data),
-      chainId:'0x3'
-    }
-    //console.log(txParams)
-    
-    let tx = new EthTx(txParams);
-    
-    txParams.gasLimit='0x'+tx.getBaseFee().toString(16);
-    let tx2= new EthTx(txParams);
-
-    let cost = parseInt(tx2.getUpfrontCost().toString());
-    let balance =  this._web3.web3.toWei(this._account.account.balance,'ether');
-
-    //console.log("value ",amount," cost:",cost,"---",balance);
-    if(cost> balance){ 
-      this.errors.amount = 'Insufficient funds';
-      return false;
-    }else{
-      this.errors.amount ="";
+    let tx;
+    let gasLimit;
+    try{
+      if(typeof(form.controls.trans_data.value)!="undefined" && form.controls.trans_data.value != "" ){
+        console.log("con data")
+        gasLimit = await this._web3.estimateGas(this._account.account.address, form.controls.receiverAddr.value, this._web3.web3.toHex(form.controls.trans_data.value), parseInt(this._web3.web3.toWei(form.controls.amount.value,'ether')));
+      } else {
+        console.log("sin data")
+        gasLimit = await this._web3.estimateGas(this._account.account.address, form.controls.receiverAddr.value, "", parseInt(this._web3.web3.toWei(form.controls.amount.value,'ether')))
+      }
+    }catch(e){
+      gasLimit = await this._web3.blockGas();
     }
 
-    this.sendDialogService.openConfirmSend(tx2, receiverAddr, amount, (cost-amountW), cost, 'send')
+    let dialogRef = this._dialog.openGasDialog(await gasLimit, 1);
+    dialogRef.afterClosed().subscribe(async result=>{
+      console.log("result",result);
+      if(typeof(result) != 'undefined'){
+        let obj = JSON.parse(result);
+
+        if(typeof(form.controls.trans_data.value)!="undefined" && form.controls.trans_data.value != ""){
+          obj.data = form.controls.trans_data.value;
+        }
+        tx =  await this._rawtx.createRaw(form.controls.receiverAddr.value, form.controls.amount.value, obj)
+        this.sendDialogService.openConfirmSend(tx[0], form.controls.receiverAddr.value, tx[2],tx[1]-tx[2], tx[1], "send");
+      }
+    })
   }
 
 }

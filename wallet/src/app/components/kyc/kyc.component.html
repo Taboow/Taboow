@@ -1,0 +1,14 @@
+<nav class="flex-row">
+    <a routerLink="kycPage" routerLinkActive="active" #kycPage="routerLinkActive">
+        <div>
+            <span>
+                <img *ngIf="kycPage.isActive" src="~icons/kyc_icon.svg">
+                <img *ngIf="!kycPage.isActive" src="~icons/kyc_icon.svg">
+            </span>
+            <p class="title-button-navbar">KYC</p>
+        </div>
+    </a>
+</nav>
+<div class="content scrollable-content flex-inside" [ngStyle]="{'max-height.px': max}">
+    <router-outlet></router-outlet>
+</div>

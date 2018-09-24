@@ -10,12 +10,9 @@
     </a>
 
 </nav>
-<div *ngIf="_account.apikey =='' || _account._web3.infuraKey ==''" class="content flex-inside">
-    <p *ngIf="!_account.account?.address; else content" class="text-center whiteBox">Set your api keys in
-        <a routerLink="/settings">Settings Page</a></p>
-</div>
-<div *ngIf="_account.apikey !='' && _account._web3.infuraKey !=''" class="content flex-inside">
-    <p *ngIf="!_account.account?.address; else content" class="text-center whiteBox">Select an account</p>
+
+<div class="content scrollable-content flex-inside">
+    <p *ngIf="!_account.account?.address; else content" class="text-center">Select an account</p>
     <ng-template #content>
         <router-outlet></router-outlet>
     </ng-template>

@@ -3,14 +3,15 @@ import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 
 /*Services*/
-import { AccountService } from '../../account.service';
+import { AccountService } from '../../services/account.service';
+import { Web3} from '../../services/web3.service';
+import { EtherscanService }  from '../../services/etherscan.service';
 
 /*Dialog*/
 import {MdDialog} from '@angular/material';
 import { SelectAccountDialogComponent } from './selectAccount-dialog.component';
 import { AddAccountDialogComponent } from './addAccount-dialog.component';
 import { LoadingDialogComponent } from '../dialogs/loading-dialog.component';
-import { Web3 } from '../../web3.service';
 
 @Component({
   selector: 'app-nav',
@@ -21,28 +22,12 @@ export class NavComponent implements OnInit {
   route: string = "";
   loadingD;
   interval
-  constructor(location: Location, router: Router,public _account: AccountService,public dialog: MdDialog, protected _web3: Web3) {
+  constructor(location: Location, router: Router,public _account: AccountService,public dialog: MdDialog, public _web3: Web3, protected _scan: EtherscanService) {
     router.events.subscribe((val) => {
       if(location.path() != ''){
         this.route = location.path();
       }
     });
-    this.loadingD=this.dialog.open(LoadingDialogComponent, {
-      width: '660px',
-      height: '150px',
-      disableClose: true,
-    });
-
-    this.interval = setInterval(()=>{
-      if('balance' in this._account.account){
-        this.loadingD.close();
-        clearInterval(this.interval);
-      }
-    })
-    if(!('address' in this._account.account)){
-      this.loadingD.close();
-     // this.loadingDialog();
-    }
   }
 
   ngOnInit() {

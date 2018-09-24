@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 
 /*Services*/
-import { AccountService } from '../../../account.service'
-import { TokenService } from '../../../token.service';
-import { DialogService } from '../../../dialog.service';
+import { AccountService } from '../../../services/account.service'
+import { TokenService } from '../../../services/token.service';
+import { DialogService } from '../../../services/dialog.service';
 
 import * as EthUtil from 'ethereumjs-util';
 
@@ -32,11 +32,11 @@ export class AddTokenPage implements OnInit {
       try{
         this.token.tokenSymbol = await this._token.getSymbol();
       }catch(e){
-        console.log(e)
+        //console.log(e)
         error = true;
       }
       if(!error){
-        console.log("sin erro")
+        
         this.token.tokenDecimal = await this._token.getDecimal();
         this.token.tokenName = await this._token.getName();
         this.token = await this._account.updateTokenBalance(this.token)
@@ -47,20 +47,22 @@ export class AddTokenPage implements OnInit {
   }
 
   addToken(){
-    let isToken = this._account.account.tokens.findIndex(token => token.contractAddress.toLowerCase() == this.token.contractAddress.toLowerCase())
-    if(isToken != -1){
+    let tokenIndex = this._account.account.tokens.findIndex(token => token.contractAddress.toLowerCase() == this.token.contractAddress.toLowerCase())
+    if(tokenIndex != -1 && !this._account.account.tokens[tokenIndex].deleted){
         let title = 'Unable to add token';
         let message = 'Something was wrong';
         let error = 'The token you are trying to import is a duplicate'
         let dialogRef = this._dialog.openErrorDialog(title, message, error)
-
-    }else{
+        
+    } else if(tokenIndex != -1 && this._account.account.tokens[tokenIndex].deleted) {
+      this._account.account.tokens[tokenIndex].deleted = false;
+      this.router.navigate(['/tokens/general']);
+    } else {
       if(this.isToken){
-        console.log(this.token.tokenSymbol,this.token.tokenDecimal,this._token.token )
         this._account.addToken(this.token),
-        this.reset();
         this.router.navigate(['/tokens/general']);
       }
+      
     }
   }
 
@@ -72,7 +74,7 @@ export class AddTokenPage implements OnInit {
       tokenName : '',
       tokenBalance: 0
 
-    }
+  }
     this.isToken=false;
     
   }
