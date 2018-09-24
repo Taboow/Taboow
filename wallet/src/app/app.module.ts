@@ -73,7 +73,6 @@ import { DialogService } from './services/dialog.service';
 import { SendDialogService } from './services/send-dialog.service';
 import { TokenService } from './services/token.service';
 import { ContractService } from './services/contract.service';
-
 import { FormsService } from './services/forms.service'
 import { RawTxService } from './services/rawtx.sesrvice'
 import { ContractStorageService } from './services/contractStorage.service'

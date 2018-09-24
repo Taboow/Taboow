@@ -252,4 +252,5 @@ export class KYCPage implements OnInit {
     });
   }
 
+  
 }

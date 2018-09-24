@@ -11,7 +11,7 @@ import { AccountService } from '../../services/account.service'
 
 
 import { ContractStorageService } from '../../services/contractStorage.service';
-import { MarketService } from '../../services/market.service';
+
 
 @Component({
   selector: 'send-dialog',
@@ -19,7 +19,7 @@ import { MarketService } from '../../services/market.service';
 })
 export class SendDialogComponent{
   insufficient = false;
-  constructor(public _web3: Web3, public _account: AccountService, private router: Router, public dialogService: DialogService, @Inject(MD_DIALOG_DATA) public data: any, public dialogRef: MdDialogRef<SendDialogComponent>, private _contractStorage: ContractStorageService, private _market: MarketService) {
+  constructor(public _web3: Web3, public _account: AccountService, private router: Router, public dialogService: DialogService, @Inject(MD_DIALOG_DATA) public data: any, public dialogRef: MdDialogRef<SendDialogComponent>, private _contractStorage: ContractStorageService) {
     if(parseInt(_web3.web3.toWei(this._account.account.balance,'ether')) < data.total ){
       this.insufficient= true;
     }
@@ -73,9 +73,7 @@ export class SendDialogComponent{
       }else{
         console.log("no error",sendResult)
         if(this.data.action == "order") {
-          let hash = await this._market.orderHash(this.data.hashParams)
-          let sign = this._market.signOrder(hash, privateKey);
-          let order = await this._market.placeOrder(this.data.hashParams, sign);
+
         }
 
         let pending: any = null;
