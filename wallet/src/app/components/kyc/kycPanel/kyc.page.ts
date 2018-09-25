@@ -1,6 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core'
-import { Http, HttpModule, Headers, ResponseOptions} from '@angular/http';
-
+import { Http, Headers, ResponseOptions, RequestOptions} from '@angular/http';
 import { AccountService } from '../../../services/account.service';
 import { Web3 } from '../../../services/web3.service';
 import fs = require('fs');
@@ -8,7 +7,8 @@ import { AngularDateTimePickerModule } from 'angular2-datetimepicker';
 import { MdDialog } from '@angular/material';
 import { CountryDialogComponent } from './country-dialog.component';
 import * as EthUtil from 'ethereumjs-util';
-
+import * as EthWallet from 'ethereumjs-wallet'
+import { stringify } from 'querystring';
 
 let resources = './extraResources/';
 
@@ -28,6 +28,7 @@ const keypair = ethGSV.generateKeyPair(); // keypair = { privateKey: '0xe3888eaa
 const signature = ethGSV.sign('SomeDataAsString', keypair.privateKey); // signature = { r: '0x14aedb650....', s: '0x4a9aa9d436....', v: 27 }
 const isValid = ethGSV.verify('SomeDataAsString', signature, keypair.address); // isValid = true
 */
+
 @Component({
   selector: 'kyc-page',
   templateUrl: './kyc.page.html',
@@ -140,6 +141,7 @@ export class KYCPage implements OnInit {
   public companyCif;
   public companyAddress;
   public companyWebsite;
+  protected pass;
 
   public submited = false;
 
@@ -160,6 +162,7 @@ export class KYCPage implements OnInit {
   }
 
   ngOnInit() {
+    this.ethAddr = this._account.account.address;
     this.type = this.accountType[0];
     this.displayPersonal = true;
     let video = document.querySelector('video');
@@ -325,42 +328,78 @@ export class KYCPage implements OnInit {
     if(this.dateErr == null && this.ethAddrErr == null){
         let x :string= form.controls.ethAddr.value.toString();
         console.log("x??",x);
-        
-        this.postAddr(x);
+        let password = "0000";
+        this.postAddr(x, form.controls.pass.value);
     }
 
     //this.postAddr(form.controls.ethAddr.value);
       
   }
 
-  postAddr(data){
-    let path = "/kyc?address="+data;
+  postAddr(data, pass){
+    let path = "/kyc";
+    data = data.toString();
+    let obj = { address: data};
+    let addr = JSON.stringify(obj);
+
+    console.log("addrjson", addr);
+    
+
     //let userData = {"address":data}
     console.log("path", path);
-    
+    let wallet;
+    let error="";
+    let priv;
+    try{
+        wallet = EthWallet.fromV3(this._account.account.v3, pass);
+      }catch(e){
+        error= e.message;
+      }
+      if(error==""){if(error==""){
+        priv = wallet.getPrivateKeyString();
+    }
+    console.log("private?", priv);
     
     return new Promise((resolve, reject) => {
       let headers = new Headers();
+     
+      
+      let sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
+      console.log("firma", sign);
+      console.log(JSON.stringify(sign));
+      sign = JSON.stringify(sign)
+      sign = btoa(sign)
+      console.log("base64",sign);
+      sign = sign.toString();
+
+      let data = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoU2VjcmV0IjoiamFza2pzZGhpdWR1aWh3cWl1MjEyIiwiaWF0IjoxNTM3ODk0NTMzLCJleHAiOjE3MDg5ODk0NTMzfQ.f06c1LCyR-FYT9nJRm2r_6K8hSETqghw5Vwlq19ZqbI';
+      
+      data = "Bearer "+data;
       headers.append('Content-Type', 'application/json');
-      this.http.post(this.url+path, {headers: headers}).subscribe(res =>{
-        resolve(res.json());
-        //localStorage.setItem('userCredentials', JSON.stringify(data));
-        let response = res.json();
-        console.log("Post Res", res);
-        //localStorage.setItem('access_token', JSON.stringify(response.access_token));
-        //localStorage.setItem('refresh_token', JSON.stringify(response.refresh_token));
+      headers.append('Authorization', data);
+      headers.append('Signature', sign);
+        console.log("fuera del post");
+        console.log("headers?", headers);
         
+        let options = new RequestOptions({headers: headers});
+        console.log(options);
+ 
+        console.log("antes del http!!!!!!");
         
-        console.log(response.access_token); 
-        console.log(response.refresh_token);
+      this.http.post(this.url+path, addr, options).subscribe(res =>{
+        //resolve(res.json());
+        console.log("dentro del post!!!!!");
+        
+        console.log(res);
         
       }, err =>{
         console.log(err);
         reject(err);
       });
+      
     });
 
-
+      }
 
   }
 }

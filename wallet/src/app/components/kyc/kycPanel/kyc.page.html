@@ -143,6 +143,15 @@
                         </p>
                     </div>
                 </div>
+                <div>
+                    <div class="width40 left">
+                        <label for="" lang="en" class="title">Eth account password</label>
+                        <input type="text" id="pass" class="block" required [(ngModel)]="pass" name="pass" ngModel #pas="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && pas.invalid)}" class="error">
+                            <span *ngIf="pas.errors?.required" class="error">This field is required</span>
+                        </p>
+                    </div>
+                </div>
             </div>
 
 
@@ -307,6 +316,15 @@
                         <input type="number" id="year-incomes" class="block" required [(ngModel)]="annual" name="annual" ngModel #ann="ngModel">
                         <p [ngClass]="{'hidden':!(submited && ann.invalid)}" class="error">
                             <span *ngIf="ann.errors?.required" class="error">This field is required</span>
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <div class="width40 left">
+                        <label for="" lang="en" class="title">Eth account password</label>
+                        <input type="text" id="pass" class="block" required [(ngModel)]="pass" name="pass" ngModel #pas="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && pas.invalid)}" class="error">
+                            <span *ngIf="pas.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                 </div>
