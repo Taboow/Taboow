@@ -511,7 +511,6 @@ p.error span {
 
 p.error {
     margin-top: -10px;
-    margin-bottom: 10px;
     min-height: 11pt;
     text-align: right;
 }
@@ -945,7 +944,8 @@ td {
 }
 
 .width80 {
-    width: 80%
+    width: 80%;
+    height: 100px;
 }
 
 .width60 {
@@ -955,6 +955,7 @@ td {
 .width40 {
     width: 40%;
     margin-right: 9%;
+    height: 100px;
 }
 
 .width30 {

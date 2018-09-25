@@ -1,200 +1,318 @@
 <div class="content scrollable-content kyc-container">
     <video class="center" style="max-width: 80%;"></video>
-    <form action="/" id="kyc-form">
+    <form id="kyc-form" (ngSubmit)="confirm(form)" #form="ngForm">
         <!-- CONTAINER -->
         <div class="round dist">
             <div>
                 <label for="account-type" lang="en" class="title">Account type</label>
-                <select id="accountType" class="block title" [(ngModel)]="type" name="type" (change)="selectAccountType($event.target.value)" #filter="ngModel">
+                <select id="accountType" class="block title" required [(ngModel)]="type" name="type" (change)="selectAccountType($event.target.value)" #filter="ngModel">
                         <option class="pointer" *ngFor="let fils of accountType, index as i" value="{{fils}}">{{fils}}</option>
                 </select>
+                <p [ngClass]="{'hidden':!(submited && filter.invalid)}" class="error">
+                    <span *ngIf="filter.errors?.required" class="error">This field is required</span>
+                </p>
             </div>
             <div *ngIf="displayPersonal">
                 <div>
-                    <label for="" lang="en" class="title">Ethereum Address:</label>
-                    <input type="text" id="ethereum-addr" class="block">
+                    <label for="ethAddr" lang="en" class="title">Ethereum Address:</label>
+                    <input type="text" id="ethAddr" class="block" required [(ngModel)]="ethAddr" name="ethAddr" ngModel #ethacc="ngModel">
+                    <p [ngClass]="{'hidden':!(submited && ethacc.invalid)}" class="error">
+                        <span *ngIf="ethacc.errors?.required" class="error">This field is required</span>
+                    </p>
+                    <p [ngClass]="{'hidden':!(submited && ethAddrErr == true)}" class="error">
+                        <span *ngIf="ethAddrErr == true" class="error">This address is not valid</span>
+                    </p>
                 </div>
                 <div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Name</label>
-                        <input type="text" id="name" class="block">
-                        <p class="small-letter-1" lang="en"></p>
+                    <div class="width40 left">
+                        <label for="name" lang="en" class="title">Name</label>
+                        <input type="text" id="name" class="block" required [(ngModel)]="name" name="name" ngModel #nam="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && nam.invalid)}" class="error" max-width="14px">
+                            <span *ngIf="nam.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Surnames</label>
-                        <input type="text" id="surnames" class="block">
+                    <div class="width40 right">
+                        <label for="surnames" lang="en" class="title">Surnames</label>
+                        <input type="text" id="surnames" class="block" required [(ngModel)]="surnames" name="surnames" ngModel #sur="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && sur.invalid)}" class="error">
+                            <span *ngIf="sur.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
                 <div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Passport/ID</label>
-                        <input type="text" id="passport" class="block">
+                    <div class="width40 left">
+                        <label for="id" lang="en" class="title">Passport/ID</label>
+                        <input type="text" id="id" class="block" required [(ngModel)]="id" name="id" ngModel #d="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && d.invalid)}" class="error">
+                            <span *ngIf="d.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Nationality</label>
-                        <input type="text" id="nationality" class="block">
+                    <div class="width40 right">
+                        <label for="nationality" lang="en" class="title">Nationality</label>
+                        <input type="text" id="nationality" class="block" required [(ngModel)]="nationality" name="nationality" ngModel #nat="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && nat.invalid)}" class="error">
+                            <span *ngIf="nat.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
-                <div class="width30 inlineBlock">
-                    <label for="" lang="en" class="block">Birthdate:</label>
-                    <angular2-date-picker (onDateSelect)="onDateSelect($event)" [(ngModel)]="date" [settings]="settings" [ngModelOptions]="{standalone: true}">
+                <div class="width40 left">
+                    <label for="date" lang="en" class="block title">Birthdate:</label>
+                    <angular2-date-picker (onDateSelect)="onDateSelect($event)" [(ngModel)]="date" name="date" [settings]="settings" [ngModelOptions]="{standalone: true}">
                     </angular2-date-picker>
+                    <p [ngClass]="{'hidden':!(submited && dateErr == true)}" class="error">
+                        <span *ngIf="dateErr == true" class="error">This date is not valid</span>
+                    </p>
                 </div>
-                <div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Postal code</label>
-                        <input type="text" id="zip" class="block">
+                <div class="clear">
+                    <div class="width40 left">
+                        <label for="postalCode" lang="en" class="title">Postal code</label>
+                        <input type="number" id="postalCode" class="block" required [(ngModel)]="postalCode" name="postalCode" ngModel #post="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && post.invalid)}" class="error">
+                            <span *ngIf="post.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">City</label>
-                        <input type="text" id="city" class="block">
-                    </div>
-                </div>
-                <div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Address</label>
-                        <input type="text" id="address" class="block">
-                    </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Email:</label>
-                        <input type="email" id="address" class="block">
+                    <div class="width40 right">
+                        <label for="city" lang="en" class="title">City</label>
+                        <input type="text" id="city" class="block" required [(ngModel)]="city" name="city" ngModel #cit="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && cit.invalid)}" class="error">
+                            <span *ngIf="cit.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
-                <div class="width40 inlineBlock">
+                <div class="clear">
+                    <div class="width40 left">
+                        <label for="address" lang="en" class="title">Address</label>
+                        <input type="text" id="addr" class="block" required [(ngModel)]="address" name="address" ngModel #addr="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && addr.invalid)}" class="error">
+                            <span *ngIf="addr.errors?.required" class="error">This field is required</span>
+                        </p>
+                    </div>
+                    <div class="width40 right">
+                        <label for="" lang="en" class="title">Email:</label>
+                        <input type="email" id="mail" class="block" required [(ngModel)]="email" name="email" ngModel #mail="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && mail.invalid)}" class="error">
+                            <span *ngIf="mail.errors?.required" class="error">This field is required</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="width40 left">
                     <label class="title" for="country">Country :</label><span class="title"><img src="~icons/info_icon.taboow.svg" (click)="openCountryDialog()"></span>
-                    <select id="country" class="block title" [(ngModel)]="country" name="country" (change)="myCountry($event.target.value)" #filter="ngModel">
+                    <select id="country" class="block title" required [(ngModel)]="country" name="country" (change)="myCountry($event.target.value)" #count="ngModel">
                         <option class="pointer" *ngFor="let fils of countries, index as i" value="{{fils.code}}" placeholder="Select a country">{{fils.name}}</option>
                     </select>
+                    <p [ngClass]="{'hidden':!(submited && count.invalid)}" class="error">
+                        <span *ngIf="count.errors?.required" class="error">This field is required</span>
+                    </p>
                 </div>
-                <div>
-                    <div *ngIf="prefix" class="width40 inlineBlock">
+                <div class="clear block">
+                    <div *ngIf="prefix" class="width40 left">
                         <label for="" lang="en" class="title">Phone Prefix: </label>
-                        <input type="text" id="prefix" class="block title" value="{{prefix}}">
+                        <input type="text" id="prefix" class="block title" value="{{prefix}}" required [(ngModel)]="prefix" name="prefix" ngModel #pref="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && pref.invalid)}" class="error">
+                            <span *ngIf="pref.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Phone Number</label>
-                        <input type="text" id="phone" class="block">
+                    <div class="width40 right">
+                        <label for="" lang="en" class="title">Phone Number</label>
+                        <input type="number" id="phone" class="block" required [(ngModel)]="phone" name="phone" ngModel #pho="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && pho.invalid)}" class="error">
+                            <span *ngIf="pho.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
-                <div class="width40 inlineBlock">
-                    <label for="" lang="en">Occupation</label>
-                    <input type="text" id="ocupation" class="block">
+                <div class="width40 left">
+                    <label for="" lang="en" class="title">Occupation</label>
+                    <input type="text" id="ocupation" class="block" required [(ngModel)]="occupation" name="occupation" ngModel #occ="ngModel">
+                    <p [ngClass]="{'hidden':!(submited && occ.invalid)}" class="error">
+                        <span *ngIf="occ.errors?.required" class="error">This field is required</span>
+                    </p>
                 </div>
-                <div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Monthly Income</label>
-                        <input type="text" id="incomes" class="block">
+                <div class="clear block">
+                    <div class="width40 left">
+                        <label for="" lang="en" class="title">Monthly Income</label>
+                        <input type="number" id="incomes" class="block" required [(ngModel)]="monthly" name="monthly" ngModel #mon="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && mon.invalid)}" class="error">
+                            <span *ngIf="mon.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Annual Income</label>
-                        <input type="text" id="year-incomes" class="block">
+                    <div class="width40 right">
+                        <label for="" lang="en" class="title">Annual Income</label>
+                        <input type="number" id="year-incomes" class="block" required [(ngModel)]="annual" name="annual" ngModel #ann="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && ann.invalid)}" class="error">
+                            <span *ngIf="ann.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
             </div>
+
+
+
             <div *ngIf="displayCompany">
                 <div>
-                    <label for="" lang="en" class="title">Ethereum Address:</label>
-                    <input type="text" id="ethereum-addr" class="block">
+                    <label for="ethAddr" lang="en" class="title">Ethereum Address:</label>
+                    <input type="text" id="ethAddr" class="block" required [(ngModel)]="ethAddr" name="ethAddr" ngModel #ethacc="ngModel">
+                    <p [ngClass]="{'hidden':!(submited && ethacc.invalid)}" class="error">
+                        <span *ngIf="ethacc.errors?.required" class="error">This field is required</span>
+                    </p>
+                    <p [ngClass]="{'hidden':!(submited && ethAddrErr == true)}" class="error">
+                        <span *ngIf="ethAddrErr == true" class="error">This address is not valid</span>
+                    </p>
                 </div>
                 <div>
-                    <div class="width40 inlineBlock">
+                    <div class="width40 left">
                         <label for="" lang="en">Company name</label>
-                        <input type="text" id="company-name" class="block">
+                        <input type="text" id="company-name" class="block" required [(ngModel)]="companyName" name="companyName" ngModel #cname="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && cname.invalid)}" class="error" max-width="14px">
+                            <span *ngIf="cname.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
+                    <div class="width40 right">
                         <label for="" lang="en">Company CIF</label>
-                        <input type="text" id="company-cif" class="block">
+                        <input type="text" id="company-cif" class="block" required [(ngModel)]="companyCif" name="companyCif" ngModel #ccif="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && ccif.invalid)}" class="error" max-width="14px">
+                            <span *ngIf="ccif.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
                 <div>
-                    <div class="width40 inlineBlock">
+                    <div class="width40 left ">
                         <label for="" lang="en">Company Address</label>
-                        <input type="text" id="company-address" class="block">
+                        <input type="text" id="company-address" class="block" required [(ngModel)]="companyAddress" name="companyAddress" ngModel #caddr="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && caddr.invalid)}" class="error" max-width="14px">
+                            <span *ngIf="caddr.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
+                    <div class="width40 right">
                         <label for="" lang="en">Company Website</label>
-                        <input type="text" id="company-web" class="block">
+                        <input type="text" id="company-web" class="block" required [(ngModel)]="companyWebsite" name="companyWebsite" ngModel #cweb="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && cweb.invalid)}" class="error" max-width="14px">
+                            <span *ngIf="cweb.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
                 <div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Name</label>
-                        <input type="text" id="name" class="block">
-                        <p class="small-letter-1" lang="en"></p>
+                    <div class="width40 left">
+                        <label for="name" lang="en" class="title">Name</label>
+                        <input type="text" id="name" class="block" required [(ngModel)]="name" name="name" ngModel #nam="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && nam.invalid)}" class="error" max-width="14px">
+                            <span *ngIf="nam.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Surnames</label>
-                        <input type="text" id="surnames" class="block">
+                    <div class="width40 right">
+                        <label for="surnames" lang="en" class="title">Surnames</label>
+                        <input type="text" id="surnames" class="block" required [(ngModel)]="surnames" name="surnames" ngModel #sur="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && sur.invalid)}" class="error">
+                            <span *ngIf="sur.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
                 <div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Passport/ID</label>
-                        <input type="text" id="passport" class="block">
+                    <div class="width40 left">
+                        <label for="id" lang="en" class="title">Passport/ID</label>
+                        <input type="text" id="id" class="block" required [(ngModel)]="id" name="id" ngModel #d="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && d.invalid)}" class="error">
+                            <span *ngIf="d.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Nationality</label>
-                        <input type="text" id="nationality" class="block">
+                    <div class="width40 right">
+                        <label for="nationality" lang="en" class="title">Nationality</label>
+                        <input type="text" id="nationality" class="block" required [(ngModel)]="nationality" name="nationality" ngModel #nat="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && nat.invalid)}" class="error">
+                            <span *ngIf="nat.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
-                <div class="width30 inlineBlock">
-                    <label for="" lang="en" class="block">Birthdate:</label>
-                    <angular2-date-picker (onDateSelect)="onDateSelect($event)" [(ngModel)]="date" [settings]="settings" [ngModelOptions]="{standalone: true}">
+                <div class="width40 left">
+                    <label for="date" lang="en" class="block title">Birthdate:</label>
+                    <angular2-date-picker (onDateSelect)="onDateSelect($event)" [(ngModel)]="date" name="date" [settings]="settings" [ngModelOptions]="{standalone: true}">
                     </angular2-date-picker>
+                    <p [ngClass]="{'hidden':!(submited && dateErr == true)}" class="error">
+                        <span *ngIf="dateErr == true" class="error">This date is not valid</span>
+                    </p>
                 </div>
-                <div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Postal code</label>
-                        <input type="text" id="zip" class="block">
+                <div class="clear">
+                    <div class="width40 left">
+                        <label for="" lang="en" class="title">Postal code</label>
+                        <input type="number" id="zip" class="block" required [(ngModel)]="postalCode" name="postalCode" ngModel #post="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && post.invalid)}" class="error">
+                            <span *ngIf="post.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">City</label>
-                        <input type="text" id="city" class="block">
-                    </div>
-                </div>
-                <div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Address</label>
-                        <input type="text" id="address" class="block">
-                    </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Email:</label>
-                        <input type="email" id="address" class="block">
+                    <div class="width40 right">
+                        <label for="" lang="en" class="title">City</label>
+                        <input type="text" id="city" class="block" required [(ngModel)]="city" name="city" ngModel #cit="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && cit.invalid)}" class="error">
+                            <span *ngIf="cit.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
-                <div class="width40 inlineBlock">
+                <div class="clear">
+                    <div class="width40 left">
+                        <label for="" lang="en" class="title">Address</label>
+                        <input type="text" id="addr" class="block" required [(ngModel)]="address" name="address" ngModel #addr="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && addr.invalid)}" class="error">
+                            <span *ngIf="addr.errors?.required" class="error">This field is required</span>
+                        </p>
+                    </div>
+                    <div class="width40 right">
+                        <label for="" lang="en" class="title">Email:</label>
+                        <input type="email" id="mail" class="block" required [(ngModel)]="email" name="email" ngModel #mail="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && mail.invalid)}" class="error">
+                            <span *ngIf="mail.errors?.required" class="error">This field is required</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="width40 left">
                     <label class="title" for="country">Country :</label><span class="title"><img src="~icons/info_icon.taboow.svg" (click)="openCountryDialog()"></span>
-                    <select id="country" class="block title" [(ngModel)]="country" name="country" (change)="myCountry($event.target.value)" #filter="ngModel">
-                        <option class="pointer" *ngFor="let fils of countries, index as i" value="{{fils.code}}" placeholder="Select a country">{{fils.name}}</option>
-                    </select>
+                    <select id="country" class="block title" required [(ngModel)]="country" name="country" (change)="myCountry($event.target.value)" #count="ngModel">
+                            <option class="pointer" *ngFor="let fils of countries, index as i" value="{{fils.code}}" placeholder="Select a country">{{fils.name}}</option>
+                        </select>
+                    <p [ngClass]="{'hidden':!(submited && count.invalid)}" class="error">
+                        <span *ngIf="count.errors?.required" class="error">This field is required</span>
+                    </p>
                 </div>
-                <div>
-                    <div *ngIf="prefix" class="width40 inlineBlock">
+                <div class="clear">
+                    <div *ngIf="prefix" class="width40 left">
                         <label for="" lang="en" class="title">Phone Prefix: </label>
-                        <input type="text" id="prefix" class="block title" value="{{prefix}}">
+                        <input type="text" id="prefix" class="block title" value="{{prefix}}" required [(ngModel)]="prefix" name="prefix" ngModel #pref="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && pref.invalid)}" class="error">
+                            <span *ngIf="pref.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Phone Number</label>
-                        <input type="text" id="phone" class="block">
+                    <div class="width40 right">
+                        <label for="" lang="en" class="title">Phone Number</label>
+                        <input type="number" id="phone" class="block" required [(ngModel)]="phone" name="phone" ngModel #pho="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && pho.invalid)}" class="error">
+                            <span *ngIf="pho.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
-                <div class="width40 inlineBlock">
-                    <label for="" lang="en">Occupation</label>
-                    <input type="text" id="ocupation" class="block">
+                <div class="width40 left">
+                    <label for="" lang="en" class="title">Occupation</label>
+                    <input type="text" id="ocupation" class="block" required [(ngModel)]="occupation" name="occupation" ngModel #occ="ngModel">
+                    <p [ngClass]="{'hidden':!(submited && occ.invalid)}" class="error">
+                        <span *ngIf="occ.errors?.required" class="error">This field is required</span>
+                    </p>
                 </div>
-                <div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Monthly Income</label>
-                        <input type="text" id="incomes" class="block">
+                <div class="clear">
+                    <div class="width40 left">
+                        <label for="" lang="en" class="title">Monthly Income</label>
+                        <input type="number" id="incomes" class="block" required [(ngModel)]="monthly" name="monthly" ngModel #mon="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && mon.invalid)}" class="error">
+                            <span *ngIf="mon.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
-                    <div class="width40 inlineBlock">
-                        <label for="" lang="en">Annual Income</label>
-                        <input type="text" id="year-incomes" class="block">
+                    <div class="width40 right">
+                        <label for="" lang="en" class="title">Annual Income</label>
+                        <input type="number" id="year-incomes" class="block" required [(ngModel)]="annual" name="annual" ngModel #ann="ngModel">
+                        <p [ngClass]="{'hidden':!(submited && ann.invalid)}" class="error">
+                            <span *ngIf="ann.errors?.required" class="error">This field is required</span>
+                        </p>
                     </div>
                 </div>
             </div>
             <div>
-                <div class="text-center">
+                <div class="clear block text-center">
                     <button id="submit-kyc" type="submit" class="btn-inverse btn-default btn-validation" lang="en">Continue <i class="fa fa-arrow-right"></i></button>
                 </div>
             </div>

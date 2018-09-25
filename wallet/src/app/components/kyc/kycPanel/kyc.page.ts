@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, Inject, OnInit } from '@angular/core'
+import { Http, HttpModule, Headers, ResponseOptions} from '@angular/http';
+
 import { AccountService } from '../../../services/account.service';
 import { Web3 } from '../../../services/web3.service';
 import fs = require('fs');
 import { AngularDateTimePickerModule } from 'angular2-datetimepicker';
 import { MdDialog } from '@angular/material';
 import { CountryDialogComponent } from './country-dialog.component';
+import * as EthUtil from 'ethereumjs-util';
 
 let resources = './extraResources/';
 
@@ -97,17 +100,44 @@ export class KYCPage implements OnInit {
 
   public countries =  require('../../../../assets/json/countries.json');
   public prefixes = require('../../../../assets/json/phonePrefixes.json');
-  public country;
-  public prefix;
   public accountType : string[] = ["Personal", "Company"];
+  public country;
 
-  public type;
   public displayPersonal;
   public displayCompany;
 
+  public ethAddrErr;
+  public dateErr;
+
+  public type;
+  public ethAddr;
+  public name;
+  public surnames;
+  public id;
+  public nationality;
+  public date: Date = new Date();
+  public postalCode;
+  public city;
+  public address;
+  public email;
+  public ownCountry;
+  public prefix;
+  public phone;
+  public occupation;
+  public monthly;
+  public annual;
+  public companyName;
+  public companyCif;
+  public companyAddress;
+  public companyWebsite;
+
+  public submited = false;
+
+  public moment = require('moment');
+
   protected url = "http://taboow.org:3000";
 
-  date: Date = new Date();
+  
   settings = {
       bigBanner: true,
       format: 'dd-MM-yyyy',
@@ -116,7 +146,7 @@ export class KYCPage implements OnInit {
       closeOnSelect: true
   }
 
-  constructor(protected _account: AccountService, protected _web3 : Web3, public dialog: MdDialog) {
+  constructor(private http: Http, protected _account: AccountService, protected _web3 : Web3, public dialog: MdDialog) {
   }
 
   ngOnInit() {
@@ -216,6 +246,11 @@ export class KYCPage implements OnInit {
 
   myCountry(value){
     console.log(value)
+    for (let ind = 0; ind < this.countries.length; ind++) {
+        if(value == this.countries[ind].code){
+            this.ownCountry= this.countries[ind].name;
+        }    
+    }
     for (let index = 0; index < this.prefixes.length; index++) {
         if(value == this.prefixes[index].code){
             this.prefix = this.prefixes[index].dial_code;
@@ -252,5 +287,63 @@ export class KYCPage implements OnInit {
     });
   }
 
-  
+  confirm(form){
+    this.submited = true;
+
+    if(form.invalid){
+        return false;
+    }
+
+    if(EthUtil.isValidAddress(form.controls.ethAddr.value) == false){  
+        this.ethAddrErr = true;
+    }
+
+    if(EthUtil.isValidAddress(form.controls.ethAddr.value) == true){
+        console.log("addr", form.controls.ethAddr.value);
+        this.postAddr(form.controls.ethAddr.value);
+        this.ethAddrErr = null;
+    }
+    let date : Date = new Date();
+    var years = this.moment().diff(this.date, 'years');
+    console.log("años de diferencia", years);
+    if(years < 18){
+        this.dateErr = true;
+    }else{
+        this.dateErr = null
+    }
+    
+
+    //this.postAddr(form.controls.ethAddr.value);
+      
+  }
+
+  postAddr(data){
+    let path = "/kyc?"+data;
+    console.log("path", path);
+    
+    /*
+    return new Promise((resolve, reject) => {
+      let headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+      this.http.post(this.url+path, JSON.stringify(data),  {headers: headers}).subscribe(res =>{
+        resolve(res.json());
+        //localStorage.setItem('userCredentials', JSON.stringify(data));
+        let response = res.json();
+        console.log("Post Res", res);
+        //localStorage.setItem('access_token', JSON.stringify(response.access_token));
+        //localStorage.setItem('refresh_token', JSON.stringify(response.refresh_token));
+        
+        
+        console.log(response.access_token); 
+        console.log(response.refresh_token);
+        
+      }, err =>{
+        console.log(err);
+        reject(err);
+      });
+    });
+
+*/
+
+  }
 }
