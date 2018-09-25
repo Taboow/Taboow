@@ -9,6 +9,7 @@ import { MdDialog } from '@angular/material';
 import { CountryDialogComponent } from './country-dialog.component';
 import * as EthUtil from 'ethereumjs-util';
 
+
 let resources = './extraResources/';
 
 //eval(fs.readFileSync(resources+'jquery.facedetection.min.js')+'');
@@ -18,6 +19,15 @@ var hark = require('hark');
 
 var KYC = require('./../../../../../extraResources/kyc.js');
 
+const ethGSV = require('ethereum-gen-sign-verify');
+
+/*  usage example
+
+account.service.ts // getPrivateKey(password) // returns this.account.privatekey
+const keypair = ethGSV.generateKeyPair(); // keypair = { privateKey: '0xe3888eaa8bc6...', publicKey: '0xc1b8e4d...', address: '0xb24f93212....' }
+const signature = ethGSV.sign('SomeDataAsString', keypair.privateKey); // signature = { r: '0x14aedb650....', s: '0x4a9aa9d436....', v: 27 }
+const isValid = ethGSV.verify('SomeDataAsString', signature, keypair.address); // isValid = true
+*/
 @Component({
   selector: 'kyc-page',
   templateUrl: './kyc.page.html',
@@ -300,11 +310,11 @@ export class KYCPage implements OnInit {
 
     if(EthUtil.isValidAddress(form.controls.ethAddr.value) == true){
         console.log("addr", form.controls.ethAddr.value);
-        this.postAddr(form.controls.ethAddr.value);
         this.ethAddrErr = null;
     }
-    let date : Date = new Date();
-    var years = this.moment().diff(this.date, 'years');
+
+    
+    let years = this.moment().diff(this.date, 'years');
     console.log("años de diferencia", years);
     if(years < 18){
         this.dateErr = true;
@@ -312,20 +322,27 @@ export class KYCPage implements OnInit {
         this.dateErr = null
     }
     
+    if(this.dateErr == null && this.ethAddrErr == null){
+        let x :string= form.controls.ethAddr.value.toString();
+        console.log("x??",x);
+        
+        this.postAddr(x);
+    }
 
     //this.postAddr(form.controls.ethAddr.value);
       
   }
 
   postAddr(data){
-    let path = "/kyc?"+data;
+    let path = "/kyc?address="+data;
+    //let userData = {"address":data}
     console.log("path", path);
     
-    /*
+    
     return new Promise((resolve, reject) => {
       let headers = new Headers();
       headers.append('Content-Type', 'application/json');
-      this.http.post(this.url+path, JSON.stringify(data),  {headers: headers}).subscribe(res =>{
+      this.http.post(this.url+path, {headers: headers}).subscribe(res =>{
         resolve(res.json());
         //localStorage.setItem('userCredentials', JSON.stringify(data));
         let response = res.json();
@@ -343,7 +360,7 @@ export class KYCPage implements OnInit {
       });
     });
 
-*/
+
 
   }
 }
