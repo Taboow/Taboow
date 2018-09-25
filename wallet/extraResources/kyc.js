@@ -115,7 +115,7 @@ KYC.prototype._runStep = function(stepNumber, forceRun) {
 
                 if (success) {
                     that.onSuccess(stepNumber, step);
-                    if (step.autoNext) {
+                    if (step.auto) {
                         that._runStep(stepNumber+1, false);
                     } else {
                         that.nextStep = stepNumber+1;
