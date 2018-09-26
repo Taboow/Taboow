@@ -39,15 +39,6 @@ h1 {
     padding-bottom: 10px;
 }
 
-h2 {
-    font-family: "Lato-Regular";
-    font-size: 12pt;
-    font-weight: bold;
-    padding-top: 15px;
-    padding-bottom: 10px;
-    color: #000;
-}
-
 .mat-dialog-container {
     position: relative;
     border-top: 10px solid #41e241;
@@ -347,10 +338,6 @@ button {
     color: #ffc107;
 }
 
-.taboow_color {
-    color: #41e241;
-}
-
 .italic {
     font-family: 'Lato-Italic';
     font-size: 9pt;
@@ -397,6 +384,11 @@ select {
     margin-top: 10px;
     margin-bottom: 20px;
     background-color: #fff;
+}
+
+input[type="checkbox"] {
+    height: auto;
+    margin: 0 12px;
 }
 
 input,
@@ -474,6 +466,18 @@ div.input-container {
     padding-left: 12px;
 }
 
+.import-contract-right {
+    width: 30%;
+    position: relative;
+}
+
+.import-contract-right button {
+    position: absolute;
+    bottom: 34px;
+    right: 0;
+    width: 95%;
+}
+
 #resized {
     display: block;
 }
@@ -511,6 +515,7 @@ p.error span {
 
 p.error {
     margin-top: -10px;
+    margin-bottom: 10px;
     min-height: 11pt;
     text-align: right;
 }
@@ -545,8 +550,16 @@ p.error {
     border-radius: 5px;
 }
 
-.btn-contract-delete {
+.contract-list .btn-contract-delete {
     margin-top: 5px;
+}
+
+.custom-contract p {
+    padding: 5px;
+}
+
+.custom-contract button {
+    width: 70px;
 }
 
 .btn-inverse {
@@ -610,12 +623,37 @@ p.error {
     border: none;
 }
 
+.btn-contract-delete:hover {
+    border: 2px solid #E66978;
+}
+
 .auto-h {
     position: fixed;
     bottom: 50px;
     top: 220px;
     left: 270px;
     right: 15px;
+}
+
+#general-token-list {
+    top: 270px;
+}
+
+.sort {
+    margin-left: 27px;
+    margin-top: 5px;
+}
+
+.sort p {
+    padding: 20px 10px;
+}
+
+.low-opacity {
+    opacity: 0.3;
+}
+
+.sort span img:first-child {
+    transform: rotate(180deg);
 }
 
 #hist-market {
@@ -937,36 +975,4 @@ td {
 .expected {
     margin: 0;
     margin-top: -2rem;
-}
-
-.kyc-container {
-    margin-bottom: 10em;
-}
-
-.width80 {
-    width: 80%;
-    height: 100px;
-}
-
-.width60 {
-    width: 60%
-}
-
-.width40 {
-    width: 40%;
-    margin-right: 9%;
-    height: 100px;
-}
-
-.width30 {
-    width: 30%;
-    margin-right: 9%;
-}
-
-.width20 {
-    width: 20%
-}
-
-.center {
-    margin: 0 auto;
 }
