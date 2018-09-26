@@ -1,4 +1,3 @@
-
 var Tesseract = require('tesseract.js');
 var RecordRTC = require('recordrtc');
 var hark = require('hark');
@@ -23,10 +22,10 @@ function KYC(options) {
 
     this.recorder = null;
     window.Tesseract = Tesseract.create({
-        langPath: options.domain+'/train/',
+        langPath: options.domain + '/train/',
     });
     this.canvas = document.createElement('canvas');
- };
+};
 
 KYC.prototype.init = function() {
     this.images = [];
@@ -43,7 +42,7 @@ KYC.prototype.runNextStepSubStep = function() {
         return;
     }
     var shouldEnd = false;
-    if (this.steps.length-1 == this.lastStep) {
+    if (this.steps.length - 1 == this.lastStep) {
         shouldEnd = true;
     }
     this._backId(this.lastStep, this.steps[this.lastStep]);
@@ -62,7 +61,7 @@ KYC.prototype.runNextStepSubStep = function() {
 KYC.prototype.goToNextStep = function() {
     if (this.nextStep == null) {
         console.error('No step to run');
-        return; 
+        return;
     }
     this._runStep(this.nextStep, false);
     this.nextStep = null;
@@ -116,9 +115,9 @@ KYC.prototype._runStep = function(stepNumber, forceRun) {
                 if (success) {
                     that.onSuccess(stepNumber, step);
                     if (step.auto) {
-                        that._runStep(stepNumber+1, false);
+                        that._runStep(stepNumber + 1, false);
                     } else {
-                        that.nextStep = stepNumber+1;
+                        that.nextStep = stepNumber + 1;
                     }
                 } else {
                     that.onRetry(stepNumber, result);
@@ -127,7 +126,7 @@ KYC.prototype._runStep = function(stepNumber, forceRun) {
             });
         } else {
             that.onSuccess(stepNumber, step);
-            that._runStep(stepNumber+1, false);
+            that._runStep(stepNumber + 1, false);
         }
     }, step.wait);
 }
@@ -186,7 +185,7 @@ KYC.prototype._stopRecording = function(callback) {
         that.video.play();
         that.recorder.camera.stop();
         that.recorder.destroy();
-        that.recorder = null; 
+        that.recorder = null;
         callback();
     });
 };
@@ -198,47 +197,46 @@ KYC.prototype._generateRandomString = function() {
         for (var i = 0, l = a.length; i < l; i++) token += a[i].toString(36);
         return token;
     } else {
-        return (Math.random() * new Date().getTime()).toString(36).replace( /\./g , '');
+        return (Math.random() * new Date().getTime()).toString(36).replace(/\./g, '');
     }
 }
 
 KYC.prototype._validatePassport = function(data, step, stepNumber, callback) {
     var that = this;
     var blobBin = atob(data.split(',')[1]);
-	var array = [];
-	for(var i = 0; i < blobBin.length; i++) {
-		array.push(blobBin.charCodeAt(i));
-	}
-	var file=new Blob([new Uint8Array(array)], {type: 'image/png'});
+    var array = [];
+    for (var i = 0; i < blobBin.length; i++) {
+        array.push(blobBin.charCodeAt(i));
+    }
+    var file = new Blob([new Uint8Array(array)], { type: 'image/png' });
 
-	Tesseract.recognize(file, {
-      lang: 'OCRB',
-      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<'
-	})
-       .progress(function  (p) { 
-		    if (p.status == 'recognizing text') {
-                that.loading(p.progress*100);
-		    }
- 
-		})
-       .then(function (result) { 
+    Tesseract.recognize(file, {
+            lang: 'OCRB',
+            tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<'
+        })
+        .progress(function(p) {
+            if (p.status == 'recognizing text') {
+                that.loading(p.progress * 100);
+            }
+
+        })
+        .then(function(result) {
             console.log('result', result);
-            
+
             //PASSPORT
-            passportDetector = result.lines.filter(function (line) {
-                return (/P<\w/.test(line.text.trim())
-                );
+            passportDetector = result.lines.filter(function(line) {
+                return (/P<\w/.test(line.text.trim()));
             });
-            
+
             console.log("PASSPORT DETECTOR", passportDetector);
 
             if (passportDetector.length > 0) {
-                passportLines = result.lines.filter(function (line) {
+                passportLines = result.lines.filter(function(line) {
                     return line.confidence > 30 && line.text.trim().length > 36 && /</.test(line.text.trim());
                 });
 
                 console.log('PASSPORT LINES', passportLines);
-                
+
                 if (passportLines.length > 1) {
                     that._validateFace(data, function(success) {
                         console.log("------>" + success);
@@ -251,23 +249,22 @@ KYC.prototype._validatePassport = function(data, step, stepNumber, callback) {
                     return;
                 }
             }
-            
+
             // ID
             // https://en.wikipedia.org/wiki/Identity_document
-            idDetector = result.lines.filter(function (line) {
-                return (/(ID\w*<)|(I<\w*)/.test(line.text.trim())
-                );
+            idDetector = result.lines.filter(function(line) {
+                return (/(ID\w*<)|(I<\w*)/.test(line.text.trim()));
             });
-            
+
             console.log("ID DETECTOR", idDetector);
 
             if (idDetector.length > 0) {
-                idLines = result.lines.filter(function (line) {
+                idLines = result.lines.filter(function(line) {
                     return line.confidence > 40 && line.text.trim().length > 25 && /</.test(line.text.trim());
                 });
 
                 console.log("ID LINES", idLines);
-                
+
                 if (idLines.length > 1) {
                     that.images.push(data);
                     that._backId(stepNumber, step, false);
@@ -276,7 +273,7 @@ KYC.prototype._validatePassport = function(data, step, stepNumber, callback) {
             }
 
             callback(false);
-		});
+        });
 }
 
 KYC.prototype._backId = function(stepNumber, step, forceRun) {
@@ -295,13 +292,13 @@ KYC.prototype._backId = function(stepNumber, step, forceRun) {
         that.document = "ID";
         that.images.push(that._getCurrentPhoto());
         callback(true);
-    }, step.wait); 
+    }, step.wait);
 }
 
 KYC.prototype._validateFace = function(data, callback) {
     var that = this;
     $(this.canvas).faceDetection({
-        complete: function (faces) {
+        complete: function(faces) {
             if (faces.length > 0) {
                 that.images.push(data);
             }
@@ -368,30 +365,30 @@ KYC.prototype._validate = function(validators, index, callback, result, data, st
             that._validate(validators, index + 1, callback, result, step, stepNumber);
         });
     } else {
-        console.error('Validator '+validators[index]+' not found');
+        console.error('Validator ' + validators[index] + ' not found');
         this._validate(validators, index + 1, callback, result, step, stepNumber);
     }
 }
 
 KYC.prototype._getCurrentPhoto = function() {
-	width = this.video.videoWidth;
-	height = this.video.videoHeight;
-	this.canvas.width = width;
+    width = this.video.videoWidth;
+    height = this.video.videoHeight;
+    this.canvas.width = width;
     this.canvas.height = height;
-	var ctx = this.canvas.getContext('2d');
-	ctx.drawImage(this.video, 0, 0, width, height);
+    var ctx = this.canvas.getContext('2d');
+    ctx.drawImage(this.video, 0, 0, width, height);
     return this.canvas.toDataURL('image/png');
 }
 
 KYC.prototype._takePhoto = function(step, stepNumber, callback) {
     var data = this._getCurrentPhoto();
- 
+
     if (step.validators.length == 0) {
         this.images.push(data);
         callback({});
         return;
     }
-    this._validate(step.validators, 0, callback, {}, data, step, stepNumber);	
+    this._validate(step.validators, 0, callback, {}, data, step, stepNumber);
 }
 
 module.exports = KYC;

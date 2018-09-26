@@ -4,8 +4,8 @@
         <!-- CONTAINER -->
         <div class="round dist">
             <div>
-                <label for="account-type" lang="en" class="title">Account type</label>
-                <select id="accountType" class="block title" required [(ngModel)]="type" name="type" (change)="selectAccountType($event.target.value)" #filter="ngModel">
+                <label for="type" lang="en" class="title">Account type</label>
+                <select id="type" class="block title" required [(ngModel)]="type" name="type" (change)="selectAccountType($event.target.value)" #filter="ngModel">
                         <option class="pointer" *ngFor="let fils of accountType, index as i" value="{{fils}}">{{fils}}</option>
                 </select>
                 <p [ngClass]="{'hidden':!(submited && filter.invalid)}" class="error">
@@ -82,14 +82,14 @@
                 <div class="clear">
                     <div class="width40 left">
                         <label for="address" lang="en" class="title">Address</label>
-                        <input type="text" id="addr" class="block" required [(ngModel)]="address" name="address" ngModel #addr="ngModel">
+                        <input type="text" id="address" class="block" required [(ngModel)]="address" name="address" ngModel #addr="ngModel">
                         <p [ngClass]="{'hidden':!(submited && addr.invalid)}" class="error">
                             <span *ngIf="addr.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                     <div class="width40 right">
-                        <label for="" lang="en" class="title">Email:</label>
-                        <input type="email" id="mail" class="block" required [(ngModel)]="email" name="email" ngModel #mail="ngModel">
+                        <label for="email" lang="en" class="title">Email:</label>
+                        <input type="email" id="email" class="block" required [(ngModel)]="email" name="email" ngModel #mail="ngModel">
                         <p [ngClass]="{'hidden':!(submited && mail.invalid)}" class="error">
                             <span *ngIf="mail.errors?.required" class="error">This field is required</span>
                         </p>
@@ -106,14 +106,14 @@
                 </div>
                 <div class="clear block">
                     <div *ngIf="prefix" class="width40 left">
-                        <label for="" lang="en" class="title">Phone Prefix: </label>
+                        <label for="prefix" lang="en" class="title">Phone Prefix: </label>
                         <input type="text" id="prefix" class="block title" value="{{prefix}}" required [(ngModel)]="prefix" name="prefix" ngModel #pref="ngModel">
                         <p [ngClass]="{'hidden':!(submited && pref.invalid)}" class="error">
                             <span *ngIf="pref.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                     <div class="width40 right">
-                        <label for="" lang="en" class="title">Phone Number</label>
+                        <label for="phone" lang="en" class="title">Phone Number</label>
                         <input type="number" id="phone" class="block" required [(ngModel)]="phone" name="phone" ngModel #pho="ngModel">
                         <p [ngClass]="{'hidden':!(submited && pho.invalid)}" class="error">
                             <span *ngIf="pho.errors?.required" class="error">This field is required</span>
@@ -121,7 +121,7 @@
                     </div>
                 </div>
                 <div class="width40 left">
-                    <label for="" lang="en" class="title">Occupation</label>
+                    <label for="occupation" lang="en" class="title">Occupation</label>
                     <input type="text" id="ocupation" class="block" required [(ngModel)]="occupation" name="occupation" ngModel #occ="ngModel">
                     <p [ngClass]="{'hidden':!(submited && occ.invalid)}" class="error">
                         <span *ngIf="occ.errors?.required" class="error">This field is required</span>
@@ -129,15 +129,15 @@
                 </div>
                 <div class="clear block">
                     <div class="width40 left">
-                        <label for="" lang="en" class="title">Monthly Income</label>
-                        <input type="number" id="incomes" class="block" required [(ngModel)]="monthly" name="monthly" ngModel #mon="ngModel">
+                        <label for="monthly" lang="en" class="title">Monthly Income</label>
+                        <input type="number" id="monthly" class="block" required [(ngModel)]="monthly" name="monthly" ngModel #mon="ngModel">
                         <p [ngClass]="{'hidden':!(submited && mon.invalid)}" class="error">
                             <span *ngIf="mon.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                     <div class="width40 right">
-                        <label for="" lang="en" class="title">Annual Income</label>
-                        <input type="number" id="year-incomes" class="block" required [(ngModel)]="annual" name="annual" ngModel #ann="ngModel">
+                        <label for="annual" lang="en" class="title">Annual Income</label>
+                        <input type="number" id="annual" class="block" required [(ngModel)]="annual" name="annual" ngModel #ann="ngModel">
                         <p [ngClass]="{'hidden':!(submited && ann.invalid)}" class="error">
                             <span *ngIf="ann.errors?.required" class="error">This field is required</span>
                         </p>
@@ -145,8 +145,8 @@
                 </div>
                 <div>
                     <div class="width40 left">
-                        <label for="" lang="en" class="title">Eth account password</label>
-                        <input type="text" id="pass" class="block" required [(ngModel)]="pass" name="pass" ngModel #pas="ngModel">
+                        <label for="pass" lang="en" class="title">Eth account password</label>
+                        <input type="password" id="pass" class="block" required [(ngModel)]="pass" name="pass" ngModel #pas="ngModel">
                         <p [ngClass]="{'hidden':!(submited && pas.invalid)}" class="error">
                             <span *ngIf="pas.errors?.required" class="error">This field is required</span>
                         </p>
@@ -169,15 +169,15 @@
                 </div>
                 <div>
                     <div class="width40 left">
-                        <label for="" lang="en">Company name</label>
-                        <input type="text" id="company-name" class="block" required [(ngModel)]="companyName" name="companyName" ngModel #cname="ngModel">
+                        <label for="companyName" lang="en">Company name</label>
+                        <input type="text" id="companyName" class="block" required [(ngModel)]="companyName" name="companyName" ngModel #cname="ngModel">
                         <p [ngClass]="{'hidden':!(submited && cname.invalid)}" class="error" max-width="14px">
                             <span *ngIf="cname.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                     <div class="width40 right">
-                        <label for="" lang="en">Company CIF</label>
-                        <input type="text" id="company-cif" class="block" required [(ngModel)]="companyCif" name="companyCif" ngModel #ccif="ngModel">
+                        <label for="companyCif" lang="en">Company CIF</label>
+                        <input type="text" id="companyCif" class="block" required [(ngModel)]="companyCif" name="companyCif" ngModel #ccif="ngModel">
                         <p [ngClass]="{'hidden':!(submited && ccif.invalid)}" class="error" max-width="14px">
                             <span *ngIf="ccif.errors?.required" class="error">This field is required</span>
                         </p>
@@ -185,15 +185,15 @@
                 </div>
                 <div>
                     <div class="width40 left ">
-                        <label for="" lang="en">Company Address</label>
-                        <input type="text" id="company-address" class="block" required [(ngModel)]="companyAddress" name="companyAddress" ngModel #caddr="ngModel">
+                        <label for="companyAddress" lang="en">Company Address</label>
+                        <input type="text" id="companyAddress" class="block" required [(ngModel)]="companyAddress" name="companyAddress" ngModel #caddr="ngModel">
                         <p [ngClass]="{'hidden':!(submited && caddr.invalid)}" class="error" max-width="14px">
                             <span *ngIf="caddr.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                     <div class="width40 right">
-                        <label for="" lang="en">Company Website</label>
-                        <input type="text" id="company-web" class="block" required [(ngModel)]="companyWebsite" name="companyWebsite" ngModel #cweb="ngModel">
+                        <label for="companyWebsite" lang="en">Company Website</label>
+                        <input type="text" id="companyWebsite" class="block" required [(ngModel)]="companyWebsite" name="companyWebsite" ngModel #cweb="ngModel">
                         <p [ngClass]="{'hidden':!(submited && cweb.invalid)}" class="error" max-width="14px">
                             <span *ngIf="cweb.errors?.required" class="error">This field is required</span>
                         </p>
@@ -241,14 +241,14 @@
                 </div>
                 <div class="clear">
                     <div class="width40 left">
-                        <label for="" lang="en" class="title">Postal code</label>
-                        <input type="number" id="zip" class="block" required [(ngModel)]="postalCode" name="postalCode" ngModel #post="ngModel">
+                        <label for="postalCode" lang="en" class="title">Postal code</label>
+                        <input type="number" id="postalCode" class="block" required [(ngModel)]="postalCode" name="postalCode" ngModel #post="ngModel">
                         <p [ngClass]="{'hidden':!(submited && post.invalid)}" class="error">
                             <span *ngIf="post.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                     <div class="width40 right">
-                        <label for="" lang="en" class="title">City</label>
+                        <label for="city" lang="en" class="title">City</label>
                         <input type="text" id="city" class="block" required [(ngModel)]="city" name="city" ngModel #cit="ngModel">
                         <p [ngClass]="{'hidden':!(submited && cit.invalid)}" class="error">
                             <span *ngIf="cit.errors?.required" class="error">This field is required</span>
@@ -257,15 +257,15 @@
                 </div>
                 <div class="clear">
                     <div class="width40 left">
-                        <label for="" lang="en" class="title">Address</label>
-                        <input type="text" id="addr" class="block" required [(ngModel)]="address" name="address" ngModel #addr="ngModel">
+                        <label for="address" lang="en" class="title">Address</label>
+                        <input type="text" id="address" class="block" required [(ngModel)]="address" name="address" ngModel #addr="ngModel">
                         <p [ngClass]="{'hidden':!(submited && addr.invalid)}" class="error">
                             <span *ngIf="addr.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                     <div class="width40 right">
-                        <label for="" lang="en" class="title">Email:</label>
-                        <input type="email" id="mail" class="block" required [(ngModel)]="email" name="email" ngModel #mail="ngModel">
+                        <label for="email" lang="en" class="title">Email:</label>
+                        <input type="email" id="email" class="block" required [(ngModel)]="email" name="email" ngModel #mail="ngModel">
                         <p [ngClass]="{'hidden':!(submited && mail.invalid)}" class="error">
                             <span *ngIf="mail.errors?.required" class="error">This field is required</span>
                         </p>
@@ -282,14 +282,14 @@
                 </div>
                 <div class="clear">
                     <div *ngIf="prefix" class="width40 left">
-                        <label for="" lang="en" class="title">Phone Prefix: </label>
+                        <label for="prefix" lang="en" class="title">Phone Prefix: </label>
                         <input type="text" id="prefix" class="block title" value="{{prefix}}" required [(ngModel)]="prefix" name="prefix" ngModel #pref="ngModel">
                         <p [ngClass]="{'hidden':!(submited && pref.invalid)}" class="error">
                             <span *ngIf="pref.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                     <div class="width40 right">
-                        <label for="" lang="en" class="title">Phone Number</label>
+                        <label for="phone" lang="en" class="title">Phone Number</label>
                         <input type="number" id="phone" class="block" required [(ngModel)]="phone" name="phone" ngModel #pho="ngModel">
                         <p [ngClass]="{'hidden':!(submited && pho.invalid)}" class="error">
                             <span *ngIf="pho.errors?.required" class="error">This field is required</span>
@@ -297,7 +297,7 @@
                     </div>
                 </div>
                 <div class="width40 left">
-                    <label for="" lang="en" class="title">Occupation</label>
+                    <label for="occupation" lang="en" class="title">Occupation</label>
                     <input type="text" id="ocupation" class="block" required [(ngModel)]="occupation" name="occupation" ngModel #occ="ngModel">
                     <p [ngClass]="{'hidden':!(submited && occ.invalid)}" class="error">
                         <span *ngIf="occ.errors?.required" class="error">This field is required</span>
@@ -305,15 +305,15 @@
                 </div>
                 <div class="clear">
                     <div class="width40 left">
-                        <label for="" lang="en" class="title">Monthly Income</label>
-                        <input type="number" id="incomes" class="block" required [(ngModel)]="monthly" name="monthly" ngModel #mon="ngModel">
+                        <label for="monthly" lang="en" class="title">Monthly Income</label>
+                        <input type="number" id="monthly" class="block" required [(ngModel)]="monthly" name="monthly" ngModel #mon="ngModel">
                         <p [ngClass]="{'hidden':!(submited && mon.invalid)}" class="error">
                             <span *ngIf="mon.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                     <div class="width40 right">
-                        <label for="" lang="en" class="title">Annual Income</label>
-                        <input type="number" id="year-incomes" class="block" required [(ngModel)]="annual" name="annual" ngModel #ann="ngModel">
+                        <label for="annual" lang="en" class="title">Annual Income</label>
+                        <input type="number" id="annual" class="block" required [(ngModel)]="annual" name="annual" ngModel #ann="ngModel">
                         <p [ngClass]="{'hidden':!(submited && ann.invalid)}" class="error">
                             <span *ngIf="ann.errors?.required" class="error">This field is required</span>
                         </p>
@@ -321,7 +321,7 @@
                 </div>
                 <div>
                     <div class="width40 left">
-                        <label for="" lang="en" class="title">Eth account password</label>
+                        <label for="pass" lang="en" class="title">Eth account password</label>
                         <input type="text" id="pass" class="block" required [(ngModel)]="pass" name="pass" ngModel #pas="ngModel">
                         <p [ngClass]="{'hidden':!(submited && pas.invalid)}" class="error">
                             <span *ngIf="pas.errors?.required" class="error">This field is required</span>

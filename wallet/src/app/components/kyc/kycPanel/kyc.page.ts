@@ -152,6 +152,7 @@ export class KYCPage implements OnInit {
   public kycAddrStatusText;
   public kycCompanyQuestions;
   public kycUserQuestions;
+  public kycStatus;
   
   settings = {
       bigBanner: true,
@@ -165,10 +166,6 @@ export class KYCPage implements OnInit {
   }
 
   async ngOnInit() {
-    await this.getQuestions("0xaea6623657aacb7b0504b10fed8e52e4a7a33cf1", "0000");
-    console.log("companyQ",this.kycCompanyQuestions);
-    console.log("userq", this.kycUserQuestions);
-    
     
     this.ethAddr = this._account.account.address;
     this.type = this.accountType[0];
@@ -323,8 +320,12 @@ export class KYCPage implements OnInit {
         console.log("addr", form.controls.ethAddr.value);
         this.ethAddrErr = null;
     }
-
+    let addr :string= form.controls.ethAddr.value.toString();
+    let pass :string= form.controls.pass.value;
+    let formControls = form.controls;
+    console.log("formControls", formControls);
     
+
     let years = this.moment().diff(this.date, 'years');
     console.log("años de diferencia", years);
     if(years < 18){
@@ -335,14 +336,24 @@ export class KYCPage implements OnInit {
     }
     
     if(this.dateErr == null && this.ethAddrErr == null){
-        let addr :string= form.controls.ethAddr.value.toString();
+        //let addr :string= form.controls.ethAddr.value.toString();
         
         
-        await this.postAddr(addr, form.controls.pass.value);
+        await this.postAddr(addr, pass);
     }
-
+    
     if(this.kycAddrStatusText == "Created"){
+        let addr :string= form.controls.ethAddr.value.toString();
+        //this.getQuestions("0xaea6623657aacb7b0504b10fed8e52e4a7a33cf1", "0000");
+        this.getQuestions(addr, pass);
+        console.log("companyQ",this.kycCompanyQuestions);
+        console.log("userq", this.kycUserQuestions);
+        this.patchData(addr, pass, formControls);
 
+        this.getStatus(addr, pass);
+        this.kycStatus;
+        this.patchStatus(addr, pass, status)
+    
     }
     //this.postAddr(form.controls.ethAddr.value);
       
@@ -386,6 +397,10 @@ export class KYCPage implements OnInit {
   }
 
   getQuestions(data, pass){
+      /*
+        GET /kyc/:address/questions/
+        Returns questions and their order to kyc video module
+      */
     let path = "/kyc/"+data+"/questions";
     data = data.toString();
     let obj = { address: data};
@@ -412,8 +427,10 @@ export class KYCPage implements OnInit {
             headers.append('Authorization', data);
             headers.append('Signature', sign);
             let options = new RequestOptions({headers: headers});   
+            console.log("into get questions before GET");
             
             this.http.get(this.url+path, options).map(ans => ans.json()).subscribe((res:any) =>{
+            
                 console.log("res?",res);
                 
                 console.log("res.companyQuestions", res.companyQuestions);
@@ -427,22 +444,243 @@ export class KYCPage implements OnInit {
         });
       }
   }
-  /*
-    GET /kyc/:address/status/
-    Devuelve el estado
 
-    PATCH /kyc/:address
-    Permite establecer valor a cada uno de los campos.
+ patchData(data, pass, form){
+     /*
+        PATCH /kyc/:address
+        Set values of each field
+     */
+    let path = "/kyc/"+data;
+    data = data.toString();
+    let obj;
 
-    PATCH /kyc/:address/:status
-    Atualiza el estado según el campo ":status". 
-    Valores:"verified" o "canceled". 
-    Esto bloquea los cambios.
+    if(form.type.value == this.accountType[0]){
+        //personal
+        obj = { 
+        accountType: form.type.value,
+        name: form.name.value,
+        surname: form.surnames.value,
+        passport: form.id.value,
+        nationality: form.nationality.value,
+        birthdate: this.date,
+        zip: form.postalCode.value,
+        city: form.city.value,
+        street: form.address.value,
+        email: form.email.value,
+        country: this.ownCountry,
+        prefix: form.prefix.value,
+        phone: form.phone.value,
+        occupation: form.occupation.value,
+        incomes: form.monthly.value,
+        yearIncomes: form.annual.value
+        };
+    }
+    if(form.type.value == this.accountType[1]){
+        //company
+        obj = { 
+            companyName: form.companyAddress.value,
+            companyCif: form.companyCif.value,
+            companyAddress: form.companyAddress.value,
+            companyWeb: form.companyWebsite.value,
+            accountType: form.type.value,
+            name: form.name.value,
+            surname: form.surnames.value,
+            passport: form.id.value,
+            nationality: form.nationality.value,
+            birthdate: this.date,
+            zip: form.postalCode.value,
+            city: form.city.value,
+            street: form.address.value,
+            email: form.email.value,
+            country: this.ownCountry,
+            prefix: form.prefix.value,
+            phone: form.phone.value,
+            occupation: form.occupation.value,
+            incomes: form.monthly.value,
+            yearIncomes: form.annual.value
+            };
+    }
+    
+    let postData = JSON.stringify(obj);
+    console.log(postData);
+    
+    let wallet;
+    let error="";
+    let priv;
+    try{
+        wallet = EthWallet.fromV3(this._account.account.v3, pass);
+      }catch(e){
+        error= e.message;
+      }
+    if(error==""){
+        priv = wallet.getPrivateKeyString();
+        return new Promise((resolve, reject) => {
+            let headers = new Headers();
+            let sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
+            sign = JSON.stringify(sign)
+            sign = btoa(sign)
+            sign = sign.toString();
+            let data = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoU2VjcmV0IjoiamFza2pzZGhpdWR1aWh3cWl1MjEyIiwiaWF0IjoxNTM3ODk0NTMzLCJleHAiOjE3MDg5ODk0NTMzfQ.f06c1LCyR-FYT9nJRm2r_6K8hSETqghw5Vwlq19ZqbI';
+            data = "Bearer "+data;
+            headers.append('Content-Type', 'application/json');
+            headers.append('Authorization', data);
+            headers.append('Signature', sign);
+            let options = new RequestOptions({headers: headers});   
+            console.log("into get questions before PATCH");
+            
+            this.http.patch(this.url+path, postData, options).map(ans => ans.json()).subscribe((res:any) =>{
+                console.log("dentro del patch?????");
+                
+                console.log("res?",res);
+                
+            }, err =>{
+                console.log(err);
+                reject(err);
+            });
+        });
+      }
+  }
 
-    POST /kyc/:address/files
-    Permite enviar un fichero para "face", "paper", "passport" y "video".
+  postFiles(data, pass){
+    //POST /kyc/:address/files
+    //Let send a file for "face", "paper", "passport" y "video".
 
-    GET /kyc/:address/questions/
-    Devuelve las preguntas y su orden
-  */
+    //base64 objects “face", "paper", "passport" y "video"
+    //how to send?
+    //how to get?
+
+    let path = "/kyc/"+data+"/files";
+    data = data.toString();
+    let obj = { address: data};
+    let addr = JSON.stringify(obj);
+    let wallet;
+    let error="";
+    let priv;
+    try{
+        wallet = EthWallet.fromV3(this._account.account.v3, pass);
+      }catch(e){
+        error= e.message;
+      }
+    if(error==""){
+        priv = wallet.getPrivateKeyString();
+        return new Promise((resolve, reject) => {
+            let headers = new Headers();
+            let sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
+            sign = JSON.stringify(sign)
+            sign = btoa(sign)
+            sign = sign.toString();
+            let data = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoU2VjcmV0IjoiamFza2pzZGhpdWR1aWh3cWl1MjEyIiwiaWF0IjoxNTM3ODk0NTMzLCJleHAiOjE3MDg5ODk0NTMzfQ.f06c1LCyR-FYT9nJRm2r_6K8hSETqghw5Vwlq19ZqbI';
+            data = "Bearer "+data;
+            headers.append('Content-Type', 'application/json');
+            headers.append('Authorization', data);
+            headers.append('Signature', sign);
+            let options = new RequestOptions({headers: headers});
+
+            this.http.post(this.url+path, addr, options).subscribe(res =>{
+                this.kycAddrStatusText = res.statusText;
+            }, err =>{
+                console.log(err);
+                reject(err);
+            });
+        });
+      }
+  }
+  patchStatus(data, pass, status){
+      /*
+        PATCH /kyc/:address/:status
+        update status by field ":status". 
+        Values :"verified" or "canceled". 
+        This blocks changes.
+      */
+    let path = "/kyc/"+data+"/"+status;
+    data = data.toString();
+    let obj;
+    
+    let postData = JSON.stringify(obj);
+    console.log(postData);
+    
+    let wallet;
+    let error="";
+    let priv;
+    try{
+        wallet = EthWallet.fromV3(this._account.account.v3, pass);
+      }catch(e){
+        error= e.message;
+      }
+    if(error==""){
+        priv = wallet.getPrivateKeyString();
+        return new Promise((resolve, reject) => {
+            let headers = new Headers();
+            let sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
+            sign = JSON.stringify(sign)
+            sign = btoa(sign)
+            sign = sign.toString();
+            let data = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoU2VjcmV0IjoiamFza2pzZGhpdWR1aWh3cWl1MjEyIiwiaWF0IjoxNTM3ODk0NTMzLCJleHAiOjE3MDg5ODk0NTMzfQ.f06c1LCyR-FYT9nJRm2r_6K8hSETqghw5Vwlq19ZqbI';
+            data = "Bearer "+data;
+            headers.append('Content-Type', 'application/json');
+            headers.append('Authorization', data);
+            headers.append('Signature', sign);
+            let options = new RequestOptions({headers: headers});   
+            console.log("into get questions before PATCH");
+            
+            this.http.patch(this.url+path, options).map(ans => ans.json()).subscribe((res:any) =>{
+                console.log("dentro del patch?????");
+                
+                console.log("res?",res);
+                
+            }, err =>{
+                console.log(err);
+                reject(err);
+            });
+        });
+      }
+  }
+
+  getStatus(data, pass){
+    /*
+       GET /kyc/:address/status/
+       returns status
+    */
+    let path = "/kyc/"+data+"/status";
+    data = data.toString();
+    let obj = { address: data};
+    let addr = JSON.stringify(obj);
+    let wallet;
+    let error="";
+    let priv;
+    try{
+        wallet = EthWallet.fromV3(this._account.account.v3, pass);
+      }catch(e){
+        error= e.message;
+      }
+    if(error==""){
+        priv = wallet.getPrivateKeyString();
+        return new Promise((resolve, reject) => {
+            let headers = new Headers();
+            let sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
+            sign = JSON.stringify(sign)
+            sign = btoa(sign)
+            sign = sign.toString();
+            let data = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoU2VjcmV0IjoiamFza2pzZGhpdWR1aWh3cWl1MjEyIiwiaWF0IjoxNTM3ODk0NTMzLCJleHAiOjE3MDg5ODk0NTMzfQ.f06c1LCyR-FYT9nJRm2r_6K8hSETqghw5Vwlq19ZqbI';
+            data = "Bearer "+data;
+            headers.append('Content-Type', 'application/json');
+            headers.append('Authorization', data);
+            headers.append('Signature', sign);
+            let options = new RequestOptions({headers: headers});   
+            console.log("into get questions before GET");
+            
+            this.http.get(this.url+path, options).map(ans => ans.json()).subscribe((res:any) =>{
+            
+                console.log("res?",res);
+                //check if res.status exists
+                this.kycStatus = res.status;
+                
+            }, err =>{
+                console.log(err);
+                reject(err);
+            });
+        });
+      }
+  }
+
 }
