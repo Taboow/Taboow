@@ -155,6 +155,8 @@ export class KYCPage implements OnInit {
   public loadingPercentage;
   public currentStep = 0;
   public retryStep = false;
+  public showContinue = false;
+  public showDoStep = false;
   
   private kyc;
 
@@ -179,7 +181,7 @@ export class KYCPage implements OnInit {
   }
   
   initKyc() {
-
+    let lastStep;
     let video = document.querySelector('video');
     let domain = './';
 
@@ -233,13 +235,13 @@ export class KYCPage implements OnInit {
                 autoNext: false
             },{
                 wait: 2000,
-                validators: ['FACE'],
+                validators: [],
                 snapshot: true,
                 auto: false,
                 autoNext: true
             },{
                 wait: 2000,
-                validators: ['FACE'],
+                validators: [],
                 snapshot: true,
                 auto: false,
                 autoNext: true
@@ -261,7 +263,14 @@ export class KYCPage implements OnInit {
         },
         onStep: function(stepNumber, step, subStep) {
             console.log('On step '+stepNumber);
+            lastStep = step;
             that.currentStep = stepNumber;
+            if (!step.auto) {
+                that.showDoStep = true;
+            } else {
+                that.showDoStep = false;
+            }
+            that.showContinue = false;
         },
         onRetry: function(stepNumber, verificationsFailed) {
             console.log('Try again');
@@ -269,17 +278,28 @@ export class KYCPage implements OnInit {
             setTimeout(() => {
                 that.retryStep = false;
             }, 5000);
+            if (!lastStep.auto) {
+                this.showDoStep = true;
+            }
         },
         onSuccess: function(stepNumber, step) {
             console.log('Success. Step = '+step);
             console.log(step);
+            that.showContinue = true;
+            that.showDoStep = false;
             
         }
       });
       this.kyc.init();
   }
-  nextStep() {
+
+  doStep() {
     this.kyc.runNextStep();
+    this.showDoStep = false;
+  }
+
+  nextStep() {
+    this.kyc.goToNextStep();
   }
 
   myCountry(value){

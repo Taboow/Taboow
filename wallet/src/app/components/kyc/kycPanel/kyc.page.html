@@ -3,7 +3,9 @@
     <div id="kyc-video">
         <div [ngClass]="{'no-display':(loadingPercentage != '')}">{{loadingPercentage}}</div>
         <div [ngClass]="{'no-display':!(retryStep)}">Error! Try again</div> 
-        <div [ngClass]="{'no-display':(currentStep != 7)}"><button (click)="nextStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div> 
+        <div [ngClass]="{'no-display':!(showContinue)}"><button (click)="nextStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div> 
+        <div [ngClass]="{'no-display':!(showDoStep)}"><button (click)="doStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div> 
+
         <div [ngClass]="{'no-display':(currentStep != 0)}">Question 1</div>
         <div [ngClass]="{'no-display':currentStep != 1}">Question 2</div>
         <div [ngClass]="{'no-display':currentStep != 2}">Question 3</div>
