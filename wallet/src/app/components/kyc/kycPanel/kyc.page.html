@@ -1,8 +1,9 @@
 <div class="content scrollable-content kyc-container">
 
     <div id="kyc-video">
-        <div [ngClass]="{'no-display':!(submited && filter.invalid)}">Continue</div> 
-        <div id="loading">{{loadingPercentage}}</div>
+        <div [ngClass]="{'no-display':(loadingPercentage != '')}">{{loadingPercentage}}</div>
+        <div [ngClass]="{'no-display':!(retryStep)}">Error! Try again</div> 
+        <div [ngClass]="{'no-display':(currentStep != 7)}">Take</div> 
         <div [ngClass]="{'no-display':(currentStep != 0)}">Question 1</div>
         <div [ngClass]="{'no-display':currentStep != 1}">Question 2</div>
         <div [ngClass]="{'no-display':currentStep != 2}">Question 3</div>

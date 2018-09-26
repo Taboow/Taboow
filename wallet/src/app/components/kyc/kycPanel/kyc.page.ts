@@ -156,6 +156,7 @@ export class KYCPage implements OnInit {
 
   public loadingPercentage;
   public currentStep = 0;
+  public retryStep = false;
   
   settings = {
       bigBanner: true,
@@ -252,7 +253,7 @@ export class KYCPage implements OnInit {
         ],
         loading: function(percentage) {
           console.log('Loading '+percentage+'%');
-          this.loadingPercentage = percentage;
+          that.loadingPercentage = percentage;
         },
         onFinish: function(result) {
             console.log('On finish');
@@ -264,6 +265,10 @@ export class KYCPage implements OnInit {
         },
         onRetry: function(stepNumber, verificationsFailed) {
             console.log('Try again');
+            that.retryStep = true;
+            setTimeout(() => {
+                that.retryStep = false;
+            }, 5000);
         },
         onSuccess: function(stepNumber, step) {
             console.log('Success. Step = '+step);
