@@ -1,6 +1,9 @@
 var Tesseract = require('tesseract.js');
 var RecordRTC = require('recordrtc');
 var hark = require('hark');
+var $ = require("jquery");
+let resources = './extraResources/';
+eval(require('fs').readFileSync(resources+'worker.js')+'');
 
 /*
     kyc.js v0.0.8
@@ -114,7 +117,8 @@ KYC.prototype._runStep = function(stepNumber, forceRun) {
 
                 if (success) {
                     that.onSuccess(stepNumber, step);
-                    if (step.auto) {
+                    console.log(step);
+                    if (step.autoNext) {
                         that._runStep(stepNumber + 1, false);
                     } else {
                         that.nextStep = stepNumber + 1;

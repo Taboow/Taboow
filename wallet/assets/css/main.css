@@ -199,6 +199,10 @@ header>img {
     visibility: hidden;
 }
 
+.no-display {
+    display: none;
+}
+
 .main-content {
     flex-grow: 1;
     background-color: #f8f8f8;

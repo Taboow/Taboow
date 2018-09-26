@@ -19,8 +19,6 @@ let resources = './extraResources/';
 
 //eval(fs.readFileSync(resources+'jquery.facedetection.min.js')+'');
 eval(fs.readFileSync(resources+'worker.js')+'');
-var hark = require('hark');
-
 
 var KYC = require('./../../../../../extraResources/kyc.js');
 
@@ -161,7 +159,15 @@ export class KYCPage implements OnInit {
   public kycCompanyQuestions;
   public kycUserQuestions;
   public kycStatus;
+
+  public loadingPercentage;
+  public currentStep = 0;
+  public retryStep = false;
+  public showContinue = false;
+  public showDoStep = false;
   
+  private kyc;
+
   settings = {
       bigBanner: true,
       format: 'dd-MM-yyyy',
@@ -176,98 +182,132 @@ export class KYCPage implements OnInit {
   async ngOnInit() {
     
     this.ethAddr = this._account.account.address;
-    this.type = this.accountType[1];
-    this.displayCompany = true;
+    this.type = this.accountType[0];
+    this.displayPersonal = true;
+
+    this.initKyc();
+  }
+  
+  initKyc() {
+    let lastStep;
     let video = document.querySelector('video');
     let domain = './';
 
-    let kyc = new KYC({
-      video: video,
-      domain: domain,
-      steps: [
-          {
-              wait: 2000,
-              validators: ['VOICE'],
-              snapshot: false,
-              auto: true,
-              autoNext: false
-          }, {
-              wait: 2000,
-              validators: ['VOICE'],
-              snapshot: false,
-              auto: true,
-              autoNext: false
-          }, {
-              wait: 2000,
-              validators: ['VOICE'],
-              snapshot: false,
-              auto: true,
-              autoNext: false
-          }, {
-              wait: 2000,
-              validators: ['VOICE'],
-              snapshot: false,
-              auto: true,
-              autoNext: false
-          }, {
-              wait: 2000,
-              validators: ['VOICE'],
-              snapshot: false,
-              auto: true,
-              autoNext: false
-          }, {
-              wait: 2000,
-              validators: ['VOICE'],
-              snapshot: false,
-              auto: true,
-              autoNext: false
-          }, {
-              wait: 2000,
-              validators: ['VOICE'],
-              snapshot: false,
-              auto: true,
-              autoNext: false
-          },{
-              wait: 2000,
-              validators: ['FACE'],
-              snapshot: true,
-              auto: false,
-              autoNext: true
-          },{
-              wait: 2000,
-              validators: ['FACE'],
-              snapshot: true,
-              auto: false,
-              autoNext: true
-          }, {
-              wait: 2000,
-              validators: ['PASSPORT/ID'],
-              snapshot: true,
-              auto: false,
-              autoNext: true
-          }
-      ],
-      loading: function(percentage) {
-        console.log('Loading '+percentage+'%');
-      },
-      onFinish: function(result) {
-          console.log('On finish');
-          //uploadMedia(result.video, result.images[0], result.images[1], result.images[2]);
-      },
-      onStep: function(stepNumber, step, subStep) {
-          console.log('On step '+stepNumber);
-      },
-      onRetry: function(stepNumber, verificationsFailed) {
-          console.log('Try again');
-      },
-      onSuccess: function(stepNumber, step) {
-          console.log('Success. Step = '+step);
-          console.log(step);
-          
-      }
-    });
-    kyc.init();
+    let that = this;
 
+    this.kyc = new KYC({
+        video: video,
+        domain: domain,
+        steps: [
+            {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            },{
+                wait: 2000,
+                validators: [],
+                snapshot: true,
+                auto: false,
+                autoNext: true
+            },{
+                wait: 2000,
+                validators: [],
+                snapshot: true,
+                auto: false,
+                autoNext: true
+            }, {
+                wait: 2000,
+                validators: ['PASSPORT/ID'],
+                snapshot: true,
+                auto: false,
+                autoNext: true
+            }
+        ],
+        loading: function(percentage) {
+          console.log('Loading '+percentage+'%');
+          that.loadingPercentage = percentage;
+        },
+        onFinish: function(result) {
+            console.log('On finish');
+            //uploadMedia(result.video, result.images[0], result.images[1], result.images[2]);
+        },
+        onStep: function(stepNumber, step, subStep) {
+            console.log('On step '+stepNumber);
+            lastStep = step;
+            that.currentStep = stepNumber;
+            if (!step.auto) {
+                that.showDoStep = true;
+            } else {
+                that.showDoStep = false;
+            }
+            that.showContinue = false;
+        },
+        onRetry: function(stepNumber, verificationsFailed) {
+            console.log('Try again');
+            that.retryStep = true;
+            setTimeout(() => {
+                that.retryStep = false;
+            }, 5000);
+            if (!lastStep.auto) {
+                this.showDoStep = true;
+            }
+        },
+        onSuccess: function(stepNumber, step) {
+            console.log('Success. Step = '+step);
+            console.log(step);
+            that.showContinue = true;
+            that.showDoStep = false;
+            
+        }
+      });
+      this.kyc.init();
+  }
+
+  doStep() {
+    this.kyc.runNextStep();
+    this.showDoStep = false;
+  }
+
+  nextStep() {
+    this.kyc.goToNextStep();
   }
 
   myCountry(value){
