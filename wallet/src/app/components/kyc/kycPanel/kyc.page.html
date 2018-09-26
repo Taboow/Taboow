@@ -1,5 +1,20 @@
 <div class="content scrollable-content kyc-container">
-    <video class="center" style="max-width: 80%;"></video>
+
+    <div id="kyc-video">
+        <div [ngClass]="{'no-display':!(submited && filter.invalid)}">Continue</div> 
+        <div id="loading">{{loadingPercentage}}</div>
+        <div [ngClass]="{'no-display':(currentStep != 0)}">Question 1</div>
+        <div [ngClass]="{'no-display':currentStep != 1}">Question 2</div>
+        <div [ngClass]="{'no-display':currentStep != 2}">Question 3</div>
+        <div [ngClass]="{'no-display':currentStep != 3}">Question 4</div>
+        <div [ngClass]="{'no-display':currentStep != 4}">Question 5</div>
+        <div [ngClass]="{'no-display':currentStep != 5}">Question 6</div>
+        <div [ngClass]="{'no-display':currentStep != 6}">Question 7</div>
+        <div [ngClass]="{'no-display':currentStep != 7}">Photo of your face</div>
+        <div [ngClass]="{'no-display':currentStep != 8}">Photo of your face near the passport</div>
+        <div [ngClass]="{'no-display':currentStep != 9}">Photo of your passport</div>
+        <video class="center" style="max-width: 80%;"></video>
+    </div>
     <form id="kyc-form" (ngSubmit)="confirm(form)" #form="ngForm">
         <!-- CONTAINER -->
         <div class="round dist">
