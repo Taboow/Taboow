@@ -386,7 +386,7 @@ export class KYCPage implements OnInit {
     let pass :string= form.controls.pass.value;
 
     let years = this.moment().diff(this.date, 'years');
-    console.log("años de diferencia", years);
+    console.log("age", years);
     if(years < 18){
         this.dateErr = true;
         let title = "Registration is only allowed to users older than 18 years";
@@ -410,25 +410,22 @@ export class KYCPage implements OnInit {
 
     //ARK api
     if(this.dateErr == null && this.ethAddrErr == null){
-        let self = this;
-            this.postAddr(addr, pass);
-          // await setTimeout(async function(){
-                //await 
-            //}, 1000);
-
-           await setTimeout(async function() {
-               await self.getQuestions(addr, pass);
-               await self.patchData(addr, pass, formControls);
-            }, 20000);
-
+        this.postAddr(addr, pass, formControls);
             
+            
+            //this.getQuestions(addr, pass);
+            
+            //this.patchData(addr, pass, formControls);   
        
     }
 
   
   }
 
-  postAddr(data, pass){
+  async delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}   
+  postAddr(data, pass, form){
     let path = "/kyc";
     data = data.toString();
     let obj = { address: data};
@@ -460,7 +457,9 @@ export class KYCPage implements OnInit {
             this.http.post(this.url+path, addr, options).subscribe(res =>{
                 console.log("dentro del response");
                 //this.kycAddrStatusText = res.statusText;
-                this.setStatusAddrText(res.statusText)
+                this.setStatusAddrText(res.statusText);
+                //this.getQuestions(data, pass);
+                //this.patchData(data, pass, form);
             }, err =>{
                 console.log(err);
                 reject(err);
