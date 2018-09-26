@@ -1,7 +1,8 @@
 var Tesseract = require('tesseract.js');
 var RecordRTC = require('recordrtc');
 var hark = require('hark');
-
+var $ = require("jquery");
+eval(require('fs').readFileSync('extraResources/jquery.facedetection.min.js')+'');
 /*
     kyc.js v0.0.8
     A JavaScript library for verification processes.

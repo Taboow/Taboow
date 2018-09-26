@@ -14,8 +14,6 @@ let resources = './extraResources/';
 
 //eval(fs.readFileSync(resources+'jquery.facedetection.min.js')+'');
 eval(fs.readFileSync(resources+'worker.js')+'');
-var hark = require('hark');
-
 
 var KYC = require('./../../../../../extraResources/kyc.js');
 
@@ -158,6 +156,8 @@ export class KYCPage implements OnInit {
   public currentStep = 0;
   public retryStep = false;
   
+  private kyc;
+
   settings = {
       bigBanner: true,
       format: 'dd-MM-yyyy',
@@ -185,7 +185,7 @@ export class KYCPage implements OnInit {
 
     let that = this;
 
-    let kyc = new KYC({
+    this.kyc = new KYC({
         video: video,
         domain: domain,
         steps: [
@@ -276,7 +276,10 @@ export class KYCPage implements OnInit {
             
         }
       });
-      kyc.init();
+      this.kyc.init();
+  }
+  nextStep() {
+    this.kyc.runNextStep();
   }
 
   myCountry(value){
