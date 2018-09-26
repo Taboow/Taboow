@@ -1,11 +1,16 @@
 import { Component, Inject, OnInit } from '@angular/core'
 import { Http, Headers, ResponseOptions, RequestOptions} from '@angular/http';
 import { AccountService } from '../../../services/account.service';
+
 import { Web3 } from '../../../services/web3.service';
 import fs = require('fs');
 import { AngularDateTimePickerModule } from 'angular2-datetimepicker';
+
 import { MdDialog } from '@angular/material';
+import { DialogService } from '../../../services/dialog.service';
 import { CountryDialogComponent } from './country-dialog.component';
+import { ErrorDialogComponent } from '../../dialogs/error-dialog.component';
+
 import * as EthUtil from 'ethereumjs-util';
 import * as EthWallet from 'ethereumjs-wallet'
 import { stringify } from 'querystring';
@@ -141,6 +146,9 @@ export class KYCPage implements OnInit {
   public companyCif;
   public companyAddress;
   public companyWebsite;
+  public region;
+  public province;
+
   protected pass;
 
   public submited = false;
@@ -162,14 +170,14 @@ export class KYCPage implements OnInit {
       closeOnSelect: true
   }
 
-  constructor(private http: Http, protected _account: AccountService, protected _web3 : Web3, public dialog: MdDialog) {
+  constructor(private http: Http, protected _account: AccountService, protected _web3 : Web3, public dialog: MdDialog, private dialogService: DialogService) {
   }
 
   async ngOnInit() {
     
     this.ethAddr = this._account.account.address;
-    this.type = this.accountType[0];
-    this.displayPersonal = true;
+    this.type = this.accountType[1];
+    this.displayCompany = true;
     let video = document.querySelector('video');
     let domain = './';
 
@@ -273,8 +281,13 @@ export class KYCPage implements OnInit {
         if(value == this.prefixes[index].code){
             this.prefix = this.prefixes[index].dial_code;
             console.log("this.prefix?", this.prefix);
+            this.prefix = parseInt(this.prefix) ;
+            console.log("typeOf?",typeof(this.prefix));
         }
     }
+    
+    
+    
   }
   myBirthdate(){
    console.log(this.date);
@@ -307,56 +320,72 @@ export class KYCPage implements OnInit {
 
   async confirm(form){
     this.submited = true;
-
     if(form.invalid){
         return false;
     }
 
     if(EthUtil.isValidAddress(form.controls.ethAddr.value) == false){  
         this.ethAddrErr = true;
+        let title = "This address is not valid";
+        let message= '';
+        let error="invalid addr";
+        
+        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+        dialogRef.afterClosed().subscribe(res=>{
+            document.getElementById("ethAddr").focus();
+        })
+        
     }
 
     if(EthUtil.isValidAddress(form.controls.ethAddr.value) == true){
         console.log("addr", form.controls.ethAddr.value);
         this.ethAddrErr = null;
     }
+
     let addr :string= form.controls.ethAddr.value.toString();
     let pass :string= form.controls.pass.value;
-    let formControls = form.controls;
-    console.log("formControls", formControls);
-    
 
     let years = this.moment().diff(this.date, 'years');
     console.log("años de diferencia", years);
     if(years < 18){
         this.dateErr = true;
+        let title = "Registration is only allowed to users older than 18 years";
+        let message= '';
+        let error="invalid birthdate";
+        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+
+        dialogRef.afterClosed().subscribe(res=>{
+            console.log("entra en el focus?");
+            
+            document.getElementById("country").focus();
+        })
+        
         //include dialog
     }else{
         this.dateErr = null
     }
-    
-    if(this.dateErr == null && this.ethAddrErr == null){
-        //let addr :string= form.controls.ethAddr.value.toString();
-        
-        
-        await this.postAddr(addr, pass);
-    }
-    
-    if(this.kycAddrStatusText == "Created"){
-        let addr :string= form.controls.ethAddr.value.toString();
-        //this.getQuestions("0xaea6623657aacb7b0504b10fed8e52e4a7a33cf1", "0000");
-        this.getQuestions(addr, pass);
-        console.log("companyQ",this.kycCompanyQuestions);
-        console.log("userq", this.kycUserQuestions);
-        this.patchData(addr, pass, formControls);
 
-        this.getStatus(addr, pass);
-        this.kycStatus;
-        this.patchStatus(addr, pass, status)
-    
+    let formControls = form.controls;
+
+
+    //ARK api
+    if(this.dateErr == null && this.ethAddrErr == null){
+        let self = this;
+            this.postAddr(addr, pass);
+          // await setTimeout(async function(){
+                //await 
+            //}, 1000);
+
+           await setTimeout(async function() {
+               await self.getQuestions(addr, pass);
+               await self.patchData(addr, pass, formControls);
+            }, 20000);
+
+            
+       
     }
-    //this.postAddr(form.controls.ethAddr.value);
-      
+
+  
   }
 
   postAddr(data, pass){
@@ -386,17 +415,31 @@ export class KYCPage implements OnInit {
             headers.append('Authorization', data);
             headers.append('Signature', sign);
             let options = new RequestOptions({headers: headers});    
+            console.log("antes del post");
+            
             this.http.post(this.url+path, addr, options).subscribe(res =>{
-                this.kycAddrStatusText = res.statusText;
+                console.log("dentro del response");
+                //this.kycAddrStatusText = res.statusText;
+                this.setStatusAddrText(res.statusText)
             }, err =>{
                 console.log(err);
                 reject(err);
             });
+            
         });
+        
       }
+      
   }
-
+  setStatusAddrText(txt){
+    this.kycAddrStatusText = txt;
+  }
+  getStatusAddrText(){
+      return this.kycAddrStatusText;
+  }
   getQuestions(data, pass){
+      console.log("this.kycAddrStatusText", this.kycAddrStatusText);
+      
       /*
         GET /kyc/:address/questions/
         Returns questions and their order to kyc video module
@@ -463,14 +506,14 @@ export class KYCPage implements OnInit {
         passport: form.id.value,
         nationality: form.nationality.value,
         birthdate: this.date,
-        zip: form.postalCode.value,
+        zip: form.postalCode.value.toString(),
         city: form.city.value,
         street: form.address.value,
         email: form.email.value,
         country: this.ownCountry,
         prefix: form.prefix.value,
         phone: form.phone.value,
-        occupation: form.occupation.value,
+        ocupation: form.occupation.value,
         incomes: form.monthly.value,
         yearIncomes: form.annual.value
         };
@@ -488,14 +531,14 @@ export class KYCPage implements OnInit {
             passport: form.id.value,
             nationality: form.nationality.value,
             birthdate: this.date,
-            zip: form.postalCode.value,
+            zip: form.postalCode.value.toString(),
             city: form.city.value,
             street: form.address.value,
             email: form.email.value,
             country: this.ownCountry,
             prefix: form.prefix.value,
             phone: form.phone.value,
-            occupation: form.occupation.value,
+            ocupation: form.occupation.value,
             incomes: form.monthly.value,
             yearIncomes: form.annual.value
             };
@@ -526,7 +569,7 @@ export class KYCPage implements OnInit {
             headers.append('Authorization', data);
             headers.append('Signature', sign);
             let options = new RequestOptions({headers: headers});   
-            console.log("into get questions before PATCH");
+            console.log("into patch data before PATCH");
             
             this.http.patch(this.url+path, postData, options).map(ans => ans.json()).subscribe((res:any) =>{
                 console.log("dentro del patch?????");
