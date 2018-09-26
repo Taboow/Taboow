@@ -452,14 +452,16 @@ export class KYCPage implements OnInit {
             headers.append('Authorization', data);
             headers.append('Signature', sign);
             let options = new RequestOptions({headers: headers});    
-            console.log("antes del post");
             
-            this.http.post(this.url+path, addr, options).subscribe(res =>{
+            
+            this.http.post(this.url+path, addr, options).subscribe(async res =>{
                 console.log("dentro del response");
                 //this.kycAddrStatusText = res.statusText;
                 this.setStatusAddrText(res.statusText);
-                //this.getQuestions(data, pass);
-                //this.patchData(data, pass, form);
+                console.log(this._account.account.address, pass, form);
+                
+                await this.getQuestions(this._account.account.address, pass, form);
+                
             }, err =>{
                 console.log(err);
                 reject(err);
@@ -476,7 +478,7 @@ export class KYCPage implements OnInit {
   getStatusAddrText(){
       return this.kycAddrStatusText;
   }
-  getQuestions(data, pass){
+  getQuestions(data, pass, form){
       console.log("this.kycAddrStatusText", this.kycAddrStatusText);
       
       /*
@@ -511,7 +513,7 @@ export class KYCPage implements OnInit {
             let options = new RequestOptions({headers: headers});   
             console.log("into get questions before GET");
             
-            this.http.get(this.url+path, options).map(ans => ans.json()).subscribe((res:any) =>{
+            this.http.get(this.url+path, options).map(ans => ans.json()).subscribe(async (res:any) =>{
             
                 console.log("res?",res);
                 
@@ -519,6 +521,7 @@ export class KYCPage implements OnInit {
                 console.log("res.userQuestions", res.userQuestions);
                 this.kycCompanyQuestions = res.companyQuestions;
                 this.kycUserQuestions = res.userQuestions;
+                await this.patchData(this._account.account.address, pass, form);
             }, err =>{
                 console.log(err);
                 reject(err);
@@ -610,7 +613,7 @@ export class KYCPage implements OnInit {
             let options = new RequestOptions({headers: headers});   
             console.log("into patch data before PATCH");
             
-            this.http.patch(this.url+path, postData, options).map(ans => ans.json()).subscribe((res:any) =>{
+            this.http.patch(this.url+path, postData, options).subscribe(async res =>{
                 console.log("dentro del patch?????");
                 
                 console.log("res?",res);
