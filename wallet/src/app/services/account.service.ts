@@ -25,6 +25,8 @@ export class AccountService{
     //Hardcode
     this._scan.getApiKey();
     if(this._scan.apikey != "" && this._web3.infuraKey != ""){
+      console.log("intoConstructor");
+      
       this.getAccountData();
       if('address' in this.account){
         this.startIntervalData();
@@ -101,12 +103,14 @@ export class AccountService{
   }
   
   async getAccountData(){
+    console.log("into getAccoount data");
+    
     this.account = this.getAccount();
     
     if(Object.keys(this.account).length != 0){
-      this.getPendingTx();
+      await this.getPendingTx();
       await this.setData();
-      this.setTokens();
+      await this.setTokens();
     }
   }
 
@@ -149,7 +153,6 @@ export class AccountService{
   deleteToken(tokenAdrr){
       if('tokens' in this.account){
         this.account.tokens.forEach(tk=>{
-          console.log(tk.contractAddress, "a borrar", tokenAdrr,tk.contractAddress == tokenAdrr)
           if(tk.contractAddress == tokenAdrr){
             tk.deleted = true;
           }
@@ -160,11 +163,14 @@ export class AccountService{
 
   async updateTokens(){
     let self = this;
-    let tokens = this.account.tokens
-    tokens = await this.updateTokenBalances(tokens);
-    this._scan.getTokensTransfers(this.account.address).subscribe(async function(resp:any){
+    let tokens = this.account.tokens;
+    
+    //tokens = await this.updateTokenBalances(tokens);
+    await this._scan.getTokensTransfers(this.account.address).subscribe(async function(resp:any){
+      
         let tkns : Array<any> = [];
         tkns = resp.result;
+       
         for(let i = 0; i<tkns.length; i++){
           if(tokens.findIndex(x=> x.contractAddress == tkns[i].contractAddress) == -1){
             let token: any = {
@@ -176,6 +182,7 @@ export class AccountService{
               deleted: false
             }
             token = await self.updateTokenBalance(token);
+            
             if(!isNaN(token.tokenDecimal)){
               tokens.push(token);
             }
@@ -186,20 +193,35 @@ export class AccountService{
       });
   }
 
+  /*
   async updateTokenBalances(tokens){
+    console.log("DENTRO DEL UPDATE!!!!!!");
+    
     for(let i = 0; i<tokens.length; i++){
       tokens[i] = await this.updateTokenBalance(tokens[i])
+        console.log("TOKENS DE I", tokens[i]);
+        
     }
+    console.log("DEVUELVE!!", tokens);
+    
     return tokens;
   }
   
+*/
   async updateTokenBalance(token){
     if(!('balance' in token) || !token.deleted){
-      this._token.setToken(token.contractAddress);
+      await this._token.setToken(token.contractAddress);
+      
+      token.tokenName = await this._token.getName();
+      token.tokenSymbol = await this._token.getSymbol();
+      token.tokenDecimal = await this._token.getDecimal();
       let exp = 10 ** token.tokenDecimal;
       let balance : any = await this._token.getBalanceOf(this.account.address);
+      
       token.balance = balance.div(exp).toNumber();
-    } 
+     
+    }
+    
     return token
   }
   
@@ -248,10 +270,9 @@ export class AccountService{
       
   }
 
-  startIntervalTokens(){
-    return setInterval(()=>{
-      console.log("tokens",this.account.tokens);
-      this.updateTokens();
+  async startIntervalTokens(){
+    return await setInterval(async()=>{
+      await this.updateTokens();
     },3000);
   }
 
