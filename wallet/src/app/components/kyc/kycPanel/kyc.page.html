@@ -67,8 +67,8 @@
                     <div class="width40 left">
                         <label class="title" for="country">Country :</label><span class="title"><img src="~icons/info_icon.taboow.svg" (click)="openCountryDialog()"></span>
                         <select id="country" class="block title" required [(ngModel)]="country" name="country" (change)="myCountry($event.target.value)" #count="ngModel">
-                                        <option class="pointer" *ngFor="let fils of countries, index as i" value="{{fils.code}}" placeholder="Select a country">{{fils.name}}</option>
-                                    </select>
+                            <option class="pointer" *ngFor="let fils of countries, index as i" value="{{fils.code}}" placeholder="Select a country">{{fils.name}}</option>
+                        </select>
                         <p [ngClass]="{'hidden':!(submited && count.invalid)}" class="error">
                             <span *ngIf="count.errors?.required" class="error">This field is required</span>
                         </p>

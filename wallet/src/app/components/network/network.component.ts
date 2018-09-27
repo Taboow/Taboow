@@ -2,9 +2,9 @@ import { Component, OnInit, DoCheck }  from '@angular/core';
 import { Web3 } from '../../services/web3.service';
 import { AccountService } from '../../services/account.service';
 import { DialogService } from '../../services/dialog.service';
-import { ContractService } from '../../services/contract.service';
 
-import { ContractStorageService } from '../../services/contractStorage.service';
+
+
 
 
 @Component({
@@ -17,7 +17,7 @@ export class NetWorkComponent implements OnInit, DoCheck{
     show: boolean = false;
     loading: boolean =  false;
     dialog;
-    constructor( private _web3: Web3, private _account: AccountService, private _dialog: DialogService,  private _contractStorage: ContractStorageService, protected _contract : ContractService) {
+    constructor( private _web3: Web3, private _account: AccountService, private _dialog: DialogService) {
 
     }
     ngOnInit(){
@@ -45,14 +45,15 @@ export class NetWorkComponent implements OnInit, DoCheck{
         this.dialog = this._dialog.openLoadingDialog();
         this.net = network;
         this._web3.setNetwork(network.chain);
-        this._contract.setContract();
+        
  
 
         if(this._account.account.address > 0){
-                this._contractStorage.setAccContracts();
-     
+            
+            console.log("Hola?",this._account.account.address);
+            
             if('address' in this._account.account){
-                this._contractStorage.setAccContracts();
+         
                 this._account.refreshAccountData();
                 this._account.updated = false;
                 

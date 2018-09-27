@@ -76,7 +76,7 @@ import { TokenService } from './services/token.service';
 import { ContractService } from './services/contract.service';
 import { FormsService } from './services/forms.service'
 import { RawTxService } from './services/rawtx.sesrvice'
-import { ContractStorageService } from './services/contractStorage.service'
+
 import { EtherscanService } from './services/etherscan.service';
 
 
@@ -190,7 +190,7 @@ import { InsuficientFundsDirective } from './validators/funds-validator.directiv
     
     FormsService,
     RawTxService,
-    ContractStorageService,
+    
     EtherscanService,
 
   ],

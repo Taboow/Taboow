@@ -3,7 +3,7 @@ var RecordRTC = require('recordrtc');
 var hark = require('hark');
 var $ = require("jquery");
 let resources = './extraResources/';
-eval(require('fs').readFileSync(resources+'worker.js')+'');
+eval(require('fs').readFileSync(resources + 'worker.js') + '');
 
 Tesseract.workerOptions.workerPath = './node_modules/tesseract.js/src/node/worker.js';
 

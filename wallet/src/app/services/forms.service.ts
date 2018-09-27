@@ -1,12 +1,12 @@
 import { Injectable} from '@angular/core';
 import { Validators, ValidatorFn, FormGroup, FormControl } from '@angular/forms'
 import { ValidateAddress } from '../validators/address-validator.directive'; 
-import { ContractService } from './contract.service';
+
 import { Web3 } from './web3.service';
 
 @Injectable()
 export class FormsService {
-    constructor(private _contract: ContractService, private _web3: Web3){
+    constructor(private _web3: Web3){
 
     }
 
@@ -35,7 +35,7 @@ export class FormsService {
     }
 
     removeControls(inputs, form): FormGroup{
-        //this._contract.getConstructor();
+        
         inputs.forEach(input=>{
            form.removeControl(input.name);
         })

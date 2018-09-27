@@ -408,6 +408,8 @@ export class KYCPage implements OnInit {
     }
 
     let formControls = form.controls;
+    console.log("PREFIX",formControls.prefix.value);
+    
     let x = this.validateEmail(form.controls.email.value);
 
     console.log("respuesta validate mail",x);
