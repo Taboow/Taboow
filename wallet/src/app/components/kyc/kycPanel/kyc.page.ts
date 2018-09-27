@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core'
 import { Http, Headers, ResponseOptions, RequestOptions} from '@angular/http';
+import { Router } from '@angular/router';
 import { AccountService } from '../../../services/account.service';
 
 import { Web3 } from '../../../services/web3.service';
@@ -117,8 +118,14 @@ export class KYCPage implements OnInit {
   public accountType : string[] = ["Personal", "Company"];
   public country;
 
+  public formSubmit = true;
+  public videoSubmit;
+  public kycComplete;
+  public accountStatus;
+
   public displayPersonal;
   public displayCompany;
+
 
   public ethAddrErr;
   public dateErr;
@@ -176,7 +183,7 @@ export class KYCPage implements OnInit {
       closeOnSelect: true
   }
 
-  constructor(private http: Http, protected _account: AccountService, protected _web3 : Web3, public dialog: MdDialog, private dialogService: DialogService) {
+  constructor(protected router : Router, private http: Http, protected _account: AccountService, protected _web3 : Web3, public dialog: MdDialog, private dialogService: DialogService) {
   }
 
   async ngOnInit() {
@@ -310,6 +317,9 @@ export class KYCPage implements OnInit {
     this.kyc.goToNextStep();
   }
 
+  home(){
+    this.router.navigate(['/wallet/global']);
+  }
   myCountry(value){
     console.log(value)
     for (let ind = 0; ind < this.countries.length; ind++) {
@@ -394,13 +404,9 @@ export class KYCPage implements OnInit {
         let error="invalid birthdate";
         let dialogRef = this.dialogService.openErrorDialog(title, message, error);
 
-        dialogRef.afterClosed().subscribe(res=>{
-            console.log("entra en el focus?");
-            
+        dialogRef.afterClosed().subscribe(res=>{            
             document.getElementById("country").focus();
         })
-        
-        //include dialog
     }else{
         this.dateErr = null
     }
@@ -408,15 +414,9 @@ export class KYCPage implements OnInit {
     let formControls = form.controls;
 
 
-    //ARK api
+    //connect with api
     if(this.dateErr == null && this.ethAddrErr == null){
         this.postAddr(addr, pass, formControls);
-            
-            
-            //this.getQuestions(addr, pass);
-            
-            //this.patchData(addr, pass, formControls);   
-       
     }
 
   
@@ -472,6 +472,7 @@ export class KYCPage implements OnInit {
       }
       
   }
+
   setStatusAddrText(txt){
     this.kycAddrStatusText = txt;
   }
@@ -617,7 +618,10 @@ export class KYCPage implements OnInit {
                 console.log("dentro del patch?????");
                 
                 console.log("res?",res);
-                
+                if(res.status == 204){
+                    this.formSubmit = null;
+                    this.videoSubmit = true;
+                }
             }, err =>{
                 console.log(err);
                 reject(err);
@@ -662,7 +666,12 @@ export class KYCPage implements OnInit {
             let options = new RequestOptions({headers: headers});
 
             this.http.post(this.url+path, addr, options).subscribe(res =>{
-                this.kycAddrStatusText = res.statusText;
+                
+                if(res.status == 204){
+                    let status = "verified";
+                    this.patchStatus(data, pass, status);
+                    
+                }
             }, err =>{
                 console.log(err);
                 reject(err);
@@ -670,6 +679,7 @@ export class KYCPage implements OnInit {
         });
       }
   }
+  
   patchStatus(data, pass, status){
       /*
         PATCH /kyc/:address/:status
@@ -712,7 +722,10 @@ export class KYCPage implements OnInit {
                 console.log("dentro del patch?????");
                 
                 console.log("res?",res);
-                
+                if(res.status == 204){
+                    this.videoSubmit = null;
+                    this.getStatus(data, pass);
+                }
             }, err =>{
                 console.log(err);
                 reject(err);
@@ -758,7 +771,23 @@ export class KYCPage implements OnInit {
             
                 console.log("res?",res);
                 //check if res.status exists
-                this.kycStatus = res.status;
+                this.accountStatus = res;
+
+                let acc:any = {
+                    address: this._account.account.address,
+                    response: res
+                }
+
+                if(!localStorage.getItem('kyc')){
+                    let acca= new Array();
+                    acca[0]=acc;
+                    localStorage.setItem('kyc',JSON.stringify(acca));
+                
+                  }else{
+                    let  acca= JSON.parse(localStorage.getItem('kyc'));
+                    acca.push(acc);
+                    localStorage.setItem('kyc',JSON.stringify(acca));
+                  }
                 
             }, err =>{
                 console.log(err);
