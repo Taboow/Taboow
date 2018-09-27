@@ -1,4 +1,4 @@
-var Tesseract = require('tesseract.js');
+var Tesseract = require('./tesseract.js');
 var RecordRTC = require('recordrtc');
 var hark = require('hark');
 var $ = require("jquery");
