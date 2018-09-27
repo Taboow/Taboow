@@ -161,14 +161,17 @@ export class KYCPage implements OnInit {
   public kycUserQuestions;
   public kycStatus;
 
-  public loadingPercentage;
+  public loadingPercentage = '';
   public currentStep = 0;
   public retryStep = false;
   public showContinue = false;
   public showDoStep = false;
   
   private kyc;
+  private runSubStep = false;
   public loadingD;
+
+  public hideSubstep = true;
 
   settings = {
       bigBanner: true,
@@ -213,7 +216,8 @@ export class KYCPage implements OnInit {
         }
       }
 
-    
+
+
   }
   
   initKyc() {
@@ -282,7 +286,6 @@ export class KYCPage implements OnInit {
     }
     let lastStep;
     let video = document.getElementById('videoFrame');
-    console.log(video);
     let domain = './';
 
     let that = this;
@@ -290,8 +293,7 @@ export class KYCPage implements OnInit {
     this.kyc = new KYC({
         video: video,
         domain: domain,
-        steps: [
-            {
+        steps: [{
                 wait: 2000,
                 validators: ['VOICE'],
                 snapshot: false,
@@ -359,7 +361,9 @@ export class KYCPage implements OnInit {
         },
         onFinish: function(result) {
             console.log('On finish');
-            //uploadMedia(result.video, result.images[0], result.images[1], result.images[2]);
+            that.blobToBase64(result.video, function(video) {
+                that.postFiles(result.images[0].split(',')[1], result.images[1].split(',')[1], result.images[2].split(',')[1], video);
+            })
         },
         onStep: function(stepNumber, step, subStep) {
             console.log('On step '+stepNumber);
@@ -374,6 +378,14 @@ export class KYCPage implements OnInit {
                 that.showDoStep = false;
             }
             that.showContinue = false;
+            if (subStep == 0) {
+                that.runSubStep= false;
+                that.hideSubstep = true;
+            } else {
+                that.currentStep = 10;
+                that.runSubStep = true;
+                that.hideSubstep = false;
+            }
         },
         onRetry: function(stepNumber, verificationsFailed) {
             console.log('Try again');
@@ -395,9 +407,22 @@ export class KYCPage implements OnInit {
       });
       this.kyc.init();
   }
+  blobToBase64 = function(blob, cb) {
+    var reader = new FileReader();
+    reader.onload = function() {
+        var dataUrl = reader.result.toString();
+        var base64 = dataUrl.split(',')[1];
+        cb(base64);
+    };
+    reader.readAsDataURL(blob);
+  }
 
   doStep() {
-    this.kyc.runNextStep();
+    if (this.runSubStep) {
+        this.kyc.runNextStepSubStep();
+    } else {
+        this.kyc.runNextStep();
+    }
     this.showDoStep = false;
   }
 
@@ -880,7 +905,7 @@ export class KYCPage implements OnInit {
       }
   }
 
-  postFiles(){
+  postFiles(face, paper, passport, video){
     //POST /kyc/:address/files
     //Let send a file for "face", "paper", "passport" y "video".
 
@@ -892,7 +917,7 @@ export class KYCPage implements OnInit {
 
     let path = "/kyc/"+data+"/files";
     data = data.toString();
-    let obj = { address: data};
+    let obj = { face: face, paper: paper, passport: passport, video: video};
     let addr = JSON.stringify(obj);
     let wallet;
     let error="";
@@ -935,7 +960,7 @@ export class KYCPage implements OnInit {
 
             this.http.post(this.url+path, addr, options).subscribe(async res =>{
                 
-                if(res.status == 204){
+                if(res.status == 201){
                 
                     await this.getStatus();
                     

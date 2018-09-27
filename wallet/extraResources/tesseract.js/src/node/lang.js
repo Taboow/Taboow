@@ -10,7 +10,9 @@ function getLanguageData(req, res, cb){
     var langfile = lang + '.traineddata.gz';
     var url = req.workerOptions.langPath + langfile;
     
-    fs.readFile('../../../train/OCRB.traineddata', function (err, data) {
+    fs.readFile('./extraResources/train/OCRB.traineddata', function (err, data) {
+
+        console.log(data);
         if(!err) return cb(new Uint8Array(data));
 
         http.get(url, function(stream){
