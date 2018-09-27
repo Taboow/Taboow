@@ -531,6 +531,8 @@ export class KYCPage implements OnInit {
                 console.log(this._account.account.address, pass, form);
                 this.loadingD.close();
                 await this.getQuestions(this._account.account.address, pass, form);
+                this.formSubmit = null;
+                this.videoSubmit = true;
                 
             }, err =>{
                 this.loadingD.close();
@@ -632,6 +634,8 @@ export class KYCPage implements OnInit {
                 this.kycCompanyQuestions = res.companyQuestions;
                 this.kycUserQuestions = res.userQuestions;
                 await this.patchData(this._account.account.address, pass, form);
+                this.formSubmit = null;
+                this.videoSubmit = true;
             }, err =>{
                 this.loadingD.close();
                 err= err.json();
@@ -769,7 +773,7 @@ export class KYCPage implements OnInit {
                 if(res.status == 204){
                     this.formSubmit = null;
                     this.videoSubmit = true;
-                    this.initKyc();
+                    await this.initKyc();
                     await this.getStatus();
                 }
             }, err =>{
