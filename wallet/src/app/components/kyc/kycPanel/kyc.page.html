@@ -357,11 +357,10 @@
 
 <ng-template #display>
     <div *ngIf="videoSubmit==true else message" class="round backWhite border ">
-        <div id="kyc-video">
-            <div [ngClass]="{'no-display':(loadingPercentage == '' || loadingPercentage == '100')}">{{loadingPercentage}}%</div>
+        <h1 class="title taboow_color">Please, answer the following questions:</h1>
+        <div *ngIf="type == 'Personal'" class="bold title">
+            <div [ngClass]="{'no-display':(loadingPercentage != '')}">{{loadingPercentage}}</div>
             <div [ngClass]="{'no-display':!(retryStep)}">Error! Try again</div>
-            <div [ngClass]="{'no-display':!(showContinue)}"><button (click)="nextStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
-            <div [ngClass]="{'no-display':!(showDoStep)}"><button (click)="doStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
 
             <div [ngClass]="{'no-display':(currentStep != 0)}">{{ this.kycUserQuestions[0] }}</div>
             <div [ngClass]="{'no-display':currentStep != 1}">{{ this.kycUserQuestions[1] }}</div>
@@ -372,15 +371,51 @@
             <div [ngClass]="{'no-display':currentStep != 6}">{{ this.kycUserQuestions[6] }}</div>
             <div [ngClass]="{'no-display':currentStep != 7}">Photo of your face</div>
             <div [ngClass]="{'no-display':currentStep != 8}">Photo of your face near the passport</div>
-            <div [ngClass]="{'no-display':currentStep != 9 && !runSubStep}">Photo of your passport</div>
-            <div [ngClass]="{'no-display':hideSubstep}">Other ID face</div>
+            <div [ngClass]="{'no-display':currentStep != 9}">Photo of your passport</div>
+
+            <span class="right">
+                        <div [ngClass]="{'no-display':!(showContinue)}"><button (click)="nextStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
+                </span>
+            <span class="right">
+                        <div [ngClass]="{'no-display':!(showDoStep)}"><button (click)="doStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
+                </span>
         </div>
+        <div *ngIf="type == 'Company'" class="bold title">
+            <div [ngClass]="{'no-display':(loadingPercentage != '')}">{{loadingPercentage}}</div>
+            <div [ngClass]="{'no-display':!(retryStep)}">Error! Try again</div>
+
+            <div [ngClass]="{'no-display':(currentStep != 0)}">{{ this.kycCompanyQuestions[0] }}</div>
+            <div [ngClass]="{'no-display':currentStep != 1}">{{ this.kycCompanyQuestions[1] }}</div>
+            <div [ngClass]="{'no-display':currentStep != 2}">{{ this.kycCompanyQuestions[2] }}</div>
+            <div [ngClass]="{'no-display':currentStep != 3}">{{ this.kycCompanyQuestions[3] }}</div>
+            <div [ngClass]="{'no-display':currentStep != 4}">{{ this.kycCompanyQuestions[4] }}</div>
+            <div [ngClass]="{'no-display':currentStep != 5}">{{ this.kycCompanyQuestions[5] }}</div>
+            <div [ngClass]="{'no-display':currentStep != 6}">{{ this.kycCompanyQuestions[6] }}</div>
+            <div [ngClass]="{'no-display':currentStep != 7}">{{ this.kycCompanyQuestions[7] }}</div>
+            <div [ngClass]="{'no-display':currentStep != 8}">{{ this.kycCompanyQuestions[8] }}</div>
+            <div [ngClass]="{'no-display':currentStep != 9}">{{ this.kycCompanyQuestions[9] }}</div>
+            <div [ngClass]="{'no-display':currentStep != 10}">{{ this.kycCompanyQuestions[10] }}</div>
+            <div [ngClass]="{'no-display':currentStep != 11}">Photo of your face</div>
+            <div [ngClass]="{'no-display':currentStep != 12}">Photo of your face near the passport</div>
+            <div [ngClass]="{'no-display':currentStep != 13}">Photo of your passport</div>
+
+            <span class="right">
+                        <div [ngClass]="{'no-display':!(showContinue)}"><button (click)="nextStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
+                </span>
+            <span class="right">
+                        <div [ngClass]="{'no-display':!(showDoStep)}"><button (click)="doStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
+                </span>
+        </div>
+
     </div>
     <div *ngIf="kycComplete==true">
         <button (click)="postFiles()" class="btn-inverse btn-default">Send <i class="fa fa-arrow-right"></i></button>
     </div>
 </ng-template>
-<video id="videoFrame" class="center" style="max-width: 80%;"></video>
+<div class="center">
+    <video id="videoFrame" class="center" style="max-width: 80%;"></video>
+</div>
+
 
 <ng-template #message>
     <div *ngIf="accountStatus else message2" class="round backWhite border ">

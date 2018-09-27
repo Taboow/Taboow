@@ -221,6 +221,69 @@ export class KYCPage implements OnInit {
   }
   
   initKyc() {
+    if(this.type == 'Company'){
+       for (let i = 0; i < this.kycCompanyQuestions.length; i++) {
+            if(this.kycCompanyQuestions[i] == "COMPANY_ADDRESS_ZIP"){
+                this.kycCompanyQuestions[i] = "Please, tell us your company zip code";
+            }
+            if(this.kycCompanyQuestions[i] == "JOB_POSITION"){
+                this.kycCompanyQuestions[i] = "What's your job position?";
+            }
+            if(this.kycCompanyQuestions[i] == "ADDRESS_ZIP"){
+                this.kycCompanyQuestions[i] = "Please, tell us your zip code";
+            }
+            if(this.kycCompanyQuestions[i] == "ID/PASSPORT"){
+                this.kycCompanyQuestions[i] = "Can you spell your id/passport?";
+            }
+            if(this.kycCompanyQuestions[i] == "NAME"){
+                this.kycCompanyQuestions[i] = "What's your name?";
+            }
+            if(this.kycCompanyQuestions[i] == "YEAR_START_JOB"){
+                this.kycCompanyQuestions[i] = "When did you start to work in this company?";
+            }
+            if(this.kycCompanyQuestions[i] == "BIRTH"){
+                this.kycCompanyQuestions[i] = "What's your birth date?";
+            }
+            if(this.kycCompanyQuestions[i] == "CIF"){
+                this.kycCompanyQuestions[i] = "Can you spell your CIF code?";
+            }
+            if(this.kycCompanyQuestions[i] == "JOB"){
+                this.kycCompanyQuestions[i] = "What's your job?";
+            }
+            if(this.kycCompanyQuestions[i] == "NATIONALITY"){
+                this.kycCompanyQuestions[i] = "What's your nationality?";
+            }
+            if(this.kycCompanyQuestions[i] == "COMPANY_SECTOR"){
+                this.kycCompanyQuestions[i] = "Which sector does your company work?";
+            }
+       }
+    }
+    if(this.type == 'Personal'){
+       for (let i = 0; i < this.kycUserQuestions.length; i++) {
+      
+        if(this.kycUserQuestions[i] == "ADDRESS_ZIP"){
+            this.kycUserQuestions[i] = "Please, tell us your zip code";
+        }
+        if(this.kycUserQuestions[i] == "ID/PASSPORT"){
+            this.kycUserQuestions[i] = "Can you spell your id/passport?";
+        }
+        if(this.kycUserQuestions[i] == "NAME"){
+            this.kycUserQuestions[i] = "What's your name?";
+        }
+        if(this.kycUserQuestions[i] == "BIRTH"){
+            this.kycUserQuestions[i] = "What's your birth date?";
+        }
+        if(this.kycUserQuestions[i] == "JOB"){
+            this.kycUserQuestions[i] = "What's your job?";
+        }
+        if(this.kycUserQuestions[i] == "NATIONALITY"){
+            this.kycUserQuestions[i] = "What's your nationality?";
+        }
+        if(this.kycUserQuestions[i] == "RESIDENCE"){
+            this.kycUserQuestions[i] = "What's your residence country?";
+        }
+   }
+    }
     let lastStep;
     let video = document.getElementById('videoFrame');
     let domain = './';
