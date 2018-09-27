@@ -161,15 +161,17 @@ export class KYCPage implements OnInit {
   public kycUserQuestions;
   public kycStatus;
 
-  public loadingPercentage;
+  public loadingPercentage = '';
   public currentStep = 0;
   public retryStep = false;
   public showContinue = false;
   public showDoStep = false;
   
   private kyc;
-  public runSubStep = false;
+  private runSubStep = false;
   public loadingD;
+
+  public hideSubstep = true;
 
   settings = {
       bigBanner: true,
@@ -296,7 +298,9 @@ export class KYCPage implements OnInit {
         },
         onFinish: function(result) {
             console.log('On finish');
-            that.postFiles(result.images[0], result.images[1], result.images[2], result.video);
+            that.blobToBase64(result.video, function(video) {
+                that.postFiles(result.images[0].split(',')[1], result.images[1].split(',')[1], result.images[2].split(',')[1], video);
+            })
         },
         onStep: function(stepNumber, step, subStep) {
             console.log('On step '+stepNumber);
@@ -313,8 +317,11 @@ export class KYCPage implements OnInit {
             that.showContinue = false;
             if (subStep == 0) {
                 that.runSubStep= false;
+                that.hideSubstep = true;
             } else {
+                that.currentStep = 10;
                 that.runSubStep = true;
+                that.hideSubstep = false;
             }
         },
         onRetry: function(stepNumber, verificationsFailed) {
@@ -336,6 +343,15 @@ export class KYCPage implements OnInit {
         }
       });
       this.kyc.init();
+  }
+  blobToBase64 = function(blob, cb) {
+    var reader = new FileReader();
+    reader.onload = function() {
+        var dataUrl = reader.result.toString();
+        var base64 = dataUrl.split(',')[1];
+        cb(base64);
+    };
+    reader.readAsDataURL(blob);
   }
 
   doStep() {
@@ -881,7 +897,7 @@ export class KYCPage implements OnInit {
 
             this.http.post(this.url+path, addr, options).subscribe(async res =>{
                 
-                if(res.status == 204){
+                if(res.status == 201){
                 
                     await this.getStatus();
                     
