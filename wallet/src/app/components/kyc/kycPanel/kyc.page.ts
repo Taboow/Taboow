@@ -11,6 +11,7 @@ import { MdDialog } from '@angular/material';
 import { DialogService } from '../../../services/dialog.service';
 import { CountryDialogComponent } from './country-dialog.component';
 import { ErrorDialogComponent } from '../../dialogs/error-dialog.component';
+import { LoadingDialogComponent } from '../../dialogs/loading-dialog.component';
 
 import * as EthUtil from 'ethereumjs-util';
 import * as EthWallet from 'ethereumjs-wallet'
@@ -167,6 +168,7 @@ export class KYCPage implements OnInit {
   public showDoStep = false;
   
   private kyc;
+  public loadingD;
 
   settings = {
       bigBanner: true,
@@ -199,7 +201,10 @@ export class KYCPage implements OnInit {
                 this.displayPersonal = null;
                 this.displayCompany = null;
                 this.videoSubmit = null;
-                this.accountStatus = "Your account is already verified";
+                if(this.accountStatus == null){
+
+                }
+                this.accountStatus;
             }else{
                 this.formSubmit = true;
                 this.type = this.accountType[0];
@@ -336,6 +341,11 @@ export class KYCPage implements OnInit {
   home(){
     this.router.navigate(['/wallet/global']);
   }
+
+  async checkStatus(){
+    this.getStatus();
+  }
+
   myCountry(value){
     console.log(value)
     for (let ind = 0; ind < this.countries.length; ind++) {
@@ -383,12 +393,38 @@ export class KYCPage implements OnInit {
       panelClass: 'dialog'
     });
   }
+   validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
 
   async confirm(form){
+    let dialogRef;
     this.submited = true;
     if(form.invalid){
         return false;
     }
+
+    let formControls = form.controls;
+    let x = this.validateEmail(form.controls.email.value);
+
+    console.log("respuesta validate mail",x);
+    if(x == false){
+        
+        let title = "This email is not valid";
+        let message= '';
+        let error="invalid email";
+        dialogRef = this.dialogService.openErrorDialog(title, message, error);
+        
+        dialogRef.afterClosed().subscribe(res=>{            
+            document.getElementById("email").focus();
+            
+        })
+        
+        return false;
+        
+    }
+
 
     if(EthUtil.isValidAddress(form.controls.ethAddr.value) == false){  
         this.ethAddrErr = true;
@@ -396,11 +432,11 @@ export class KYCPage implements OnInit {
         let message= '';
         let error="invalid addr";
         
-        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+        dialogRef = this.dialogService.openErrorDialog(title, message, error);
         dialogRef.afterClosed().subscribe(res=>{
             document.getElementById("ethAddr").focus();
         })
-        
+        return false;
     }
 
     if(EthUtil.isValidAddress(form.controls.ethAddr.value) == true){
@@ -408,6 +444,7 @@ export class KYCPage implements OnInit {
         this.ethAddrErr = null;
     }
 
+   
     let addr :string= form.controls.ethAddr.value.toString();
     let pass :string= form.controls.pass.value;
 
@@ -423,12 +460,12 @@ export class KYCPage implements OnInit {
         dialogRef.afterClosed().subscribe(res=>{            
             document.getElementById("country").focus();
         })
+        return false;
     }else{
         this.dateErr = null
     }
 
-    let formControls = form.controls;
-
+    
 
     //connect with api
     if(this.dateErr == null && this.ethAddrErr == null){
@@ -449,16 +486,31 @@ export class KYCPage implements OnInit {
     let wallet;
     let error="";
     let priv;
+
+    this.loadingD = this.dialog.open(LoadingDialogComponent, {
+        width: '660px',
+        height: '150px',
+        disableClose: true,
+      });
+      let sign
+    
     try{
         wallet = EthWallet.fromV3(this._account.account.v3, pass);
+        priv = wallet.getPrivateKeyString();
+        sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
       }catch(e){
+        this.loadingD.close();
         error= e.message;
+        let title = "Error:";
+        let message= '';
+
+        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+        console.log(e);
       }
     if(error==""){
-        priv = wallet.getPrivateKeyString();
+       
         return new Promise((resolve, reject) => {
             let headers = new Headers();
-            let sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
             sign = JSON.stringify(sign)
             sign = btoa(sign)
             sign = sign.toString();
@@ -468,19 +520,50 @@ export class KYCPage implements OnInit {
             headers.append('Authorization', data);
             headers.append('Signature', sign);
             let options = new RequestOptions({headers: headers});    
+            console.log("outside post addr");
             
             
             this.http.post(this.url+path, addr, options).subscribe(async res =>{
-                console.log("dentro del response");
+
+                console.log("into response post addr");
                 //this.kycAddrStatusText = res.statusText;
                 this.setStatusAddrText(res.statusText);
                 console.log(this._account.account.address, pass, form);
-                
+                this.loadingD.close();
                 await this.getQuestions(this._account.account.address, pass, form);
                 
             }, err =>{
+                this.loadingD.close();
+                err= err.json();
                 console.log(err);
-                reject(err);
+               
+                if(err.message || err._body){
+                    if(err.message){
+                        let title = "Error:";
+                        let message= '';
+                        let error=err.message;
+                        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                        console.log(err);
+                        reject(err);    
+                    }
+                    if(err._body){
+                        console.log("errbody", err._body);
+                        
+                        let title = "Error:";
+                        let message= '';
+                        let error=err._body;
+                        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                        console.log(err);
+                        reject(err);
+                    }
+                }else{
+                    let title = "Error:";
+                    let message= '';
+                    let error=err.message;
+                    let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                    console.log(err);
+                    reject(err);
+                }
             });
             
         });
@@ -509,11 +592,21 @@ export class KYCPage implements OnInit {
     let wallet;
     let error="";
     let priv;
+    let sign;
     try{
         wallet = EthWallet.fromV3(this._account.account.v3, pass);
+        priv = wallet.getPrivateKeyString();
+        sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
       }catch(e){
+        this.loadingD.close();
         error= e.message;
+        let title = "Error:";
+        let message= '';
+
+        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+        console.log(e);
       }
+      
     if(error==""){
         priv = wallet.getPrivateKeyString();
         return new Promise((resolve, reject) => {
@@ -540,8 +633,37 @@ export class KYCPage implements OnInit {
                 this.kycUserQuestions = res.userQuestions;
                 await this.patchData(this._account.account.address, pass, form);
             }, err =>{
+                this.loadingD.close();
+                err= err.json();
                 console.log(err);
-                reject(err);
+               
+                if(err.message || err._body){
+                    if(err.message){
+                        let title = "Error:";
+                        let message= '';
+                        let error=err.message;
+                        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                        console.log(err);
+                        reject(err);    
+                    }
+                    if(err._body){
+                        console.log("errbody", err._body);
+                        
+                        let title = "Error:";
+                        let message= '';
+                        let error=err._body;
+                        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                        console.log(err);
+                        reject(err);
+                    }
+                }else{
+                    let title = "Error:";
+                    let message= '';
+                    let error=err.message;
+                    let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                    console.log(err);
+                    reject(err);
+                }
             });
         });
       }
@@ -609,10 +731,20 @@ export class KYCPage implements OnInit {
     let wallet;
     let error="";
     let priv;
+    let sign;
+    
     try{
         wallet = EthWallet.fromV3(this._account.account.v3, pass);
+        priv = wallet.getPrivateKeyString();
+        sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
       }catch(e){
+        this.loadingD.close();
         error= e.message;
+        let title = "Error:";
+        let message= '';
+
+        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+        console.log(e);
       }
     if(error==""){
         priv = wallet.getPrivateKeyString();
@@ -633,15 +765,45 @@ export class KYCPage implements OnInit {
             this.http.patch(this.url+path, postData, options).subscribe(async res =>{
                 console.log("dentro del patch?????");
                 
-                console.log("res?",res);
+                console.log("res patch form?",res);
                 if(res.status == 204){
                     this.formSubmit = null;
                     this.videoSubmit = true;
                     this.initKyc();
+                    await this.getStatus();
                 }
             }, err =>{
+                this.loadingD.close();
+                err= err.json();
                 console.log(err);
-                reject(err);
+               
+                if(err.message || err._body){
+                    if(err.message){
+                        let title = "Error:";
+                        let message= '';
+                        let error=err.message;
+                        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                        console.log(err);
+                        reject(err);    
+                    }
+                    if(err._body){
+                        console.log("errbody", err._body);
+                        
+                        let title = "Error:";
+                        let message= '';
+                        let error=err._body;
+                        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                        console.log(err);
+                        reject(err);
+                    }
+                }else{
+                    let title = "Error:";
+                    let message= '';
+                    let error=err.message;
+                    let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                    console.log(err);
+                    reject(err);
+                }
             });
         });
       }
@@ -664,10 +826,26 @@ export class KYCPage implements OnInit {
     let wallet;
     let error="";
     let priv;
+    this.loadingD = this.dialog.open(LoadingDialogComponent, {
+        width: '660px',
+        height: '150px',
+        disableClose: true,
+      });
+
+    let sign;
+    
     try{
         wallet = EthWallet.fromV3(this._account.account.v3, pass);
+        priv = wallet.getPrivateKeyString();
+        sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
       }catch(e){
+        this.loadingD.close();
         error= e.message;
+        let title = "Error:";
+        let message= '';
+
+        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+        console.log(e);
       }
     if(error==""){
         priv = wallet.getPrivateKeyString();
@@ -684,77 +862,51 @@ export class KYCPage implements OnInit {
             headers.append('Signature', sign);
             let options = new RequestOptions({headers: headers});
 
-            this.http.post(this.url+path, addr, options).subscribe(res =>{
+            this.http.post(this.url+path, addr, options).subscribe(async res =>{
                 
                 if(res.status == 204){
-                    let status = "verified";
-                    this.patchStatus(status);
+                
+                    await this.getStatus();
                     
                 }
             }, err =>{
+                this.loadingD.close();
+                err= err.json();
                 console.log(err);
-                reject(err);
-            });
-        });
-      }
-  }
-
-  patchStatus(status){
-      /*
-        PATCH /kyc/:address/:status
-        update status by field ":status". 
-        Values :"verified" or "canceled". 
-        This blocks changes.
-      */
-    let data = this._account.account.address;
-    let pass = this.pass;
-
-    let path = "/kyc/"+data+"/"+status;
-    data = data.toString();
-    let obj;
-    
-    let postData = JSON.stringify(obj);
-    console.log(postData);
-    
-    let wallet;
-    let error="";
-    let priv;
-    try{
-        wallet = EthWallet.fromV3(this._account.account.v3, pass);
-      }catch(e){
-        error= e.message;
-      }
-    if(error==""){
-        priv = wallet.getPrivateKeyString();
-        return new Promise((resolve, reject) => {
-            let headers = new Headers();
-            let sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
-            sign = JSON.stringify(sign)
-            sign = btoa(sign)
-            sign = sign.toString();
-            let data = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoU2VjcmV0IjoiamFza2pzZGhpdWR1aWh3cWl1MjEyIiwiaWF0IjoxNTM3ODk0NTMzLCJleHAiOjE3MDg5ODk0NTMzfQ.f06c1LCyR-FYT9nJRm2r_6K8hSETqghw5Vwlq19ZqbI';
-            data = "Bearer "+data;
-            headers.append('Content-Type', 'application/json');
-            headers.append('Authorization', data);
-            headers.append('Signature', sign);
-            let options = new RequestOptions({headers: headers});   
-            console.log("into get questions before PATCH");
-            
-            this.http.patch(this.url+path, options).map(ans => ans.json()).subscribe((res:any) =>{
-                console.log("dentro del patch?????");
-                
-                console.log("res?",res);
-                if(res.status == 204){
-                    this.videoSubmit = null;
-                    this.getStatus();
+               
+                if(err.message || err._body){
+                    if(err.message){
+                        let title = "Error:";
+                        let message= '';
+                        let error=err.message;
+                        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                        console.log(err);
+                        reject(err);    
+                    }
+                    if(err._body){
+                        console.log("errbody", err._body);
+                        
+                        let title = "Error:";
+                        let message= '';
+                        let error=err._body;
+                        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                        console.log(err);
+                        reject(err);
+                    }
+                }else{
+                    let title = "Error:";
+                    let message= '';
+                    let error=err.message;
+                    let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                    console.log(err);
+                    reject(err);
                 }
-            }, err =>{
-                console.log(err);
-                reject(err);
             });
         });
       }
   }
+
+
 
   getStatus(){
     /*
@@ -771,10 +923,20 @@ export class KYCPage implements OnInit {
     let wallet;
     let error="";
     let priv;
+    let sign;
+    
     try{
         wallet = EthWallet.fromV3(this._account.account.v3, pass);
+        priv = wallet.getPrivateKeyString();
+        sign = ethGSV.sign("HO1231DF1HUOW23UFO579EFOIWUE32FB0WEF", priv);
       }catch(e){
+        this.loadingD.close();
         error= e.message;
+        let title = "Error:";
+        let message= '';
+
+        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+        console.log(e);
       }
     if(error==""){
         priv = wallet.getPrivateKeyString();
@@ -794,13 +956,13 @@ export class KYCPage implements OnInit {
             
             this.http.get(this.url+path, options).map(ans => ans.json()).subscribe((res:any) =>{
             
-                console.log("res?",res);
+                console.log("res getStatus?",res);
                 //check if res.status exists
-                this.accountStatus = res;
+                this.accountStatus = res.status;
 
                 let acc:any = {
                     address: this._account.account.address,
-                    response: res
+                    response: res.status
                 }
 
                 if(!localStorage.getItem('kyc')){
@@ -815,8 +977,37 @@ export class KYCPage implements OnInit {
                   }
                 
             }, err =>{
+                this.loadingD.close();
+                err= err.json();
                 console.log(err);
-                reject(err);
+               
+                if(err.message || err._body){
+                    if(err.message){
+                        let title = "Error:";
+                        let message= '';
+                        let error=err.message;
+                        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                        console.log(err);
+                        reject(err);    
+                    }
+                    if(err._body){
+                        console.log("errbody", err._body);
+                        
+                        let title = "Error:";
+                        let message= '';
+                        let error=err._body;
+                        let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                        console.log(err);
+                        reject(err);
+                    }
+                }else{
+                    let title = "Error:";
+                    let message= '';
+                    let error=err.message;
+                    let dialogRef = this.dialogService.openErrorDialog(title, message, error);
+                    console.log(err);
+                    reject(err);
+                }
             });
         });
       }

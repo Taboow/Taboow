@@ -76,7 +76,7 @@
 
                 </div>
                 <div class="clear block">
-                    <div *ngIf="prefix" class="width40 left">
+                    <div class="width40 left">
                         <label for="prefix" lang="en" class="title">Phone Prefix: </label>
                         <input type="number" id="prefix" class="block title" value="{{prefix}}" required [(ngModel)]="prefix" name="prefix" ngModel #pref="ngModel">
                         <p [ngClass]="{'hidden':!(submited && pref.invalid)}" class="error">
@@ -262,7 +262,7 @@
                 </div>
 
                 <div class="clear">
-                    <div *ngIf="prefix" class="width40 left">
+                    <div class="width40 left">
                         <label for="prefix" lang="en" class="title">Phone Prefix: </label>
                         <input type="number" id="prefix" class="block title" value="{{prefix}}" required [(ngModel)]="prefix" name="prefix" ngModel #pref="ngModel">
                         <p [ngClass]="{'hidden':!(submited && pref.invalid)}" class="error">
@@ -382,8 +382,29 @@
 </ng-template>
 
 <ng-template #message>
-    <div class="round backWhite border ">
-        <p class="title taboow_color bold">{{accountStatus}}</p>
-        <button type="button" name="button" class="btn-black" (click)="home()">Withdraw</button>
+    <div *ngIf="accountStatus else message2" class="round backWhite border ">
+        <div>
+            <p class="title bold">Your data has been sent correctly</p>
+            <p class="title taboow_color bold">Account status: {{accountStatus}}</p>
+        </div>
+
+        <button type="button" name="button" class="btn-black dist" (click)="home()">Back</button>
+    </div>
+</ng-template>
+
+<ng-template #message2>
+    <div class="round backWhite border">
+        <div class="">
+            <div class="width40 inlineBlock">
+                <h1>Check your account status:</h1>
+                <label for="pass" lang="en" class="title">Type your account password:</label>
+                <input type="password" id="pass" class="block" required [(ngModel)]="pass" name="pass" ngModel #pas="ngModel">
+                <p [ngClass]="{'hidden':!(submited && pas.invalid)}" class="error">
+                    <span *ngIf="pas.errors?.required" class="error">This field is required</span>
+                </p>
+            </div>
+
+            <button type="button" name="button" class="btn-inverse right dist" (click)="checkStatus()">Check</button>
+        </div>
     </div>
 </ng-template>
