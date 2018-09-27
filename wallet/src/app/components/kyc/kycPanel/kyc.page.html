@@ -373,13 +373,13 @@
             <div [ngClass]="{'no-display':currentStep != 7}">Photo of your face</div>
             <div [ngClass]="{'no-display':currentStep != 8}">Photo of your face near the passport</div>
             <div [ngClass]="{'no-display':currentStep != 9}">Photo of your passport</div>
-            <video class="center" style="max-width: 80%;"></video>
         </div>
     </div>
     <div *ngIf="kycComplete==true">
         <button (click)="postFiles()" class="btn-inverse btn-default">Send <i class="fa fa-arrow-right"></i></button>
     </div>
 </ng-template>
+<video id="videoFrame" class="center" style="max-width: 80%;"></video>
 
 <ng-template #message>
     <div *ngIf="accountStatus else message2" class="round backWhite border ">

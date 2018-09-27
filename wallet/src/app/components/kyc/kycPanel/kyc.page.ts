@@ -218,7 +218,8 @@ export class KYCPage implements OnInit {
   
   initKyc() {
     let lastStep;
-    let video = document.querySelector('video');
+    let video = document.getElementById('videoFrame');
+    console.log(video);
     let domain = './';
 
     let that = this;
@@ -301,6 +302,9 @@ export class KYCPage implements OnInit {
             console.log('On step '+stepNumber);
             lastStep = step;
             that.currentStep = stepNumber;
+
+            
+
             if (!step.auto) {
                 that.showDoStep = true;
             } else {
@@ -361,8 +365,6 @@ export class KYCPage implements OnInit {
             console.log("typeOf?",typeof(this.prefix));
         }
     }
-    
-    
     
   }
   myBirthdate(){
@@ -773,7 +775,7 @@ export class KYCPage implements OnInit {
                 if(res.status == 204){
                     this.formSubmit = null;
                     this.videoSubmit = true;
-                    await this.initKyc();
+                    this.initKyc();
                     await this.getStatus();
                 }
             }, err =>{

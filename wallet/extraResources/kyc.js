@@ -5,6 +5,8 @@ var $ = require("jquery");
 let resources = './extraResources/';
 eval(require('fs').readFileSync(resources+'worker.js')+'');
 
+Tesseract.workerOptions.workerPath = './node_modules/tesseract.js/src/node/worker.js';
+
 /*
     kyc.js v0.0.8
     A JavaScript library for verification processes.
@@ -24,9 +26,6 @@ function KYC(options) {
     this.nextStep = null;
 
     this.recorder = null;
-    window.Tesseract = Tesseract.create({
-        langPath: options.domain + '/train/',
-    });
     this.canvas = document.createElement('canvas');
 };
 
@@ -207,12 +206,9 @@ KYC.prototype._generateRandomString = function() {
 
 KYC.prototype._validatePassport = function(data, step, stepNumber, callback) {
     var that = this;
-    var blobBin = atob(data.split(',')[1]);
-    var array = [];
-    for (var i = 0; i < blobBin.length; i++) {
-        array.push(blobBin.charCodeAt(i));
-    }
-    var file = new Blob([new Uint8Array(array)], { type: 'image/png' });
+    
+    var bin = data.replace(/^data:image\/\w+;base64,/, "");
+    var file = new Buffer(bin, 'base64');
 
     Tesseract.recognize(file, {
             lang: 'OCRB',
