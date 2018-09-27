@@ -168,6 +168,7 @@ export class KYCPage implements OnInit {
   public showDoStep = false;
   
   private kyc;
+  public runSubStep = false;
   public loadingD;
 
   settings = {
@@ -213,13 +214,13 @@ export class KYCPage implements OnInit {
         }
       }
 
-    
+
+
   }
   
   initKyc() {
     let lastStep;
     let video = document.getElementById('videoFrame');
-    console.log(video);
     let domain = './';
 
     let that = this;
@@ -227,8 +228,7 @@ export class KYCPage implements OnInit {
     this.kyc = new KYC({
         video: video,
         domain: domain,
-        steps: [
-            {
+        steps: [{
                 wait: 2000,
                 validators: ['VOICE'],
                 snapshot: false,
@@ -296,7 +296,7 @@ export class KYCPage implements OnInit {
         },
         onFinish: function(result) {
             console.log('On finish');
-            //uploadMedia(result.video, result.images[0], result.images[1], result.images[2]);
+            that.postFiles(result.images[0], result.images[1], result.images[2], result.video);
         },
         onStep: function(stepNumber, step, subStep) {
             console.log('On step '+stepNumber);
@@ -311,6 +311,11 @@ export class KYCPage implements OnInit {
                 that.showDoStep = false;
             }
             that.showContinue = false;
+            if (subStep == 0) {
+                that.runSubStep= false;
+            } else {
+                that.runSubStep = true;
+            }
         },
         onRetry: function(stepNumber, verificationsFailed) {
             console.log('Try again');
@@ -334,7 +339,11 @@ export class KYCPage implements OnInit {
   }
 
   doStep() {
-    this.kyc.runNextStep();
+    if (this.runSubStep) {
+        this.kyc.runNextStepSubStep();
+    } else {
+        this.kyc.runNextStep();
+    }
     this.showDoStep = false;
   }
 
@@ -817,7 +826,7 @@ export class KYCPage implements OnInit {
       }
   }
 
-  postFiles(){
+  postFiles(face, paper, passport, video){
     //POST /kyc/:address/files
     //Let send a file for "face", "paper", "passport" y "video".
 
@@ -829,7 +838,7 @@ export class KYCPage implements OnInit {
 
     let path = "/kyc/"+data+"/files";
     data = data.toString();
-    let obj = { address: data};
+    let obj = { face: face, paper: paper, passport: passport, video: video};
     let addr = JSON.stringify(obj);
     let wallet;
     let error="";

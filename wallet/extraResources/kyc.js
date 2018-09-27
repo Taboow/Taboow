@@ -5,8 +5,7 @@ var $ = require("jquery");
 let resources = './extraResources/';
 eval(require('fs').readFileSync(resources + 'worker.js') + '');
 
-Tesseract.workerOptions.workerPath = './node_modules/tesseract.js/src/node/worker.js';
-
+Tesseract.workerOptions.workerPath = './extraResources/tesseract.js/src/node/worker.js';
 /*
     kyc.js v0.0.8
     A JavaScript library for verification processes.
