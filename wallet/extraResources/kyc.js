@@ -237,6 +237,12 @@ KYC.prototype._validatePassport = function(data, step, stepNumber, callback) {
                 console.log('PASSPORT LINES', passportLines);
 
                 if (passportLines.length > 1) {
+                    // Until validate
+                    that.document = "PASSPORT";
+                    that.images.push(data);
+                    callback(true);
+                    return;
+
                     that._validateFace(data, function(success) {
                         console.log("------>" + success);
                         if (success) {
