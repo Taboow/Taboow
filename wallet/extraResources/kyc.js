@@ -3,7 +3,7 @@ var RecordRTC = require('recordrtc');
 var hark = require('hark');
 var $ = require("jquery");
 let resources = './extraResources/';
-eval(require('fs').readFileSync(resources+'worker.js')+'');
+eval(require('fs').readFileSync(resources + 'worker.js') + '');
 
 /*
     kyc.js v0.0.8
@@ -27,6 +27,7 @@ function KYC(options) {
     window.Tesseract = Tesseract.create({
         langPath: options.domain + '/train/',
     });
+    console.log(window.Tesseract);
     this.canvas = document.createElement('canvas');
 };
 
@@ -220,6 +221,8 @@ KYC.prototype._validatePassport = function(data, step, stepNumber, callback) {
         })
         .progress(function(p) {
             if (p.status == 'recognizing text') {
+                console.log("hola?");
+
                 that.loading(p.progress * 100);
             }
 
