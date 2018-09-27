@@ -192,6 +192,29 @@ export class KYCPage implements OnInit {
     this.type = this.accountType[0];
     this.displayPersonal = true;
 
+    if(!localStorage.getItem('kyc')){
+        this.formSubmit = true;
+        this.type = this.accountType[0];
+        this.displayPersonal = true;
+    
+      }
+      if(localStorage.getItem('kyc')){
+        let acca= JSON.parse(localStorage.getItem('kyc'));
+        for (let i = 0; i < acca.length; i++) {
+            if(acca[i].address == this._account.account.address){
+                this.formSubmit = null;
+                this.displayPersonal = null;
+                this.displayCompany = null;
+                this.videoSubmit = null;
+                this.accountStatus = "Your account is already verified";
+            }else{
+                this.formSubmit = true;
+                this.type = this.accountType[0];
+                this.displayPersonal = true;
+            }
+        }
+      }
+
     this.initKyc();
   }
   
@@ -630,13 +653,15 @@ export class KYCPage implements OnInit {
       }
   }
 
-  postFiles(data, pass){
+  postFiles(){
     //POST /kyc/:address/files
     //Let send a file for "face", "paper", "passport" y "video".
 
     //base64 objects “face", "paper", "passport" y "video"
     //how to send?
     //how to get?
+    let data = this._account.account.address;
+    let pass = this.pass;
 
     let path = "/kyc/"+data+"/files";
     data = data.toString();
@@ -669,7 +694,7 @@ export class KYCPage implements OnInit {
                 
                 if(res.status == 204){
                     let status = "verified";
-                    this.patchStatus(data, pass, status);
+                    this.patchStatus(status);
                     
                 }
             }, err =>{
@@ -679,14 +704,17 @@ export class KYCPage implements OnInit {
         });
       }
   }
-  
-  patchStatus(data, pass, status){
+
+  patchStatus(status){
       /*
         PATCH /kyc/:address/:status
         update status by field ":status". 
         Values :"verified" or "canceled". 
         This blocks changes.
       */
+    let data = this._account.account.address;
+    let pass = this.pass;
+
     let path = "/kyc/"+data+"/"+status;
     data = data.toString();
     let obj;
@@ -724,7 +752,7 @@ export class KYCPage implements OnInit {
                 console.log("res?",res);
                 if(res.status == 204){
                     this.videoSubmit = null;
-                    this.getStatus(data, pass);
+                    this.getStatus();
                 }
             }, err =>{
                 console.log(err);
@@ -734,11 +762,14 @@ export class KYCPage implements OnInit {
       }
   }
 
-  getStatus(data, pass){
+  getStatus(){
     /*
        GET /kyc/:address/status/
        returns status
     */
+    let data = this._account.account.address;
+    let pass = this.pass;
+
     let path = "/kyc/"+data+"/status";
     data = data.toString();
     let obj = { address: data};
