@@ -18,11 +18,6 @@ import * as EthUtil from 'ethereumjs-util';
 import * as EthWallet from 'ethereumjs-wallet'
 import { stringify } from 'querystring';
 
-let resources = './extraResources/';
-
-//eval(fs.readFileSync(resources+'jquery.facedetection.min.js')+'');
-eval(fs.readFileSync(resources+'worker.js')+'');
-
 var KYC = require('./../../../../../extraResources/kyc.js');
 
 const ethGSV = require('ethereum-gen-sign-verify');
@@ -337,19 +332,19 @@ export class KYCPage implements OnInit {
                 auto: true,
                 autoNext: false
             },{
-                wait: 2000,
+                wait: 500,
                 validators: [],
                 snapshot: true,
                 auto: false,
                 autoNext: true
             },{
-                wait: 2000,
+                wait: 500,
                 validators: [],
                 snapshot: true,
                 auto: false,
                 autoNext: true
             }, {
-                wait: 2000,
+                wait: 500,
                 validators: ['PASSPORT/ID'],
                 snapshot: true,
                 auto: false,
@@ -383,7 +378,7 @@ export class KYCPage implements OnInit {
                 that.runSubStep= false;
                 that.hideSubstep = true;
             } else {
-                that.currentStep = 10;
+                that.currentStep++;
                 that.runSubStep = true;
                 that.hideSubstep = false;
             }

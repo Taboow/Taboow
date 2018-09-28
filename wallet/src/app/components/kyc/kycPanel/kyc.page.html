@@ -359,7 +359,7 @@
     <div *ngIf="videoSubmit==true else message" class="round backWhite border ">
         <h1 class="title taboow_color">Please, answer the following questions:</h1>
         <div *ngIf="type == 'Personal'" class="bold title">
-            <div [ngClass]="{'no-display':(loadingPercentage != '')}">{{loadingPercentage}}</div>
+            <div [ngClass]="{'no-display':(loadingPercentage == '' || loadingPercentage == '100')}">{{loadingPercentage}}%</div>
             <div [ngClass]="{'no-display':!(retryStep)}">Error! Try again</div>
 
             <div [ngClass]="{'no-display':(currentStep != 0)}">{{ this.kycUserQuestions[0] }}</div>
@@ -381,7 +381,7 @@
                 </span>
         </div>
         <div *ngIf="type == 'Company'" class="bold title">
-            <div [ngClass]="{'no-display':(loadingPercentage != '')}">{{loadingPercentage}}</div>
+            <div [ngClass]="{'no-display':(loadingPercentage == '' || loadingPercentage == '100')}">{{loadingPercentage}}%</div>
             <div [ngClass]="{'no-display':!(retryStep)}">Error! Try again</div>
 
             <div [ngClass]="{'no-display':(currentStep != 0)}">{{ this.kycCompanyQuestions[0] }}</div>
