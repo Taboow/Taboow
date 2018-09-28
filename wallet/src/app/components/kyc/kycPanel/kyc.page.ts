@@ -21,7 +21,7 @@ import { stringify } from 'querystring';
 let resources = './extraResources/';
 
 //eval(fs.readFileSync(resources+'jquery.facedetection.min.js')+'');
-//eval(fs.readFileSync(resources+'worker.js')+'');
+eval(fs.readFileSync(resources+'worker.js')+'');
 
 var KYC = require('./../../../../../extraResources/kyc.js');
 
