@@ -93,5 +93,9 @@ function loadImage(image, cb){
         image.data = Array.from(image.data)
         return loadImage(image, cb)
     }
+
+    console.log(image);
+    console.log(image instanceof Buffer);
+
     cb(image)
 }

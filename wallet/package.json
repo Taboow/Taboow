@@ -48,6 +48,7 @@
         "leveldown": "^3.0.0",
         "levelup": "^2.0.2",
         "moment": "^2.22.2",
+        "node-fetch": "^2.2.0",
         "node-loader": "^0.6.0",
         "qrcode": "^1.2.0",
         "recordrtc": "^5.4.7",
@@ -126,7 +127,6 @@
             "allowToChangeInstallationDirectory": true,
             "runAfterFinish": true
         },
-
         "files": [
             "build",
             "main.js",
