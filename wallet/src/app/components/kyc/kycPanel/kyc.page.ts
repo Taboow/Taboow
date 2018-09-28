@@ -12,6 +12,7 @@ import { DialogService } from '../../../services/dialog.service';
 import { CountryDialogComponent } from './country-dialog.component';
 import { ErrorDialogComponent } from '../../dialogs/error-dialog.component';
 import { LoadingDialogComponent } from '../../dialogs/loading-dialog.component';
+import { SendingDialogComponent } from '../../dialogs/sending-dialog.component';
 
 import * as EthUtil from 'ethereumjs-util';
 import * as EthWallet from 'ethereumjs-wallet'
@@ -20,7 +21,7 @@ import { stringify } from 'querystring';
 let resources = './extraResources/';
 
 //eval(fs.readFileSync(resources+'jquery.facedetection.min.js')+'');
-eval(fs.readFileSync(resources+'worker.js')+'');
+//eval(fs.readFileSync(resources+'worker.js')+'');
 
 var KYC = require('./../../../../../extraResources/kyc.js');
 
@@ -912,6 +913,8 @@ export class KYCPage implements OnInit {
     //base64 objects “face", "paper", "passport" y "video"
     //how to send?
     //how to get?
+    this.videoSubmit = null;
+
     let data = this._account.account.address;
     let pass = this.pass;
 
@@ -922,7 +925,7 @@ export class KYCPage implements OnInit {
     let wallet;
     let error="";
     let priv;
-    this.loadingD = this.dialog.open(LoadingDialogComponent, {
+    this.loadingD = this.dialog.open(SendingDialogComponent, {
         width: '660px',
         height: '150px',
         disableClose: true,
@@ -959,9 +962,9 @@ export class KYCPage implements OnInit {
             let options = new RequestOptions({headers: headers});
 
             this.http.post(this.url+path, addr, options).subscribe(async res =>{
-                
+                this.loadingD.close();
                 if(res.status == 201){
-                
+                    
                     await this.getStatus();
                     
                 }

@@ -54,6 +54,8 @@ import { JSONDialogComponent } from './components/wallet/wsettings/json-dialog.c
 import { PrivateKeyDialogComponent } from './components/wallet/wsettings/privatekey-dialog.component';
 import { ErrorDialogComponent } from './components/dialogs/error-dialog.component';
 import { LoadingDialogComponent } from './components/dialogs/loading-dialog.component';
+import { SendingDialogComponent } from './components/dialogs/sending-dialog.component';
+
 import { MessageDialogComponent } from './components/dialogs/message-dialog.component';
 import { DeleteDialog } from './components/dialogs/confirm-delete.component';
 import { GasDialogComponent } from './components/dialogs/gas-dialog.component';
@@ -114,6 +116,7 @@ import { InsuficientFundsDirective } from './validators/funds-validator.directiv
     DeleteComponent,
     ErrorDialogComponent,
     LoadingDialogComponent,
+    SendingDialogComponent,
     JSONDialogComponent,
     PrivateKeyDialogComponent,
     ListComponent,
@@ -166,6 +169,7 @@ import { InsuficientFundsDirective } from './validators/funds-validator.directiv
     DeleteComponent,
     ErrorDialogComponent,
     LoadingDialogComponent,
+    SendingDialogComponent,
     JSONDialogComponent,
     PrivateKeyDialogComponent,
     MessageDialogComponent,

@@ -1025,3 +1025,8 @@ td {
 .center {
     margin: 0 auto;
 }
+
+video {
+    margin-left: 15%;
+    width: 60%;
+}

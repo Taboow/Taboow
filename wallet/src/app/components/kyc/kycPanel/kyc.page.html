@@ -136,14 +136,14 @@
                 </div>
                 <div class="clear block">
                     <div class="width40 left">
-                        <label for="monthly" lang="en" class="title">Monthly Income</label>
+                        <label for="monthly" lang="en" class="title">Monthly Income in €</label>
                         <input type="number" id="monthly" class="block" required [(ngModel)]="monthly" name="monthly" ngModel #mon="ngModel">
                         <p [ngClass]="{'hidden':!(submited && mon.invalid)}" class="error">
                             <span *ngIf="mon.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                     <div class="width40 right">
-                        <label for="annual" lang="en" class="title">Annual Income</label>
+                        <label for="annual" lang="en" class="title">Annual Income in €</label>
                         <input type="number" id="annual" class="block" required [(ngModel)]="annual" name="annual" ngModel #ann="ngModel">
                         <p [ngClass]="{'hidden':!(submited && ann.invalid)}" class="error">
                             <span *ngIf="ann.errors?.required" class="error">This field is required</span>
@@ -153,7 +153,7 @@
 
                 <div>
                     <div class="width40 left">
-                        <label for="pass" lang="en" class="title">Eth account password</label>
+                        <label for="pass" lang="en" class="title">Ethereum account password</label>
                         <input type="password" id="pass" class="block" required [(ngModel)]="pass" name="pass" ngModel #pas="ngModel">
                         <p [ngClass]="{'hidden':!(submited && pas.invalid)}" class="error">
                             <span *ngIf="pas.errors?.required" class="error">This field is required</span>
@@ -319,14 +319,14 @@
                 </div>
                 <div class="clear">
                     <div class="width40 left">
-                        <label for="monthly" lang="en" class="title">Monthly Income</label>
+                        <label for="monthly" lang="en" class="title">Monthly Income in €</label>
                         <input type="number" id="monthly" class="block" required [(ngModel)]="monthly" name="monthly" ngModel #mon="ngModel">
                         <p [ngClass]="{'hidden':!(submited && mon.invalid)}" class="error">
                             <span *ngIf="mon.errors?.required" class="error">This field is required</span>
                         </p>
                     </div>
                     <div class="width40 right">
-                        <label for="annual" lang="en" class="title">Annual Income</label>
+                        <label for="annual" lang="en" class="title">Annual Income in €</label>
                         <input type="number" id="annual" class="block" required [(ngModel)]="annual" name="annual" ngModel #ann="ngModel">
                         <p [ngClass]="{'hidden':!(submited && ann.invalid)}" class="error">
                             <span *ngIf="ann.errors?.required" class="error">This field is required</span>
@@ -336,7 +336,7 @@
 
                 <div>
                     <div class="width40 left">
-                        <label for="pass" lang="en" class="title">Eth account password</label>
+                        <label for="pass" lang="en" class="title">Ethereum account password</label>
                         <input type="password" id="pass" class="block" required [(ngModel)]="pass" name="pass" ngModel #pas="ngModel">
                         <p [ngClass]="{'hidden':!(submited && pas.invalid)}" class="error">
                             <span *ngIf="pas.errors?.required" class="error">This field is required</span>
@@ -370,8 +370,8 @@
             <div [ngClass]="{'no-display':currentStep != 5}">{{ this.kycUserQuestions[5] }}</div>
             <div [ngClass]="{'no-display':currentStep != 6}">{{ this.kycUserQuestions[6] }}</div>
             <div [ngClass]="{'no-display':currentStep != 7}">Photo of your face</div>
-            <div [ngClass]="{'no-display':currentStep != 8}">Photo of your face near the passport</div>
-            <div [ngClass]="{'no-display':currentStep != 9}">Photo of your passport</div>
+            <div [ngClass]="{'no-display':currentStep != 8}">Photo of your face near the passport/ID</div>
+            <div [ngClass]="{'no-display':currentStep != 9}">Photo of your passport/ID backside</div>
 
             <span class="right">
                         <div [ngClass]="{'no-display':!(showContinue)}"><button (click)="nextStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
@@ -396,8 +396,8 @@
             <div [ngClass]="{'no-display':currentStep != 9}">{{ this.kycCompanyQuestions[9] }}</div>
             <div [ngClass]="{'no-display':currentStep != 10}">{{ this.kycCompanyQuestions[10] }}</div>
             <div [ngClass]="{'no-display':currentStep != 11}">Photo of your face</div>
-            <div [ngClass]="{'no-display':currentStep != 12}">Photo of your face near the passport</div>
-            <div [ngClass]="{'no-display':currentStep != 13}">Photo of your passport</div>
+            <div [ngClass]="{'no-display':currentStep != 12}">Photo of your face near the passport/ID</div>
+            <div [ngClass]="{'no-display':currentStep != 13}">Photo of your passport/ID backside</div>
 
             <span class="right">
                         <div [ngClass]="{'no-display':!(showContinue)}"><button (click)="nextStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
@@ -412,8 +412,9 @@
         <button (click)="postFiles()" class="btn-inverse btn-default">Send <i class="fa fa-arrow-right"></i></button>
     </div>
 </ng-template>
-<div class="center">
-    <video id="videoFrame" class="center" style="max-width: 80%;"></video>
+
+<div [ngClass]="{'hidden': videoSubmit!=true}">
+    <video id="videoFrame" style="max-width: 70%;"></video>
 </div>
 
 
@@ -424,7 +425,7 @@
             <p class="title taboow_color bold">Account status: {{accountStatus}}</p>
         </div>
 
-        <button type="button" name="button" class="btn-black dist" (click)="home()">Back</button>
+        <button type="button" name="button" class="btn-inverse title-button-navbar right" (click)="home()">Done</button>
     </div>
 </ng-template>
 

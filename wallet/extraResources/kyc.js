@@ -3,7 +3,7 @@ var RecordRTC = require('recordrtc');
 var hark = require('hark');
 var $ = require("jquery");
 let resources = './extraResources/';
-eval(require('fs').readFileSync(resources + 'worker.js') + '');
+//eval(require('fs').readFileSync(resources + 'worker.js') + '');
 
 Tesseract.workerOptions.workerPath = './extraResources/tesseract.js/src/node/worker.js';
 /*
@@ -205,7 +205,7 @@ KYC.prototype._generateRandomString = function() {
 
 KYC.prototype._validatePassport = function(data, step, stepNumber, callback) {
     var that = this;
-    
+
     var bin = data.replace(/^data:image\/\w+;base64,/, "");
     var file = new Buffer(bin, 'base64');
 
