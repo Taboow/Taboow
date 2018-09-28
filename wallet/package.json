@@ -102,6 +102,7 @@
         "webpack-merge": "^3.0.0"
     },
     "build": {
+        "asar": true,
         "extraResources": [
             "./extraResources/**"
         ],
@@ -111,12 +112,21 @@
             "icon": "./taboow.png"
         },
         "win": {
-            "icon": "./taboow.ico"
+            "icon": "./taboow.png",
+            "target": "nsis"
         },
         "linux": {
             "target": "AppImage",
             "icon": "./taboow.png"
         },
+        "nsis": {
+            "oneClick": false,
+            "perMachine": false,
+            "allowElevation": true,
+            "allowToChangeInstallationDirectory": true,
+            "runAfterFinish": true
+        },
+
         "files": [
             "build",
             "main.js",
