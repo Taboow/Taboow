@@ -101,7 +101,12 @@ module.exports = {
         new CopyWebpackPlugin([{
             from: helpers.root('assets/css'),
             to: 'assets/css'
+        }]),
+		new CopyWebpackPlugin([{
+            from: helpers.root('extraResources'),
+            to: 'extraResources'
         }])
+		
     ],
     node: {
         global: true,
