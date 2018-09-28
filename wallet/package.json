@@ -105,7 +105,8 @@
     "build": {
         "asar": true,
         "extraResources": [
-            "./extraResources/**"
+            "./extraResources/**",
+            "./extraResources/*/**"
         ],
         "appId": "Taboow",
         "mac": {

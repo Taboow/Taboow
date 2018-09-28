@@ -25,7 +25,11 @@ exports.terminateWorker = function(instance){
 exports.sendPacket = function sendPacket(instance, packet){
     loadImage(packet.payload.image, function(img){
         packet.payload.image = img
-        instance.worker.send(packet)
+        var worker = require('./worker.js');
+        worker.dispatch(packet, (obj) => {
+            instance._recv(obj)
+        });
+        //instance.worker.send(packet)
     })
 }
 
