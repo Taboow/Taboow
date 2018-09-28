@@ -15,7 +15,7 @@ export class ConfirmTxDialog{
     public pass;
     insufficient = false;
     constructor(@Inject(MD_DIALOG_DATA) public data: any, protected _account: AccountService, private _web3: Web3, private dialogRef: MdDialogRef<ConfirmTxDialog>){
-        console.log(data);
+        console.log("data del confirmtx",data);
         if(_web3.web3.toWei(this._account.account.balance,'ether') < data.cost ){
             this.insufficient= true;
         }

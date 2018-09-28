@@ -64,6 +64,7 @@ export class ContractPanelPage implements OnInit {
   async ngOnInit(){
 
     await this.load();
+    this.userInfo.account = this._account.account.address;
     let pubEnd = await this.contract.getPubEnd();
     let today = new Date;
     let now = today.getTime()/1000;
@@ -537,9 +538,11 @@ export class ContractPanelPage implements OnInit {
     let estimateGas = 1000000000;
     let gasLimit = 1000000;
     let amount = this._web3.web3.toWei(this.taboowBroker.buyValue);
+    console.log(this.userInfo);
+    
     let dialogRef = this.dialog.open( ConfirmTxDialog, {
       width: '660px',
-      height: '450px',
+      height: '350px',
       data : {
         contract: this.userInfo,
         amount: amount,

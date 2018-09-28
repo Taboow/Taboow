@@ -59,6 +59,7 @@ export class SendPage implements OnInit {
           obj.data = form.controls.trans_data.value;
         }
         tx =  await this._rawtx.createRaw(form.controls.receiverAddr.value, form.controls.amount.value, obj)
+ 
         this.sendDialogService.openConfirmSend(tx[0], form.controls.receiverAddr.value, tx[2],tx[1]-tx[2], tx[1], "send");
       }
     })
