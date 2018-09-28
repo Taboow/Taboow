@@ -15,7 +15,6 @@ function getLanguageData(req, res, cb){
     
     //fs.readFile('./extraResources/train/OCRB.traineddata', function (err, data) {
 
-//        console.log(data);
 //        if(!err) return cb(new Uint8Array(data));
 
         http.get("http://cdn.taboow.org/train/OCRB.traineddata.gz", function(stream){
