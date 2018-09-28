@@ -159,6 +159,7 @@ export class KYCPage implements OnInit {
 
   public loadingPercentage = '';
   public currentStep = 0;
+  public currentSubStep = 0;
   public retryStep = false;
   public showContinue = false;
   public showDoStep = false;
@@ -363,10 +364,11 @@ export class KYCPage implements OnInit {
         },
         onStep: function(stepNumber, step, subStep) {
             console.log('On step '+stepNumber);
+            console.log('On substep '+subStep);
+            
             lastStep = step;
             that.currentStep = stepNumber;
-
-            
+            that.currentSubStep = subStep;
 
             if (!step.auto) {
                 that.showDoStep = true;

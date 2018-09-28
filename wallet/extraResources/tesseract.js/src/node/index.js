@@ -33,7 +33,6 @@ exports.sendPacket = function sendPacket(instance, packet){
     })
 }
 
-
 function loadImage(image, cb){
     
     if(isURL(image)) {
@@ -78,7 +77,6 @@ function loadImage(image, cb){
                         image.data[offset + 3] = pix[3];
                     }
                 }
-                // console.log(image)
                 loadImage(image, cb)
             });
             return
@@ -97,9 +95,6 @@ function loadImage(image, cb){
         image.data = Array.from(image.data)
         return loadImage(image, cb)
     }
-
-    console.log(image);
-    console.log(image instanceof Buffer);
 
     cb(image)
 }
