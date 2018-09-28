@@ -6,6 +6,9 @@ const http = require("http"),
 var langdata = require('../common/langdata.json')
 
 function getLanguageData(req, res, cb){
+
+    cb(new Uint8Array( Buffer.from(require("./mrz.js")(), 'base64') ));
+    return;
     var lang = req.options.lang;
     var langfile = lang + '.traineddata.gz';
     var url = req.workerOptions.langPath + langfile;

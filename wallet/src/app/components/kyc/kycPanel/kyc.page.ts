@@ -290,62 +290,62 @@ export class KYCPage implements OnInit {
         video: video,
         domain: domain,
         steps: [{
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            }, {
+                wait: 2000,
+                validators: ['VOICE'],
+                snapshot: false,
+                auto: true,
+                autoNext: false
+            },{
+                wait: 500,
+                validators: [],
+                snapshot: true,
+                auto: false,
+                autoNext: true
+            },{
+                wait: 500,
+                validators: [],
+                snapshot: true,
+                auto: false,
+                autoNext: true
+            },{
                 wait: 500,
                 validators: ['PASSPORT/ID'],
-                snapshot: true,
-                auto: false,
-                autoNext: true
-            },{
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            },{
-                wait: 500,
-                validators: [],
-                snapshot: true,
-                auto: false,
-                autoNext: true
-            },{
-                wait: 500,
-                validators: [],
                 snapshot: true,
                 auto: false,
                 autoNext: true
