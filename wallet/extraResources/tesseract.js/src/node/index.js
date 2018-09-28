@@ -65,6 +65,7 @@ function loadImage(image, cb){
                     width: png.getWidth(),
                     height: png.getHeight()
                 }
+
                 image.data = new Uint8Array(image.width * image.height * 4)
                 for(var j = 0; j < image.height; j++){
                     for(var i = 0; i < image.width; i++){
@@ -77,6 +78,7 @@ function loadImage(image, cb){
                         image.data[offset + 3] = pix[3];
                     }
                 }
+                
                 loadImage(image, cb)
             });
             return

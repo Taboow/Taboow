@@ -359,7 +359,14 @@ export class KYCPage implements OnInit {
         onFinish: function(result) {
             console.log('On finish');
             that.blobToBase64(result.video, function(video) {
-                that.postFiles(result.images[0].split(',')[1], result.images[1].split(',')[1], result.images[2].split(',')[1], video);
+                console.log(result.images);
+                that.postFiles(
+                    result.images[0].split(',')[1], 
+                    result.images[1].split(',')[1], 
+                    result.images[2].split(',')[1], 
+                    result.images[3] ? result.images[3].split(',')[1] : null, 
+                    video
+                );
             })
         },
         onStep: function(stepNumber, step, subStep) {
@@ -397,14 +404,13 @@ export class KYCPage implements OnInit {
         },
         onSuccess: function(stepNumber, step) {
             console.log('Success. Step = '+step);
-            console.log(step);
             that.showContinue = true;
             that.showDoStep = false;
             
         }
-      });
-      this.kyc.init();
-  }
+    });
+    this.kyc.init();
+}
   blobToBase64 = function(blob, cb) {
     var reader = new FileReader();
     reader.onload = function() {
@@ -903,13 +909,10 @@ export class KYCPage implements OnInit {
       }
   }
 
-  postFiles(face, paper, passport, video){
+  postFiles(face, paper, passport, backId,  video){
     //POST /kyc/:address/files
     //Let send a file for "face", "paper", "passport" y "video".
 
-    //base64 objects “face", "paper", "passport" y "video"
-    //how to send?
-    //how to get?
     this.videoSubmit = null;
 
     let data = this._account.account.address;
@@ -917,7 +920,18 @@ export class KYCPage implements OnInit {
 
     let path = "/kyc/"+data+"/files";
     data = data.toString();
-    let obj = { face: face, paper: paper, passport: passport, video: video};
+    let obj = { 
+        face: face, 
+        paper: paper, 
+        passport: passport, 
+        backId: null,
+        video: video
+    };
+
+    if (backId) {
+        obj.backId = backId
+    }
+
     let addr = JSON.stringify(obj);
     let wallet;
     let error="";

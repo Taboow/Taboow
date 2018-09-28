@@ -284,17 +284,18 @@ KYC.prototype._backId = function(stepNumber, step, forceRun) {
     if (!forceRun) {
         that.onStep(stepNumber, step, 1);
     }
-    if (!step.auto && !forceRun) {
-        this.lastStep = stepNumber;
-        return;
-    }
-    if (!step.auto && !forceRun) {
-        return;
-    }
+    // if (!step.auto && !forceRun) {
+    //     this.lastStep = stepNumber;
+    //     return;
+    // }
+    // if (!step.auto && !forceRun) {
+    //     return;
+    // }
+    this.lastStep = stepNumber;
     setTimeout(function() {
         that.document = "ID";
         that.images.push(that._getCurrentPhoto());
-        callback(true);
+        console.log("FOTO DE LA CARA A DEL DNI");
     }, step.wait);
 }
 
