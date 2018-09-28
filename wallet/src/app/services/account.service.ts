@@ -14,52 +14,56 @@ import { EtherscanService } from './etherscan.service';
 @Injectable()
 export class AccountService{
   updated = false;
+  updatedTokens = false;
   account : any = {};
   pending: Array<any> = [];
   events : Array<any> = [];
   marginCalls : Array<any> = [];
   interval;
+  tokenInterval;
   apikey: string = "";
 
   constructor(private http: Http, private _wallet : WalletService, private _token : TokenService,private _web3: Web3, private router: Router, private _scan: EtherscanService){
-    //Hardcode
     this._scan.getApiKey();
-    if(this._scan.apikey != "" && this._web3.infuraKey != ""){
-      console.log("intoConstructor");
-      
+    if(this._scan.apikey != "" && this._web3.infuraKey != ""){     
       this.getAccountData();
       if('address' in this.account){
         this.startIntervalData();
+        this.account.tokkens = [];
       }
     }
   }
 
   async setAccount(account){
     if('address' in this.account && typeof(this.account.address)!= "undefined"){
+      console.log("clear intervals")
       clearInterval(this.interval)
+      this.clearIntervalTokens();
     }
-      this.account = account;
-      localStorage.setItem('acc',JSON.stringify(account.address));
-      this.getPendingTx();
-      await this.startIntervalData();
-      await this.setTokens();
-    this.updated = true;
     this.router.navigate(['/wallet/global']);
+    this.account = account;
+    localStorage.setItem('acc',JSON.stringify(account.address));
+    this.getPendingTx();
+    await this.startIntervalData();
+    await this.setTokens();
+    
   }
 
   async refreshAccountData(){
+      this.updatedTokens = false;
       clearInterval(this.interval)
+      this.clearIntervalTokens();
       this.getPendingTx();
       await this.startIntervalData();
-      await this.setTokens();
-      this.updated = await true;
+      await this.setTokens(); 
   }
   
   refreshAccount(){
     localStorage.removeItem('acc');
     this.getAccountData();
     if(typeof(this.account.address) == "undefined"){
-      clearInterval(this.interval)
+      clearInterval(this.interval);
+      this.clearIntervalTokens();
     }
     this.router.navigate(['/wallet/global']);
   }
@@ -100,6 +104,7 @@ export class AccountService{
       history[i].date = date;
     }
     this.account.history = await history;
+    this.updated=true;
   }
   
   async getAccountData(){
@@ -111,6 +116,7 @@ export class AccountService{
       await this.getPendingTx();
       await this.setData();
       await this.setTokens();
+      
     }
   }
 
@@ -128,10 +134,14 @@ export class AccountService{
   }
 
   async setTokens(){
+    this.account.tokens = [];
+    this.updatedTokens =false;
     if('address' in this.account){
       this.account.tokens = this.getTokensLocale();
+      console.log("tokens local", this.account.tokens)
       await this.updateTokens();
     }
+    this.updatedTokens = true;
   }
 
   saveAccountTokens(){
@@ -141,6 +151,7 @@ export class AccountService{
       wallet[result].tokens = this.account.tokens;
     }
   }
+  
   addToken(token){
       if('tokens' in this.account){
         this.account.tokens.push(token);
@@ -163,63 +174,51 @@ export class AccountService{
 
   async updateTokens(){
     let self = this;
-    let tokens = this.account.tokens;
-    
-    //tokens = await this.updateTokenBalances(tokens);
-    await this._scan.getTokensTransfers(this.account.address).subscribe(async function(resp:any){
-      
-        let tkns : Array<any> = [];
-        tkns = resp.result;
-       
-        for(let i = 0; i<tkns.length; i++){
-          if(tokens.findIndex(x=> x.contractAddress == tkns[i].contractAddress) == -1){
-            let token: any = {
-              contractAddress :  tkns[i].contractAddress,
-              tokenName:  tkns[i].tokenName,
-              tokenSymbol:  tkns[i].tokenSymbol,
-              tokenDecimal: parseInt( tkns[i].tokenDecimal),
-              network : self._web3.network,
-              deleted: false
-            }
-            token = await self.updateTokenBalance(token);
-            
-            if(!isNaN(token.tokenDecimal)){
-              tokens.push(token);
-            }
-          }
+    let tokens = this.account.tokens
+    tokens = await this.updateTokenBalances(tokens);
+    let resultTokens =  await this._scan.getTokensTransfers(this.account.address).toPromise();
+    let tkns : Array<any> = [];
+    tkns = resultTokens.result;
+    for(let i = 0; i<tkns.length; i++){
+      if(tokens.findIndex(x=> x.contractAddress == tkns[i].contractAddress) == -1){
+        let token: any = {
+          contractAddress :  tkns[i].contractAddress,
+          tokenName:  tkns[i].tokenName,
+          tokenSymbol:  tkns[i].tokenSymbol,
+          tkenDecimal: parseInt( tkns[i].tokenDecimal),
+          network : self._web3.network,
+          deleted: false
         }
-        self.account.tokens = tokens;
-        self.saveAccountTokens();
-      });
+        token = await self.updateTokenBalance(token);
+        if(!isNaN(token.tokenDecimal)){
+            tokens.push(token);
+        }
+      }
+    }
+      self.account.tokens = await tokens;
+      self.saveAccountTokens();
   }
 
-  /*
   async updateTokenBalances(tokens){
-    console.log("DENTRO DEL UPDATE!!!!!!");
-    
     for(let i = 0; i<tokens.length; i++){
-      tokens[i] = await this.updateTokenBalance(tokens[i])
-        console.log("TOKENS DE I", tokens[i]);
-        
+      tokens[i] = await this.updateTokenBalance(tokens[i]);        
     }
-    console.log("DEVUELVE!!", tokens);
     
     return tokens;
   }
-  
-*/
+
   async updateTokenBalance(token){
     if(!('balance' in token) || !token.deleted){
-      await this._token.setToken(token.contractAddress);
-      
-      token.tokenName = await this._token.getName();
-      token.tokenSymbol = await this._token.getSymbol();
-      token.tokenDecimal = await this._token.getDecimal();
+      this._token.setToken(token.contractAddress);
+      if(isNaN(token.tokenDecimal)){
+        token.tokenName = await this._token.getName();
+        token.tokenSymbol = await this._token.getSymbol();
+        token.tokenDecimal = await this._token.getDecimal();
+      }      
       let exp = 10 ** token.tokenDecimal;
       let balance : any = await this._token.getBalanceOf(this.account.address);
       
-      token.balance = balance.div(exp).toNumber();
-     
+      token.balance = balance.div(exp).toNumber();  
     }
     
     return token
@@ -263,17 +262,22 @@ export class AccountService{
 
   async startIntervalData(){
     await this.setData();
-    this.updated=true;
     this.interval = setInterval(async ()=>{
       await this.setData();
     },3000); 
       
   }
 
-  async startIntervalTokens(){
-    return await setInterval(async()=>{
-      await this.updateTokens();
+  startIntervalTokens(){
+    this.tokenInterval = setInterval(()=>{
+      if(this.account.tokens != []){
+        this.updateTokens();
+      }
     },3000);
+  }
+  clearIntervalTokens(){
+    clearInterval(this.tokenInterval);
+    this.tokenInterval = null;
   }
 
   tm(unix_tm) {

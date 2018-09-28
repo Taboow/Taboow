@@ -303,9 +303,12 @@
                     </div>
                     <div class="width40 right">
                         <label for="email" lang="en" class="title">Email:</label>
-                        <input type="email" id="email" class="block" required [(ngModel)]="email" ngModel email #mail="ngModel">
+                        <input type="email" id="email" class="block" required [(ngModel)]="email" name="email" ngModel email #mail="ngModel">
                         <p [ngClass]="{'hidden':!(submited && mail.invalid)}" class="error">
                             <span *ngIf="mail.errors?.required" class="error">This field is required</span>
+                        </p>
+                        <p [ngClass]="{'hidden':!(submited && mail.invalid && (mail.dirty || mail.touched))}" class="error">
+                            <span *ngIf="mail.invalid && (mail.dirty || mail.touched)" class="error">This email is not valid</span>
                         </p>
                     </div>
                 </div>
@@ -358,6 +361,7 @@
 <ng-template #display>
     <div *ngIf="videoSubmit==true else message" class="round backWhite border ">
         <h1 class="title taboow_color">Please, answer the following questions:</h1>
+
         <div *ngIf="type == 'Personal'" class="bold title">
             <div [ngClass]="{'no-display':(loadingPercentage == '' || loadingPercentage == '100')}">{{loadingPercentage}}%</div>
             <div [ngClass]="{'no-display':!(retryStep)}">Error! Try again</div>
@@ -374,11 +378,11 @@
             <div [ngClass]="{'no-display':currentStep != 9}">Photo of your passport/ID backside</div>
 
             <span class="right">
-                        <div [ngClass]="{'no-display':!(showContinue)}"><button (click)="nextStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
-                </span>
+                <div [ngClass]="{'no-display':!(showContinue)}"><button (click)="nextStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
+            </span>
             <span class="right">
-                        <div [ngClass]="{'no-display':!(showDoStep)}"><button (click)="doStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
-                </span>
+                <div [ngClass]="{'no-display':!(showDoStep)}"><button (click)="doStep()" class="btn-inverse btn-default">Continue <i class="fa fa-arrow-right"></i></button></div>
+            </span>
         </div>
         <div *ngIf="type == 'Company'" class="bold title">
             <div [ngClass]="{'no-display':(loadingPercentage == '' || loadingPercentage == '100')}">{{loadingPercentage}}%</div>
