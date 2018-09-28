@@ -287,71 +287,160 @@ export class KYCPage implements OnInit {
 
     let that = this;
 
+    var steps = [{
+        wait: 2000,
+        validators: ['VOICE'],
+        snapshot: false,
+        auto: true,
+        autoNext: false
+    }, {
+        wait: 2000,
+        validators: ['VOICE'],
+        snapshot: false,
+        auto: true,
+        autoNext: false
+    }, {
+        wait: 2000,
+        validators: ['VOICE'],
+        snapshot: false,
+        auto: true,
+        autoNext: false
+    }, {
+        wait: 2000,
+        validators: ['VOICE'],
+        snapshot: false,
+        auto: true,
+        autoNext: false
+    }, {
+        wait: 2000,
+        validators: ['VOICE'],
+        snapshot: false,
+        auto: true,
+        autoNext: false
+    }, {
+        wait: 2000,
+        validators: ['VOICE'],
+        snapshot: false,
+        auto: true,
+        autoNext: false
+    }, {
+        wait: 2000,
+        validators: ['VOICE'],
+        snapshot: false,
+        auto: true,
+        autoNext: false
+    },{
+        wait: 500,
+        validators: [],
+        snapshot: true,
+        auto: false,
+        autoNext: true
+    },{
+        wait: 500,
+        validators: [],
+        snapshot: true,
+        auto: false,
+        autoNext: true
+    },{
+        wait: 500,
+        validators: ['PASSPORT/ID'],
+        snapshot: true,
+        auto: false,
+        autoNext: true
+    }];
+
+    if (this.type == 'Company') {
+        steps = [{
+            wait: 2000,
+            validators: ['VOICE'],
+            snapshot: false,
+            auto: true,
+            autoNext: false
+        }, {
+            wait: 2000,
+            validators: ['VOICE'],
+            snapshot: false,
+            auto: true,
+            autoNext: false
+        }, {
+            wait: 2000,
+            validators: ['VOICE'],
+            snapshot: false,
+            auto: true,
+            autoNext: false
+        }, {
+            wait: 2000,
+            validators: ['VOICE'],
+            snapshot: false,
+            auto: true,
+            autoNext: false
+        }, {
+            wait: 2000,
+            validators: ['VOICE'],
+            snapshot: false,
+            auto: true,
+            autoNext: false
+        }, {
+            wait: 2000,
+            validators: ['VOICE'],
+            snapshot: false,
+            auto: true,
+            autoNext: false
+        }, {
+            wait: 2000,
+            validators: ['VOICE'],
+            snapshot: false,
+            auto: true,
+            autoNext: false
+        }, {
+            wait: 2000,
+            validators: ['VOICE'],
+            snapshot: false,
+            auto: true,
+            autoNext: false
+        }, {
+            wait: 2000,
+            validators: ['VOICE'],
+            snapshot: false,
+            auto: true,
+            autoNext: false
+        }, {
+            wait: 2000,
+            validators: ['VOICE'],
+            snapshot: false,
+            auto: true,
+            autoNext: false
+        }, {
+            wait: 2000,
+            validators: ['VOICE'],
+            snapshot: false,
+            auto: true,
+            autoNext: false
+        },{
+            wait: 500,
+            validators: [],
+            snapshot: true,
+            auto: false,
+            autoNext: true
+        },{
+            wait: 500,
+            validators: [],
+            snapshot: true,
+            auto: false,
+            autoNext: true
+        },{
+            wait: 500,
+            validators: ['PASSPORT/ID'],
+            snapshot: true,
+            auto: false,
+            autoNext: true
+        }];
+    }
+
     this.kyc = new KYC({
         video: video,
         domain: domain,
-        steps: [{
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            }, {
-                wait: 2000,
-                validators: ['VOICE'],
-                snapshot: false,
-                auto: true,
-                autoNext: false
-            },{
-                wait: 500,
-                validators: [],
-                snapshot: true,
-                auto: false,
-                autoNext: true
-            },{
-                wait: 500,
-                validators: [],
-                snapshot: true,
-                auto: false,
-                autoNext: true
-            },{
-                wait: 500,
-                validators: ['PASSPORT/ID'],
-                snapshot: true,
-                auto: false,
-                autoNext: true
-            }
-        ],
+        steps: steps,
         loading: function(percentage) {
           console.log('Loading '+percentage+'%');
           that.loadingPercentage = percentage;
@@ -471,11 +560,11 @@ export class KYCPage implements OnInit {
       this.type = x;
       console.log(this.type);
     
-      if(this.type == "Personal"){
+      if (this.type == "Personal"){
           this.displayPersonal = true;
           this.displayCompany = null;
       }
-      if(this.type == "Company"){
+      if (this.type == "Company"){
           this.displayCompany = true;
           this.displayPersonal = false;
       }

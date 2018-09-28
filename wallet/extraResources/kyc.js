@@ -284,6 +284,7 @@ KYC.prototype._backId = function(stepNumber, step, forceRun) {
     if (!forceRun) {
         that.onStep(stepNumber, step, 1);
     }
+    
     // if (!step.auto && !forceRun) {
     //     this.lastStep = stepNumber;
     //     return;
@@ -291,6 +292,7 @@ KYC.prototype._backId = function(stepNumber, step, forceRun) {
     // if (!step.auto && !forceRun) {
     //     return;
     // }
+
     this.lastStep = stepNumber;
     setTimeout(function() {
         that.document = "ID";
