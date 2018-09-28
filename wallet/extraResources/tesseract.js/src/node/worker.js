@@ -4,6 +4,10 @@ process.on('message', function(packet){
     workerUtils.dispatchHandlers(packet, obj => process.send(obj))
 })
 
+exports.dispatch = function(packet, cb){
+    workerUtils.dispatchHandlers(packet, obj => cb(obj))
+}
+
 var TesseractCore;
 exports.getCore = function(req, res){
     if(!TesseractCore){
