@@ -1,0 +1,39 @@
+<div *ngIf="contract.verifiedAccount == true else display">
+    <div>
+        <div class="round backWhite border ">
+            <p class="title green bold">{{contract.verifiedMessageTaboow}}</p>
+            <p class="title">User Ethereum Account: <span>{{contract.userInfo.account}}</span></p>
+            <p *ngIf="contract.userInfo.reservedAmount > 0" class="title">Reserved Amount: <span>{{contract.userInfo.reservedAmount}}</span></p>
+            <p *ngIf="contract.userInfo.soldAmount > 0" class="title">Sold Amount: <span>{{contract.userInfo.soldAmount}} TBW</span></p>
+            <p *ngIf="contract.userInfo.balance > 0" class="title">Balance Amount: <span>{{contract.userInfo.balance}} TBW</span></p>
+            <p class="title">ICO end date: <span>{{contract.userInfo.pubEndDate | date:'EEEE, d MMMM y, H:mm:ss'}}</span></p>
+            <div *ngIf="contract.userInfo.pubEnd > contract.userInfo.now">
+                <button type="button" name="button" class="btn-inverse" (click)="buyTaboow(taboowBroker.buyValue)">Buy tokens</button>
+                <input type="text" name="buyValue" id="buyValue" placeholder="ETH amount" [(ngModel)]="taboowBroker.buyValue">
+            </div>
+            <div *ngIf="contract.userInfo.pubEnd < contract.userInfo.now">
+                <button *ngIf="contract.userInfo.soldAmount > 0" type="button" name="button" class="btn-black" (click)="withdrawPUB()">Withdraw</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #display>
+    <div class="round backWhite border ">
+        <p class="title red bold">{{contract.verifiedMessageTaboow}}</p>
+        <p class="title">User Ethereum Account: <span>{{contract.userInfo.account}}</span></p>
+        <p *ngIf="contract.userInfo.reservedAmount > 0" class="title">User Reserved Amount: <span>{{contract.userInfo.reservedAmount}}</span></p>
+        <p *ngIf="contract.userInfo.soldAmount > 0" class="title">Sold Amount: <span>{{contract.userInfo.soldAmount}} TBW</span></p>
+        <p *ngIf="contract.userInfo.balance > 0" class="title">Balance Amount: <span>{{contract.userInfo.balance}} TBW</span></p>
+        <p class="title">ICO end date: <span>{{contract.userInfo.pubEndDate | date:'EEEE, d MMMM y, H:mm:ss'}}</span></p>
+        <div *ngIf="contract.userInfo.pubEnd > contract.userInfo.now">
+            <button type="button" name="button" class="btn-inverse" (click)="buyTaboow(taboowBroker.buyValue)">Buy tokens</button>
+            <input type="text" name="buyValue" id="buyValue" placeholder="ETH amount" [(ngModel)]="taboowBroker.buyValue">
+        </div>
+        <div *ngIf="contract.userInfo.pubEnd < contract.userInfo.now">
+
+            <button *ngIf="contract.userInfo.soldAmount > 0" type="button" name="button" class="btn-black" (click)="withdrawPUB()">Withdraw</button>
+
+        </div>
+    </div>
+</ng-template>

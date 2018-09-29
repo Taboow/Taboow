@@ -1,0 +1,19 @@
+<nav class="flex-row">
+    <a routerLink="panel" routerLinkActive="active" #panel="routerLinkActive">
+        <div>
+            <span>
+                <img *ngIf="panel.isActive" src='~icons/newcontract_icon.svg'>
+                <img *ngIf="!panel.isActive" src='~icons/newcontract_inactive_icon.svg'>
+            </span>
+            <p class="title-button-navbar">Contract panel</p>
+        </div>
+    </a>
+
+</nav>
+
+<div class="content scrollable-content flex-inside">
+    <p *ngIf="!_account.account?.address; else content" class="text-center">Select an account</p>
+    <ng-template #content>
+        <router-outlet></router-outlet>
+    </ng-template>
+</div>
